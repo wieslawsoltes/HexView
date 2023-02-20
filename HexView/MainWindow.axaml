@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hexView="clr-namespace:HexView"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HexView.MainWindow"
+        WindowStartupLocation="CenterScreen"
+        Width="1000" Height="750"
+        Title="HexView">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
+                VerticalScrollBarVisibility="Auto">
+    <hexView:HexViewControl Name="HexViewControl" />
+  </ScrollViewer>
+</Window>
