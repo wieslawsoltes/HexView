@@ -3,6 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexView", "HexView\HexView.csproj", "{DE055189-83CD-4AE3-BD7A-7A38E6C90D92}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{57B5C431-566C-4FE4-80DF-23B304C9B554}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		global.json = global.json
+		NuGet.Config = NuGet.Config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
