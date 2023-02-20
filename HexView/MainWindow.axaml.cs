@@ -34,5 +34,6 @@ public partial class MainWindow : Window
         Console.WriteLine(sb);
 */
         HexViewControl.State = hexViewState;
+        HexViewControl.InvalidateScrollable();
     }
 }
