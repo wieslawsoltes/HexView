@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Text;
 
 namespace HexView;
 
@@ -19,62 +19,69 @@ public class HexViewState
         _info = new FileInfo(path); 
         _file = MemoryMappedFile.CreateFromFile(path); 
         _accessor = _file.CreateViewAccessor(0, _info.Length);
-        _width = 16; // 8m 16, 24, 32
+        _width = 16; // 8, 16, 24 or 32
         _lines = _info.Length / _width;
     }
 
     public byte[] GetLine(long lineNumber)
     {
         var bytes = new byte[_width];
-
         var offset = lineNumber * _width;
 
-        Console.Write($"{offset:X8}: ");
+        for (var j = 0; j < _width; j++)
+        {
+            var position = offset + j;
+            if (position < _info.Length)
+            {
+                bytes[j] = _accessor.ReadByte(position);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return bytes;
+    }
+
+    public void AddLine(byte[] bytes, long lineNumber, StringBuilder sb)
+    {
+        var offset = lineNumber * _width;
+
+        sb.Append($"{offset:X8}: ");
 
         for (var j = 0; j < _width; j++)
         {
             var position = offset + j;
 
-                var isSplit = j > 0 && j % 8 == 0;
-                if (isSplit)
-                {
-                    Console.Write("| ");
-                }
-                
-                if (position < _info.Length)
-                {
-                    bytes[j] = _accessor.ReadByte(position);
-                    Console.Write($"{bytes[j]:X2}");
-                }
-                else
-                {
-                    Console.Write("  ");
-                }
-
-                if (!isSplit)
-                {
-                    Console.Write(' ');
-                }
-        }
-
-        Console.Write(" | ");
-
-        for (int j = 0; j < _width; j++)
-        {
-            var c = (char)bytes[j];
-
-            if (char.IsControl(c))
+            var isSplit = j > 0 && j % 8 == 0;
+            if (isSplit)
             {
-                Console.Write(' ');
+                sb.Append("| ");
+            }
+
+            if (position < _info.Length)
+            {
+                sb.Append($"{bytes[j]:X2}");
             }
             else
             {
-                Console.Write(c); 
+                sb.Append("  ");
+            }
+
+            if (!isSplit)
+            {
+                sb.Append(' ');
             }
         }
 
-        Console.WriteLine();
+        sb.Append(" | ");
 
-        return bytes;
+        for (var j = 0; j < _width; j++)
+        {
+            var c = (char)bytes[j];
+
+            sb.Append(char.IsControl(c) ? ' ' : c);
+        }
     }
 }
