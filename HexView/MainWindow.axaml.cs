@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Avalonia.Controls;
 
 namespace HexView;
@@ -17,10 +19,14 @@ public partial class MainWindow : Window
         // var endLine = 10;
         var startLine = hexViewState.Lines - 10;
         var endLine =  hexViewState.Lines;
+        var sb = new StringBuilder();
         for (var i = startLine; i <= endLine; i++)
         {
-            hexViewState.GetLine(i);
+            var bytes = hexViewState.GetLine(i);
+            hexViewState.AddLine(bytes, i, sb);
+            sb.AppendLine();
         }
+        Console.WriteLine(sb);
 
         HexViewControl.State = hexViewState;
         HexViewControl.InvalidateScrollable();
