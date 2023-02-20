@@ -7,7 +7,8 @@
         x:Class="HexView.MainWindow"
         WindowStartupLocation="CenterScreen"
         Width="760" Height="600"
-        Title="HexView">
+        Title="HexView"
+        DragDrop.AllowDrop="True">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
                 VerticalScrollBarVisibility="Auto">
     <hexView:HexViewControl Name="HexViewControl"
