@@ -11,6 +11,6 @@
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
                 VerticalScrollBarVisibility="Auto">
     <hexView:HexViewControl Name="HexViewControl"
-                            TextElement.FontFamily="Consolas"/>
+                            TextElement.FontFamily="{StaticResource RobotoMonoFont}"/>
   </ScrollViewer>
 </Window>
