@@ -75,10 +75,10 @@ public class HexViewControl : Control, ILogicalScrollable
     }
 
     // TODO: Use LineHeight
-    Size ILogicalScrollable.ScrollSize => new Size(1, _lineHeight);
+    Size ILogicalScrollable.ScrollSize => new Size(1, 1);
 
     // TODO: Use LineHeight
-    Size ILogicalScrollable.PageScrollSize => new Size(10, _lineHeight);
+    Size ILogicalScrollable.PageScrollSize => new Size(10, 16);
 
     bool ILogicalScrollable.BringIntoView(Control target, Rect targetRect)
     {
@@ -128,7 +128,7 @@ public class HexViewControl : Control, ILogicalScrollable
         var width = Bounds.Width;
         var height = Bounds.Height;
         var viewport = new Size(width, height);
-        var extent = new Size(width, _lineHeight * lines); // Text height * 1000 lines
+        var extent = new Size(width, lines); // Text height * 1000 lines
         //var offset = new Vector(0, 0);
 
         //Console.WriteLine($"{Bounds.Width} {Bounds.Height} {_offset}");
@@ -150,7 +150,7 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var startLine = (long)Math.Floor(_offset.Y / _lineHeight);
+        var startLine = (long)Math.Floor(_offset.Y);
         var lines = _viewport.Height / _lineHeight;
         var endLine = (long)(startLine + Math.Ceiling(lines));
 
