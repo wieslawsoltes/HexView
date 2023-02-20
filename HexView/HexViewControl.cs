@@ -95,24 +95,28 @@ public class HexViewControl : Control, ILogicalScrollable
         _scrollInvalidated?.Invoke(this, e);
     }
 
-    public HexViewControl()
+    protected override void OnLoaded()
     {
+        base.OnLoaded();
+        
         _fontFamily = TextElement.GetFontFamily(this);
         _fontSize =  TextElement.GetFontSize(this);
         
         _typeface = new Typeface(_fontFamily);
 
         var ft = new FormattedText(
-            "",
+            "0",
             CultureInfo.CurrentCulture,
             FlowDirection.LeftToRight,
             _typeface,
             _fontSize,
             Brushes.Black);
 
-        _lineHeight = ft.LineHeight;
+        _lineHeight = ft.Height;
+
+        InvalidateScrollable();
     }
-    
+
     public void InvalidateScrollable()
     {
         if (this is not ILogicalScrollable scrollable)
