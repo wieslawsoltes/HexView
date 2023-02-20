@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HexView;
 
-public class HexViewState
+public class HexViewState : IDisposable
 {
     private FileInfo _info;
     private MemoryMappedFile? _file;
@@ -85,5 +85,11 @@ public class HexViewState
 
             sb.Append(char.IsControl(c) ? ' ' : c);
         }
+    }
+
+    public void Dispose()
+    {
+        _accessor.Dispose();
+        _file?.Dispose();
     }
 }
