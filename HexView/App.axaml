@@ -3,7 +3,10 @@
              x:Class="HexView.App"
              Name="HexView"
              RequestedThemeVariant="Light">
-    <Application.Styles>
-        <FluentTheme />
-    </Application.Styles>
+  <Application.Resources>
+    <FontFamily x:Key="RobotoMonoFont">avares://HexView/Assets#Roboto Mono</FontFamily>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+  </Application.Styles>
 </Application>
