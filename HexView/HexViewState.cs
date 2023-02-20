@@ -48,7 +48,7 @@ public class HexViewState
     {
         var offset = lineNumber * _width;
 
-        sb.Append($"{offset:X8}: ");
+        sb.Append($"{offset:X10}: ");
 
         for (var j = 0; j < _width; j++)
         {
