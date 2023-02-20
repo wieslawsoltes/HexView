@@ -150,7 +150,7 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var startLine = (long)Math.Floor((_offset.Y / _lineHeight));
+        var startLine = (long)Math.Floor(_offset.Y / _lineHeight);
         var lines = _viewport.Height / _lineHeight;
         var endLine = (long)(startLine + Math.Ceiling(lines));
 
