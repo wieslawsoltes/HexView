@@ -19,6 +19,10 @@ public class HexViewControl : Control, ILogicalScrollable
     private bool _canHorizontallyScroll;
     private bool _canVerticallyScroll;
     private EventHandler? _scrollInvalidated;
+    private Typeface _typeface;
+    private double _lineHeight;
+    private FontFamily _fontFamily;
+    private double _fontSize;
 
     public HexViewState? State { get;  set; }
 
@@ -71,10 +75,10 @@ public class HexViewControl : Control, ILogicalScrollable
     }
 
     // TODO: Use LineHeight
-    Size ILogicalScrollable.ScrollSize => new Size(1, 14);
+    Size ILogicalScrollable.ScrollSize => new Size(1, _lineHeight);
 
     // TODO: Use LineHeight
-    Size ILogicalScrollable.PageScrollSize => new Size(10,14);
+    Size ILogicalScrollable.PageScrollSize => new Size(10, _lineHeight);
 
     bool ILogicalScrollable.BringIntoView(Control target, Rect targetRect)
     {
@@ -91,6 +95,24 @@ public class HexViewControl : Control, ILogicalScrollable
         _scrollInvalidated?.Invoke(this, e);
     }
 
+    public HexViewControl()
+    {
+        _fontFamily = TextElement.GetFontFamily(this);
+        _fontSize =  TextElement.GetFontSize(this);
+        
+        _typeface = new Typeface(_fontFamily);
+
+        var ft = new FormattedText(
+            "",
+            CultureInfo.CurrentCulture,
+            FlowDirection.LeftToRight,
+            _typeface,
+            _fontSize,
+            Brushes.Black);
+
+        _lineHeight = ft.LineHeight;
+    }
+    
     public void InvalidateScrollable()
     {
         if (this is not ILogicalScrollable scrollable)
@@ -98,7 +120,7 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var lineHeight = 14;
+        var lineHeight = _lineHeight;
         var lines = State?.Lines ?? 0;
 
         var width = Bounds.Width;
@@ -126,10 +148,8 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var lineHeight = 14;
-
-        var startLine = (long)(_offset.Y / lineHeight);
-        var endLine = (long)(startLine + _viewport.Height / lineHeight);
+        var startLine = (long)(_offset.Y / _lineHeight);
+        var endLine = (long)(startLine + _viewport.Height / _lineHeight);
         
         //Console.WriteLine($"Render {startLine}..{endLine}");
         
@@ -143,14 +163,12 @@ public class HexViewControl : Control, ILogicalScrollable
 
         var text = sb.ToString();
 
-        var typeface = new Typeface(TextElement.GetFontFamily(this));
-
         var ft = new FormattedText(
             text,
             CultureInfo.CurrentCulture,
             FlowDirection.LeftToRight,
-            typeface,
-            lineHeight,
+            _typeface,
+            _fontSize,
             Brushes.Black);
 
         var origin = new Point();
