@@ -178,7 +178,7 @@ public class HexViewControl : Control, ILogicalScrollable
         var endLine = (long)Math.Floor(startLine + lines);
         endLine = Math.Min(endLine, State.Lines - 1);
         
-        Console.WriteLine($"{startLine}..{endLine}, Lines={State.Lines}, extent={_extent.Height}, offset={_offset.Y}, _viewport={_viewport.Height}");
+        //Console.WriteLine($"{startLine}..{endLine}, Lines={State.Lines}, extent={_extent.Height}, offset={_offset.Y}, _viewport={_viewport.Height}");
 
         var sb = new StringBuilder();
         for (var i = startLine; i <= endLine; i++)
