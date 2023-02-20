@@ -124,13 +124,11 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var lineHeight = _lineHeight;
         var lines = State?.Lines ?? 0;
-
         var width = Bounds.Width;
         var height = Bounds.Height;
         var viewport = new Size(width, height);
-        var extent = new Size(width, lineHeight * lines); // Text height * 1000 lines
+        var extent = new Size(width, _lineHeight * lines); // Text height * 1000 lines
         //var offset = new Vector(0, 0);
 
         //Console.WriteLine($"{Bounds.Width} {Bounds.Height} {_offset}");
@@ -152,11 +150,12 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var startLine = (long)(_offset.Y / _lineHeight);
-        var endLine = (long)(startLine + _viewport.Height / _lineHeight);
-        
-        //Console.WriteLine($"Render {startLine}..{endLine}");
-        
+        var startLine = (long)Math.Floor((_offset.Y / _lineHeight));
+        var lines = _viewport.Height / _lineHeight;
+        var endLine = (long)(startLine + Math.Ceiling(lines));
+
+        // Console.WriteLine($"Render {startLine}..{endLine}, {State.Lines}");
+
         var sb = new StringBuilder();
         for (var i = startLine; i <= endLine; i++)
         {
