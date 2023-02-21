@@ -5,6 +5,7 @@
              RequestedThemeVariant="Light">
   <Application.Resources>
     <FontFamily x:Key="RobotoMonoFont">avares://HexView/Assets#Roboto Mono</FontFamily>
+    <FontFamily x:Key="ConsolasFont">Consolas</FontFamily>
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />
