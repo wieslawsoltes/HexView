@@ -23,6 +23,7 @@ public class HexViewControl : Control, ILogicalScrollable
     private double _lineHeight;
     private FontFamily? _fontFamily;
     private double _fontSize;
+    private IBrush? _foreground;
     private Size _scrollSize = new(1, 1);
     private Size _pageScrollSize = new(10, 10);
 
@@ -41,8 +42,6 @@ public class HexViewControl : Control, ILogicalScrollable
             }
             _updating = true;
             _offset = CoerceOffset(value);
-            //_offset = value;
-            //InvalidateMeasure();
             InvalidateScrollable();
             _updating = false;
         }
@@ -96,29 +95,7 @@ public class HexViewControl : Control, ILogicalScrollable
     {
         _scrollInvalidated?.Invoke(this, e);
     }
-
-    protected override void OnLoaded()
-    {
-        base.OnLoaded();
-        
-        _fontFamily = TextElement.GetFontFamily(this);
-        _fontSize =  TextElement.GetFontSize(this);
-        
-        _typeface = new Typeface(_fontFamily);
-
-        var ft = new FormattedText(
-            "0",
-            CultureInfo.CurrentCulture,
-            FlowDirection.LeftToRight,
-            _typeface,
-            _fontSize,
-            Brushes.Black);
-
-        _lineHeight = ft.Height;
-
-        InvalidateScrollable();
-    }
-    
+   
     private Vector CoerceOffset(Vector value)
     {
         var scrollable = (ILogicalScrollable)this;
@@ -126,6 +103,46 @@ public class HexViewControl : Control, ILogicalScrollable
         var maxY = Math.Max(scrollable.Extent.Height - scrollable.Viewport.Height, 0);
         return new Vector(Clamp(value.X, 0, maxX), Clamp(value.Y, 0, maxY));
         static double Clamp(double val, double min, double max) => val < min ? min : val > max ? max : val;
+    }
+
+    private FormattedText CreateFormattedText(string text)
+    {
+        return new FormattedText(text,
+            CultureInfo.CurrentCulture,
+            FlowDirection.LeftToRight,
+            _typeface,
+            _fontSize,
+            _foreground);
+    }
+
+    protected override void OnLoaded()
+    {
+        base.OnLoaded();
+
+        Invalidate();
+        InvalidateScrollable();
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == TextElement.FontFamilyProperty
+            || change.Property == TextElement.FontSizeProperty
+            || change.Property == TextElement.ForegroundProperty)
+        {
+            Invalidate();
+            InvalidateScrollable();
+        }
+    }
+
+    private void Invalidate()
+    {
+        _fontFamily = TextElement.GetFontFamily(this);
+        _fontSize = TextElement.GetFontSize(this);
+        _foreground = TextElement.GetForeground(this);
+        _typeface = new Typeface(_fontFamily);
+        _lineHeight = CreateFormattedText("0").Height;
     }
 
     public void InvalidateScrollable()
@@ -138,17 +155,11 @@ public class HexViewControl : Control, ILogicalScrollable
         var lines = State?.Lines ?? 0;
         var width = Bounds.Width;
         var height = Bounds.Height;
-        var viewport = new Size(width, height);
-        var extent = new Size(width, lines * _lineHeight); // Text height * 1000 lines
-        //var offset = new Vector(0, 0);
 
         _scrollSize = new Size(1, _lineHeight);
         _pageScrollSize = new Size(_viewport.Width, _viewport.Height);
-
-        //Console.WriteLine($"{Bounds.Width} {Bounds.Height} {_offset}");
-        _extent = extent;
-        //_offset = offset;
-        _viewport = viewport;
+        _extent = new Size(width, lines * _lineHeight);
+        _viewport = new Size(width, height);
 
         scrollable.RaiseScrollInvalidated(EventArgs.Empty);
         
@@ -175,10 +186,7 @@ public class HexViewControl : Control, ILogicalScrollable
 
         var startLine = (long)Math.Ceiling(_offset.Y / _lineHeight);
         var lines = _viewport.Height / _lineHeight;
-        var endLine = (long)Math.Floor(startLine + lines);
-        endLine = Math.Min(endLine, State.Lines - 1);
-        
-        //Console.WriteLine($"{startLine}..{endLine}, Lines={State.Lines}, extent={_extent.Height}, offset={_offset.Y}, _viewport={_viewport.Height}");
+        var endLine = (long)Math.Min(Math.Floor(startLine + lines), State.Lines - 1);
 
         var sb = new StringBuilder();
         for (var i = startLine; i <= endLine; i++)
@@ -189,15 +197,7 @@ public class HexViewControl : Control, ILogicalScrollable
         }
 
         var text = sb.ToString();
-
-        var ft = new FormattedText(
-            text,
-            CultureInfo.CurrentCulture,
-            FlowDirection.LeftToRight,
-            _typeface,
-            _fontSize,
-            Brushes.Black);
-
+        var ft = CreateFormattedText(text);
         var origin = new Point();
 
         context.DrawText(ft, origin);
