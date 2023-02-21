@@ -200,6 +200,10 @@ public class HexViewControl : Control, ILogicalScrollable
         var ft = CreateFormattedText(text);
         var origin = new Point();
 
+        // TODO: Format diff.
+        // ft.SetForegroundBrush(Brushes.Red, 8, 2);
+        // ft.SetForegroundBrush(Brushes.Red, 11, 2);
+        
         context.DrawText(ft, origin);
     }
 }
