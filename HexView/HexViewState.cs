@@ -50,7 +50,6 @@ public class HexViewState : IDisposable
         var offset = lineNumber * _width;
 
         sb.Append($"{offset:X10}: ");
-        //sb.Append($"{lineNumber:D10}: ");
 
         for (var j = 0; j < _width; j++)
         {
