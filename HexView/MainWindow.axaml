@@ -3,22 +3,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hexView="clr-namespace:HexView"
-        mc:Ignorable="d" d:DesignWidth="760" d:DesignHeight="660"
+        mc:Ignorable="d" d:DesignWidth="1150" d:DesignHeight="660"
         x:Class="HexView.MainWindow"
         WindowStartupLocation="CenterScreen"
-        Width="760" Height="600"
-        Title="HexView"
-        DragDrop.AllowDrop="True">
-  <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
-                VerticalScrollBarVisibility="Auto">
-    <hexView:HexViewControl Name="HexViewControl"
-                            TextElement.FontSize="13"
-                            TextElement.Foreground="{DynamicResource TextControlForeground}">
-      <TextElement.FontFamily>
-        <OnPlatform Default="{StaticResource RobotoMonoFont}">
-          <On Options="Windows" Content="{StaticResource ConsolasFont}" />
-        </OnPlatform>
-      </TextElement.FontFamily>
-    </hexView:HexViewControl>
-  </ScrollViewer>
+        Width="1150" Height="600"
+        Title="HexView">
+  <Grid ColumnDefinitions="*,8,*">
+    <ScrollViewer Name="ScrollViewer1"
+      HorizontalScrollBarVisibility="Disabled" 
+                  VerticalScrollBarVisibility="Auto"
+                  Grid.Column="0">
+      <hexView:HexViewControl Name="HexViewControl1"
+                              TextElement.FontSize="13"
+                              TextElement.Foreground="{DynamicResource TextControlForeground}"
+                              DragDrop.AllowDrop="True">
+        <TextElement.FontFamily>
+          <OnPlatform Default="{StaticResource RobotoMonoFont}">
+            <On Options="Windows" Content="{StaticResource ConsolasFont}" />
+          </OnPlatform>
+        </TextElement.FontFamily>
+      </hexView:HexViewControl>
+    </ScrollViewer>
+    <GridSplitter Grid.Column="1"/>
+    <ScrollViewer Name="ScrollViewer2"
+                  HorizontalScrollBarVisibility="Disabled" 
+                  VerticalScrollBarVisibility="Auto"
+                  Grid.Column="2">
+      <hexView:HexViewControl Name="HexViewControl2"
+                              TextElement.FontSize="13"
+                              TextElement.Foreground="{DynamicResource TextControlForeground}"
+                              DragDrop.AllowDrop="True">
+        <TextElement.FontFamily>
+          <OnPlatform Default="{StaticResource RobotoMonoFont}">
+            <On Options="Windows" Content="{StaticResource ConsolasFont}" />
+          </OnPlatform>
+        </TextElement.FontFamily>
+      </hexView:HexViewControl>
+    </ScrollViewer>
+  </Grid>
 </Window>
