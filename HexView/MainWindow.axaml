@@ -13,6 +13,7 @@
                 VerticalScrollBarVisibility="Auto">
     <hexView:HexViewControl Name="HexViewControl"
                             TextElement.FontFamily="{StaticResource RobotoMonoFont}"
-                            TextElement.FontSize="14"/>
+                            TextElement.FontSize="14"
+                            TextElement.Foreground="{DynamicResource TextControlForeground}"/>
   </ScrollViewer>
 </Window>
