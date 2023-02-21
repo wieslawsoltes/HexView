@@ -19,8 +19,14 @@ public class HexViewState : IDisposable
     public HexViewState(string path)
     {
         _info = new FileInfo(path); 
-        _file = MemoryMappedFile.CreateFromFile(path); 
-        _accessor = _file.CreateViewAccessor(0, _info.Length);
+        _file = MemoryMappedFile.CreateFromFile(
+            File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read),
+            null, 
+            0, 
+            MemoryMappedFileAccess.Read,
+            HandleInheritability.None,
+            false); 
+        _accessor = _file.CreateViewAccessor(0, _info.Length, MemoryMappedFileAccess.Read);
         _width = 16; // 8, 16, 24 or 32
         _lines = (long)Math.Ceiling((decimal)_info.Length / _width);
         _length = _info.Length.ToString("X").Length;
