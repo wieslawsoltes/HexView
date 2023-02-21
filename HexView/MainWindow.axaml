@@ -12,8 +12,13 @@
   <ScrollViewer HorizontalScrollBarVisibility="Disabled" 
                 VerticalScrollBarVisibility="Auto">
     <hexView:HexViewControl Name="HexViewControl"
-                            TextElement.FontFamily="{StaticResource RobotoMonoFont}"
-                            TextElement.FontSize="14"
-                            TextElement.Foreground="{DynamicResource TextControlForeground}"/>
+                            TextElement.FontSize="13"
+                            TextElement.Foreground="{DynamicResource TextControlForeground}">
+      <TextElement.FontFamily>
+        <OnPlatform Default="{StaticResource RobotoMonoFont}">
+          <On Options="Windows" Content="{StaticResource ConsolasFont}" />
+        </OnPlatform>
+      </TextElement.FontFamily>
+    </hexView:HexViewControl>
   </ScrollViewer>
 </Window>
