@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Numerics;
 using System.Text;
 
 namespace HexView;
@@ -12,6 +13,7 @@ public class HexViewState : IDisposable
     private MemoryMappedViewAccessor _accessor;
     private int _width;
     private long _lines;
+    private int _length;
 
     public long Lines => _lines;
     
@@ -22,6 +24,7 @@ public class HexViewState : IDisposable
         _accessor = _file.CreateViewAccessor(0, _info.Length);
         _width = 16; // 8, 16, 24 or 32
         _lines = (long)Math.Ceiling((decimal)_info.Length / _width);
+        _length = _info.Length.ToString("X").Length;
     }
 
     public byte[] GetLine(long lineNumber)
@@ -49,7 +52,7 @@ public class HexViewState : IDisposable
     {
         var offset = lineNumber * _width;
 
-        sb.Append($"{offset:X10}: ");
+        sb.Append($"{offset.ToString($"X{_length}")}: ");
 
         for (var j = 0; j < _width; j++)
         {
