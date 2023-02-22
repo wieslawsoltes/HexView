@@ -8,6 +8,7 @@ public partial class MainWindow : Window
 {
     private HexViewState? _hexViewState1;
     private HexViewState? _hexViewState2;
+    private bool _updating;
 
     public MainWindow()
     {
@@ -59,7 +60,7 @@ public partial class MainWindow : Window
     protected override void OnLoaded()
     {
         base.OnLoaded();
-
+#if DEBUG
         //var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
         //var path = @"/Users/wieslawsoltes/Downloads/Windows11_InsiderPreview_Client_ARM64_en-us_25158.VHDX";
         var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
@@ -74,10 +75,9 @@ public partial class MainWindow : Window
         
         ScrollViewer1.ScrollChanged += ScrollViewer1OnScrollChanged;
         ScrollViewer2.ScrollChanged += ScrollViewer2OnScrollChanged;
+#endif
     }
 
-    private bool _updating;
-    
     private void ScrollViewer1OnScrollChanged(object? sender, ScrollChangedEventArgs e)
     {
         if (_updating)
