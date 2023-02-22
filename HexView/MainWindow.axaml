@@ -8,12 +8,43 @@
         WindowStartupLocation="CenterScreen"
         Width="1150" Height="600"
         Title="HexView">
-  <Grid ColumnDefinitions="*,8,*">
+  <Grid ColumnDefinitions="*,8,*"
+        RowDefinitions="Auto,*">
+    <Grid Grid.Row="0"
+          Grid.Column="0"
+          Grid.ColumnSpan="3">
+      <StackPanel Orientation="Horizontal"
+                  Spacing="4">
+        <ComboBox Name="ToBaseComboBox" SelectedIndex="3">
+          <ComboBox.Items>
+            <x:Int32>2</x:Int32>
+            <x:Int32>8</x:Int32>
+            <x:Int32>10</x:Int32>
+            <x:Int32>16</x:Int32>
+          </ComboBox.Items>
+        </ComboBox>
+        <TextBlock Text="base" 
+                   VerticalAlignment="Center"/>
+        <ComboBox Name="BytesWidthComboBox" SelectedIndex="0">
+          <ComboBox.Items>
+            <x:Int32>8</x:Int32>
+            <x:Int32>16</x:Int32>
+            <x:Int32>24</x:Int32>
+            <x:Int32>32</x:Int32>
+          </ComboBox.Items>
+        </ComboBox>
+        <TextBlock Text="bytes" 
+                   VerticalAlignment="Center"/>
+      </StackPanel>
+    </Grid>
     <ScrollViewer Name="ScrollViewer1"
-      HorizontalScrollBarVisibility="Disabled" 
+                  HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto"
+                  Grid.Row="1"
                   Grid.Column="0">
       <hexView:HexViewControl Name="HexViewControl1"
+                              ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                              BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
                               TextElement.FontSize="13"
                               TextElement.Foreground="{DynamicResource TextControlForeground}"
                               DragDrop.AllowDrop="True">
@@ -24,12 +55,16 @@
         </TextElement.FontFamily>
       </hexView:HexViewControl>
     </ScrollViewer>
-    <GridSplitter Grid.Column="1"/>
+    <GridSplitter Grid.Row="1" 
+                  Grid.Column="1"/>
     <ScrollViewer Name="ScrollViewer2"
                   HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto"
+                  Grid.Row="1"
                   Grid.Column="2">
       <hexView:HexViewControl Name="HexViewControl2"
+                              ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                              BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
                               TextElement.FontSize="13"
                               TextElement.Foreground="{DynamicResource TextControlForeground}"
                               DragDrop.AllowDrop="True">
