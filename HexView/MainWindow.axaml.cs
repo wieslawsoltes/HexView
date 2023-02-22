@@ -61,9 +61,9 @@ public partial class MainWindow : Window
     {
         base.OnLoaded();
 #if DEBUG
-        //var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
+        var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
+        //var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
         //var path = @"/Users/wieslawsoltes/Downloads/Windows11_InsiderPreview_Client_ARM64_en-us_25158.VHDX";
-        var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
 
         _hexViewState1 = new HexViewState(path);
         HexViewControl1.State = _hexViewState1;
