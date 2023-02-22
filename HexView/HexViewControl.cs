@@ -203,13 +203,15 @@ public class HexViewControl : Control, ILogicalScrollable
     {
         base.Render(context);
 
-        var toBase = ToBase;
-        var bytesWidth = BytesWidth;
-
         if (State is null)
         {
+            context.DrawRectangle(Brushes.Transparent, null, Bounds);
+            
             return;
         }
+   
+        var toBase = ToBase;
+        var bytesWidth = BytesWidth;
 
         if (bytesWidth != State.Width)
         {
