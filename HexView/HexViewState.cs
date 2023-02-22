@@ -10,12 +10,23 @@ public class HexViewState : IDisposable
     private FileInfo _info;
     private MemoryMappedFile? _file;
     private MemoryMappedViewAccessor _accessor;
-    private int _width;
     private long _lines;
-    private int _length;
+    private int _width;
+    private int _offsetPadding;
 
     public long Lines => _lines;
-    
+
+    // 8, 16, 24 or 32
+    public int Width
+    {
+        get => _width;
+        set
+        {
+            _width = value;
+            _lines = (long)Math.Ceiling((decimal)_info.Length / _width);
+        }
+    }
+
     public HexViewState(string path)
     {
         _info = new FileInfo(path); 
@@ -27,17 +38,18 @@ public class HexViewState : IDisposable
             HandleInheritability.None,
             false); 
         _accessor = _file.CreateViewAccessor(0, _info.Length, MemoryMappedFileAccess.Read);
-        _width = 16; // 8, 16, 24 or 32
+        _width = 8; 
         _lines = (long)Math.Ceiling((decimal)_info.Length / _width);
-        _length = _info.Length.ToString("X").Length;
+        _offsetPadding = _info.Length.ToString("X").Length;
     }
 
     public byte[] GetLine(long lineNumber)
     {
-        var bytes = new byte[_width];
-        var offset = lineNumber * _width;
+        var width = _width;
+        var bytes = new byte[width];
+        var offset = lineNumber * width;
 
-        for (var j = 0; j < _width; j++)
+        for (var j = 0; j < width; j++)
         {
             var position = offset + j;
             if (position < _info.Length)
@@ -53,13 +65,37 @@ public class HexViewState : IDisposable
         return bytes;
     }
 
-    public void AddLine(byte[] bytes, long lineNumber, StringBuilder sb)
+    public void AddLine(byte[] bytes, long lineNumber, StringBuilder sb, int toBase)
     {
-        var offset = lineNumber * _width;
+        if (toBase != 2 && toBase != 8 && toBase != 10 && toBase != 16)
+        {
+            throw new ArgumentException("Invalid base");
+        }
 
-        sb.Append($"{offset.ToString($"X{_length}")}: ");
+        var width = _width;
+        var offset = lineNumber * width;
 
-        for (var j = 0; j < _width; j++)
+        sb.Append($"{offset.ToString($"X{_offsetPadding}")}: ");
+
+        var toBasePadding = toBase switch
+        {
+            2 => 8,
+            8 => 3,
+            10 => 3,
+            16 => 2,
+            _ => throw new ArgumentOutOfRangeException(nameof(toBase), toBase, null)
+        };
+
+        var paddingChar = toBase switch
+        {
+            2 => '0',
+            8 => ' ',
+            10 => ' ',
+            16 => '0',
+            _ => throw new ArgumentOutOfRangeException(nameof(toBase), toBase, null)
+        };
+
+        for (var j = 0; j < width; j++)
         {
             var position = offset + j;
 
@@ -71,22 +107,29 @@ public class HexViewState : IDisposable
 
             if (position < _info.Length)
             {
-                sb.Append($"{bytes[j]:X2}");
+                if (toBase == 16)
+                {
+                    var value = $"{bytes[j]:X2}";
+                    sb.Append(value);
+                }
+                else
+                {
+                    var value = Convert.ToString(bytes[j], toBase).PadLeft(toBasePadding, paddingChar);
+                    sb.Append(value);
+                }
             }
             else
             {
-                sb.Append("  ");
+                var value = new string(' ', toBasePadding);
+                sb.Append(value);
             }
 
-            if (!isSplit)
-            {
-                sb.Append(' ');
-            }
+            sb.Append(' ');
         }
 
         sb.Append(" | ");
 
-        for (var j = 0; j < _width; j++)
+        for (var j = 0; j < width; j++)
         {
             var c = (char)bytes[j];
 
