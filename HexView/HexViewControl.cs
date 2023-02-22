@@ -12,6 +12,12 @@ namespace HexView;
 
 public class HexViewControl : Control, ILogicalScrollable
 {
+    public static readonly StyledProperty<int> ToBaseProperty = 
+        AvaloniaProperty.Register<HexViewControl, int>(nameof(ToBase), defaultValue: 16);
+
+    public static readonly StyledProperty<int> BytesWidthProperty = 
+        AvaloniaProperty.Register<HexViewControl, int>(nameof(BytesWidth), defaultValue: 8);
+
     private volatile bool _updating;
     private Size _extent;
     private Size _viewport;
@@ -26,6 +32,18 @@ public class HexViewControl : Control, ILogicalScrollable
     private IBrush? _foreground;
     private Size _scrollSize = new(1, 1);
     private Size _pageScrollSize = new(10, 10);
+
+    public int ToBase
+    {
+        get => GetValue(ToBaseProperty);
+        set => SetValue(ToBaseProperty, value);
+    }
+
+    public int BytesWidth
+    {
+        get => GetValue(BytesWidthProperty);
+        set => SetValue(BytesWidthProperty, value);
+    }
 
     public HexViewState? State { get;  set; }
 
@@ -127,11 +145,26 @@ public class HexViewControl : Control, ILogicalScrollable
     {
         base.OnPropertyChanged(change);
 
+        if (change.Property == BoundsProperty)
+        {
+            InvalidateScrollable();
+        }
+        
         if (change.Property == TextElement.FontFamilyProperty
             || change.Property == TextElement.FontSizeProperty
             || change.Property == TextElement.ForegroundProperty)
         {
             Invalidate();
+            InvalidateScrollable();
+        }
+
+        if (change.Property == ToBaseProperty)
+        {
+            InvalidateVisual();
+        }
+
+        if (change.Property == BytesWidthProperty)
+        {
             InvalidateScrollable();
         }
     }
@@ -166,22 +199,21 @@ public class HexViewControl : Control, ILogicalScrollable
         InvalidateVisual();
     }
 
-    protected override Size ArrangeOverride(Size finalSize)
-    {
-        finalSize = base.ArrangeOverride(finalSize);
-        
-        InvalidateScrollable();
-
-        return finalSize;
-    }
-
     public override void Render(DrawingContext context)
     {
         base.Render(context);
 
+        var toBase = ToBase;
+        var bytesWidth = BytesWidth;
+
         if (State is null)
         {
             return;
+        }
+
+        if (bytesWidth != State.Width)
+        {
+            State.Width = bytesWidth;
         }
 
         var startLine = (long)Math.Ceiling(_offset.Y / _lineHeight);
@@ -192,7 +224,7 @@ public class HexViewControl : Control, ILogicalScrollable
         for (var i = startLine; i <= endLine; i++)
         {
             var bytes = State.GetLine(i);
-            State.AddLine(bytes, i, sb);
+            State.AddLine(bytes, i, sb, toBase);
             sb.AppendLine();
         }
 
