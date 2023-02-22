@@ -1,7 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
     <Nullable>enable</Nullable>
     <TrimMode>full</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
