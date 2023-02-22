@@ -2,13 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:hexView="clr-namespace:HexView"
+        xmlns:views="clr-namespace:HexView"
         mc:Ignorable="d" d:DesignWidth="1150" d:DesignHeight="660"
         x:Class="HexView.MainWindow"
         WindowStartupLocation="CenterScreen"
         Width="1150" Height="600"
-        Title="HexView">
-  <Grid ColumnDefinitions="*,8,*"
+        Title="HexView"
+        x:CompileBindings="True" x:DataType="views:MainWindow">
+  <Grid ColumnDefinitions="*,Auto,*"
         RowDefinitions="Auto,*">
     <Grid Grid.Row="0"
           Grid.Column="0"
@@ -42,7 +43,7 @@
                   VerticalScrollBarVisibility="Auto"
                   Grid.Row="1"
                   Grid.Column="0">
-      <hexView:HexViewControl Name="HexViewControl1"
+      <views:HexViewControl Name="HexViewControl1"
                               ToBase="{Binding #ToBaseComboBox.SelectedItem}"
                               BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
                               TextElement.FontSize="13"
@@ -53,16 +54,17 @@
             <On Options="Windows" Content="{StaticResource ConsolasFont}" />
           </OnPlatform>
         </TextElement.FontFamily>
-      </hexView:HexViewControl>
+      </views:HexViewControl>
     </ScrollViewer>
-    <GridSplitter Grid.Row="1" 
+    <GridSplitter Width="8"
+                  Grid.Row="1" 
                   Grid.Column="1"/>
     <ScrollViewer Name="ScrollViewer2"
                   HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto"
                   Grid.Row="1"
                   Grid.Column="2">
-      <hexView:HexViewControl Name="HexViewControl2"
+      <views:HexViewControl Name="HexViewControl2"
                               ToBase="{Binding #ToBaseComboBox.SelectedItem}"
                               BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
                               TextElement.FontSize="13"
@@ -73,7 +75,7 @@
             <On Options="Windows" Content="{StaticResource ConsolasFont}" />
           </OnPlatform>
         </TextElement.FontFamily>
-      </hexView:HexViewControl>
+      </views:HexViewControl>
     </ScrollViewer>
   </Grid>
 </Window>
