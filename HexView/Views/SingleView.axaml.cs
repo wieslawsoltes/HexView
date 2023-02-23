@@ -10,8 +10,9 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
+using HexView.Controls;
 
-namespace HexView;
+namespace HexView.Views;
 
 public partial class SingleView : UserControl
 {

@@ -8,7 +8,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
 
-namespace HexView;
+namespace HexView.Controls;
 
 public class HexViewControl : Control, ILogicalScrollable
 {

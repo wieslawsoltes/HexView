@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Text;
 
-namespace HexView;
+namespace HexView.Controls;
 
 public class HexViewState : IDisposable
 {

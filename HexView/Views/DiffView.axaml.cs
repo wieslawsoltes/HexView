@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
+using HexView.Controls;
 
-namespace HexView;
+namespace HexView.Views;
 
 public partial class DiffView : UserControl
 {

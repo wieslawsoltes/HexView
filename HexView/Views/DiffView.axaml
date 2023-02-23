@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:HexView"
+             xmlns:controls="clr-namespace:HexView.Controls"
+             xmlns:views="clr-namespace:HexView.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="HexView.DiffView"
+             x:Class="HexView.Views.DiffView"
              x:CompileBindings="True" x:DataType="views:DiffView">
   <Grid ColumnDefinitions="*,Auto,*"
         RowDefinitions="Auto,*">
@@ -40,18 +41,18 @@
                   VerticalScrollBarVisibility="Auto"
                   Grid.Row="1"
                   Grid.Column="0">
-      <views:HexViewControl Name="HexViewControl1"
-                            ToBase="{Binding #ToBaseComboBox.SelectedItem}"
-                            BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                            TextElement.FontSize="13"
-                            TextElement.Foreground="{DynamicResource TextControlForeground}"
-                            DragDrop.AllowDrop="True">
+      <controls:HexViewControl Name="HexViewControl1"
+                               ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                               BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
+                               TextElement.FontSize="13"
+                               TextElement.Foreground="{DynamicResource TextControlForeground}"
+                               DragDrop.AllowDrop="True">
         <TextElement.FontFamily>
           <OnPlatform Default="{StaticResource RobotoMonoFont}">
             <On Options="Windows" Content="{StaticResource ConsolasFont}" />
           </OnPlatform>
         </TextElement.FontFamily>
-      </views:HexViewControl>
+      </controls:HexViewControl>
     </ScrollViewer>
     <GridSplitter Width="8"
                   Grid.Row="1" 
@@ -61,18 +62,18 @@
                   VerticalScrollBarVisibility="Auto"
                   Grid.Row="1"
                   Grid.Column="2">
-      <views:HexViewControl Name="HexViewControl2"
-                            ToBase="{Binding #ToBaseComboBox.SelectedItem}"
-                            BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                            TextElement.FontSize="13"
-                            TextElement.Foreground="{DynamicResource TextControlForeground}"
-                            DragDrop.AllowDrop="True">
+      <controls:HexViewControl Name="HexViewControl2"
+                               ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                               BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
+                               TextElement.FontSize="13"
+                               TextElement.Foreground="{DynamicResource TextControlForeground}"
+                               DragDrop.AllowDrop="True">
         <TextElement.FontFamily>
           <OnPlatform Default="{StaticResource RobotoMonoFont}">
             <On Options="Windows" Content="{StaticResource ConsolasFont}" />
           </OnPlatform>
         </TextElement.FontFamily>
-      </views:HexViewControl>
+      </controls:HexViewControl>
     </ScrollViewer>
   </Grid>
 </UserControl>

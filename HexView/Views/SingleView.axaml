@@ -2,9 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:HexView"
+             xmlns:controls="clr-namespace:HexView.Controls"
+             xmlns:views="clr-namespace:HexView.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="HexView.SingleView"
+             x:Class="HexView.Views.SingleView"
              x:CompileBindings="True" x:DataType="views:SingleView">
   <Grid ColumnDefinitions="*"
         RowDefinitions="Auto,Auto,*">
@@ -57,19 +58,19 @@
                   VerticalScrollBarVisibility="Auto"
                   Grid.Row="2"
                   Grid.Column="0">
-      <views:HexViewControl Name="HexViewControl1"
-                            ToBase="{Binding #ToBaseComboBox.SelectedItem}"
-                            BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                            TextElement.FontSize="13"
-                            TextElement.Foreground="{DynamicResource TextControlForeground}"
-                            DragDrop.AllowDrop="True"
-                            Margin="4,0,4,4">
+      <controls:HexViewControl Name="HexViewControl1"
+                               ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                               BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
+                               TextElement.FontSize="13"
+                               TextElement.Foreground="{DynamicResource TextControlForeground}"
+                               DragDrop.AllowDrop="True"
+                               Margin="4,0,4,4">
         <TextElement.FontFamily>
           <OnPlatform Default="{StaticResource RobotoMonoFont}">
             <On Options="Windows" Content="{StaticResource ConsolasFont}" />
           </OnPlatform>
         </TextElement.FontFamily>
-      </views:HexViewControl>
+      </controls:HexViewControl>
     </ScrollViewer>
   </Grid>
 </UserControl>

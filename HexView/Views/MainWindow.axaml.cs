@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace HexView;
+namespace HexView.Views;
 
 public partial class MainWindow : Window
 {
