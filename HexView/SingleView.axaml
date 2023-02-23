@@ -7,12 +7,26 @@
              x:Class="HexView.SingleView"
              x:CompileBindings="True" x:DataType="views:SingleView">
   <Grid ColumnDefinitions="*"
-        RowDefinitions="Auto,*">
-    <Grid Grid.Row="0"
+        RowDefinitions="Auto,Auto,*">
+    <Grid ColumnDefinitions="*,Auto"
+          Grid.Row="0"
+          Grid.Column="0">
+      <TextBox Name="PathTextBox"
+               Margin="4"
+               Grid.Column="0" />
+      <Button Name="OpenButton" 
+              Click="OpenButton_OnClick"
+              Content="..." 
+              Margin="4"
+              Grid.Column="1" />
+    </Grid>
+    <Grid Grid.Row="1"
           Grid.Column="0">
       <StackPanel Orientation="Horizontal"
                   Spacing="4">
-        <ComboBox Name="ToBaseComboBox" SelectedIndex="3">
+        <ComboBox Name="ToBaseComboBox" 
+                  SelectedIndex="3"
+                  Margin="4">
           <ComboBox.Items>
             <x:Int32>2</x:Int32>
             <x:Int32>8</x:Int32>
@@ -21,8 +35,11 @@
           </ComboBox.Items>
         </ComboBox>
         <TextBlock Text="base" 
-                   VerticalAlignment="Center"/>
-        <ComboBox Name="BytesWidthComboBox" SelectedIndex="1">
+                   VerticalAlignment="Center"
+                   Margin="4"/>
+        <ComboBox Name="BytesWidthComboBox" 
+                  SelectedIndex="1"
+                  Margin="4">
           <ComboBox.Items>
             <x:Int32>8</x:Int32>
             <x:Int32>16</x:Int32>
@@ -31,20 +48,22 @@
           </ComboBox.Items>
         </ComboBox>
         <TextBlock Text="bytes" 
-                   VerticalAlignment="Center"/>
+                   VerticalAlignment="Center"
+                   Margin="4"/>
       </StackPanel>
     </Grid>
     <ScrollViewer Name="ScrollViewer1"
                   HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto"
-                  Grid.Row="1"
+                  Grid.Row="2"
                   Grid.Column="0">
       <views:HexViewControl Name="HexViewControl1"
                             ToBase="{Binding #ToBaseComboBox.SelectedItem}"
                             BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
                             TextElement.FontSize="13"
                             TextElement.Foreground="{DynamicResource TextControlForeground}"
-                            DragDrop.AllowDrop="True">
+                            DragDrop.AllowDrop="True"
+                            Margin="4,0,4,4">
         <TextElement.FontFamily>
           <OnPlatform Default="{StaticResource RobotoMonoFont}">
             <On Options="Windows" Content="{StaticResource ConsolasFont}" />
