@@ -21,7 +21,6 @@ public partial class MainView : UserControl
         HexViewControl2.AddHandler(DragDrop.DragOverEvent, DragOver);
     }
 
-
     private void DragOver(object? sender, DragEventArgs e)
     {
         e.DragEffects &= (DragDropEffects.Copy | DragDropEffects.Link);
@@ -62,9 +61,8 @@ public partial class MainView : UserControl
     {
         base.OnLoaded();
 #if DEBUG
-        var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
-        //var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
-        //var path = @"/Users/wieslawsoltes/Downloads/Windows11_InsiderPreview_Client_ARM64_en-us_25158.VHDX";
+        //var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
+        var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
 
         _hexViewState1 = new HexViewState(path);
         HexViewControl1.State = _hexViewState1;
@@ -73,7 +71,7 @@ public partial class MainView : UserControl
         _hexViewState2 = new HexViewState(path);
         HexViewControl2.State = _hexViewState2;
         HexViewControl2.InvalidateScrollable();
-        
+
         ScrollViewer1.ScrollChanged += ScrollViewer1OnScrollChanged;
         ScrollViewer2.ScrollChanged += ScrollViewer2OnScrollChanged;
 #endif
