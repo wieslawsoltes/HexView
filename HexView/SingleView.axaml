@@ -22,7 +22,7 @@
         </ComboBox>
         <TextBlock Text="base" 
                    VerticalAlignment="Center"/>
-        <ComboBox Name="BytesWidthComboBox" SelectedIndex="0">
+        <ComboBox Name="BytesWidthComboBox" SelectedIndex="1">
           <ComboBox.Items>
             <x:Int32>8</x:Int32>
             <x:Int32>16</x:Int32>
