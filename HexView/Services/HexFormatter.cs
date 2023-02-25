@@ -1,18 +1,23 @@
-﻿using System;
-using System.IO;
-using System.IO.MemoryMappedFiles;
+using System;
 using System.Text;
+using HexView.Model;
 
-namespace HexView.Controls;
+namespace HexView.Services;
 
-public class HexViewState : IDisposable
+public class HexFormatter : IHexFormatter
 {
-    private readonly FileStream _stream;
-    private readonly MemoryMappedFile _file;
-    private readonly MemoryMappedViewAccessor _accessor;
+    private readonly long _length;
     private long _lines;
     private int _width;
     private readonly int _offsetPadding;
+
+    public HexFormatter(long length)
+    {
+        _length = length;
+        _width = 8; 
+        _lines = (long)Math.Ceiling((decimal)_length / _width);
+        _offsetPadding = _length.ToString("X").Length;
+    }
 
     public long Lines => _lines;
 
@@ -22,51 +27,8 @@ public class HexViewState : IDisposable
         set
         {
             _width = value;
-            _lines = (long)Math.Ceiling((decimal)_stream.Length / _width);
+            _lines = (long)Math.Ceiling((decimal)_length / _width);
         }
-    }
-
-    public HexViewState(string path) :
-        this(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-    {
-    }
-
-    public HexViewState(FileStream stream)
-    {
-        _stream = stream;
-        _file = MemoryMappedFile.CreateFromFile(
-            _stream,
-            null, 
-            0, 
-            MemoryMappedFileAccess.Read,
-            HandleInheritability.None,
-            false); 
-        _accessor = _file.CreateViewAccessor(0, _stream.Length, MemoryMappedFileAccess.Read);
-        _width = 8; 
-        _lines = (long)Math.Ceiling((decimal)_stream.Length / _width);
-        _offsetPadding = _stream.Length.ToString("X").Length;
-    }
-    
-    public byte[] GetLine(long lineNumber)
-    {
-        var width = _width;
-        var bytes = new byte[width];
-        var offset = lineNumber * width;
-
-        for (var j = 0; j < width; j++)
-        {
-            var position = offset + j;
-            if (position < _stream.Length)
-            {
-                bytes[j] = _accessor.ReadByte(position);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        return bytes;
     }
 
     public void AddLine(byte[] bytes, long lineNumber, StringBuilder sb, int toBase)
@@ -109,7 +71,7 @@ public class HexViewState : IDisposable
                 sb.Append("| ");
             }
 
-            if (position < _stream.Length)
+            if (position < _length)
             {
                 if (toBase == 16)
                 {
@@ -139,12 +101,5 @@ public class HexViewState : IDisposable
 
             sb.Append(char.IsControl(c) ? ' ' : c);
         }
-    }
-
-    public void Dispose()
-    {
-        _accessor.Dispose();
-        _file.Dispose();
-        _stream.Dispose();
     }
 }

@@ -11,12 +11,15 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using HexView.Controls;
+using HexView.Model;
+using HexView.Services;
 
 namespace HexView.Views;
 
 public partial class SingleView : UserControl
 {
-    private HexViewState? _hexViewState1;
+    private ILineReader? _lineReader1;
+    private IHexFormatter? _hexFormatter1;
 
     public SingleView()
     {
@@ -28,9 +31,11 @@ public partial class SingleView : UserControl
 
     private void OpenFile(FileStream stream, string path)
     {
-        _hexViewState1?.Dispose();
-        _hexViewState1 = new HexViewState(stream);
-        HexViewControl1.State = _hexViewState1;
+        _lineReader1?.Dispose();
+        _lineReader1 = new MemoryMappedLineReader(stream);
+        _hexFormatter1 = new HexFormatter(stream.Length);
+        HexViewControl1.LineReader = _lineReader1;
+        HexViewControl1.HexFormatter = _hexFormatter1;
         HexViewControl1.InvalidateScrollable();
         PathTextBox.Text = path;
     }
@@ -77,7 +82,7 @@ public partial class SingleView : UserControl
     {
         base.OnUnloaded();
         
-        _hexViewState1?.Dispose();
+        _lineReader1?.Dispose();
     }
 
     private IStorageProvider? GetStorageProvider()

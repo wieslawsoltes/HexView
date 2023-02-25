@@ -7,6 +7,7 @@ using Avalonia.Controls.Documents;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media;
+using HexView.Model;
 
 namespace HexView.Controls;
 
@@ -45,7 +46,9 @@ public class HexViewControl : Control, ILogicalScrollable
         set => SetValue(BytesWidthProperty, value);
     }
 
-    public HexViewState? State { get;  set; }
+    public IHexFormatter? HexFormatter { get;  set; }
+
+    public ILineReader? LineReader { get;  set; }
 
     Size IScrollable.Extent => _extent;
 
@@ -185,7 +188,7 @@ public class HexViewControl : Control, ILogicalScrollable
             return;
         }
 
-        var lines = State?.Lines ?? 0;
+        var lines = HexFormatter?.Lines ?? 0;
         var width = Bounds.Width;
         var height = Bounds.Height;
 
@@ -203,30 +206,30 @@ public class HexViewControl : Control, ILogicalScrollable
     {
         base.Render(context);
 
-        if (State is null)
+        if (HexFormatter is null || LineReader is null)
         {
             context.DrawRectangle(Brushes.Transparent, null, Bounds);
-            
+
             return;
         }
    
         var toBase = ToBase;
         var bytesWidth = BytesWidth;
 
-        if (bytesWidth != State.Width)
+        if (bytesWidth != HexFormatter.Width)
         {
-            State.Width = bytesWidth;
+            HexFormatter.Width = bytesWidth;
         }
 
         var startLine = (long)Math.Ceiling(_offset.Y / _lineHeight);
         var lines = _viewport.Height / _lineHeight;
-        var endLine = (long)Math.Min(Math.Floor(startLine + lines), State.Lines - 1);
+        var endLine = (long)Math.Min(Math.Floor(startLine + lines), HexFormatter.Lines - 1);
 
         var sb = new StringBuilder();
         for (var i = startLine; i <= endLine; i++)
         {
-            var bytes = State.GetLine(i);
-            State.AddLine(bytes, i, sb, toBase);
+            var bytes = LineReader.GetLine(i, HexFormatter.Width);
+            HexFormatter.AddLine(bytes, i, sb, toBase);
             sb.AppendLine();
         }
 
