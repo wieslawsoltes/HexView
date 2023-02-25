@@ -42,16 +42,18 @@ public partial class DiffView : UserControl
             {
                 if (Equals(sender, HexViewControl1))
                 {
+                    var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
                     _hexViewState1?.Dispose();
-                    _hexViewState1 = new HexViewState(path);
+                    _hexViewState1 = new HexViewState(stream);
                     HexViewControl1.State = _hexViewState1;
                     HexViewControl1.InvalidateScrollable();
                 }
 
                 if (Equals(sender, HexViewControl2))
                 {
+                    var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
                     _hexViewState2?.Dispose();
-                    _hexViewState2 = new HexViewState(path);
+                    _hexViewState2 = new HexViewState(stream);
                     HexViewControl2.State = _hexViewState2;
                     HexViewControl2.InvalidateScrollable();
                 }
