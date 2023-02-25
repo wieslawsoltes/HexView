@@ -54,7 +54,8 @@ public partial class SingleView : UserControl
             {
                 if (Equals(sender, HexViewControl1))
                 {
-                    OpenFile(null!, path);
+                    var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    OpenFile(stream, path);
                 }
             }
         }
