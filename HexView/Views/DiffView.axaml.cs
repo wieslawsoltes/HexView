@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using HexView.Controls;
@@ -65,11 +66,12 @@ public partial class DiffView : UserControl
         //var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
         var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
 
-        _hexViewState1 = new HexViewState(path);
+        var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        _hexViewState1 = new HexViewState(stream);
         HexViewControl1.State = _hexViewState1;
         HexViewControl1.InvalidateScrollable();
 
-        _hexViewState2 = new HexViewState(path);
+        _hexViewState2 = new HexViewState(stream);
         HexViewControl2.State = _hexViewState2;
         HexViewControl2.InvalidateScrollable();
 
