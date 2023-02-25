@@ -26,10 +26,10 @@ public partial class SingleView : UserControl
         HexViewControl1.AddHandler(DragDrop.DragOverEvent, DragOver);
     }
 
-    private void OpenFile(Stream stream, string path)
+    private void OpenFile(FileStream stream, string path)
     {
         _hexViewState1?.Dispose();
-        _hexViewState1 = new HexViewState(path);
+        _hexViewState1 = new HexViewState(stream);
         HexViewControl1.State = _hexViewState1;
         HexViewControl1.InvalidateScrollable();
         PathTextBox.Text = path;
@@ -67,7 +67,8 @@ public partial class SingleView : UserControl
         var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
         //var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
 
-        OpenFile(null!, path);
+        var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        OpenFile(stream, path);
 #endif
     }
 
@@ -125,13 +126,16 @@ public partial class SingleView : UserControl
             try
             {
                 await using var stream = await file.OpenReadAsync();
-                if (file.Path.IsAbsoluteUri)
+                if (stream is FileStream fileStream)
                 {
-                    OpenFile(stream, file.Path.AbsolutePath);
-                }
-                else
-                {
-                    // TODO:
+                    if (file.Path.IsAbsoluteUri)
+                    {
+                        OpenFile(fileStream, file.Path.AbsolutePath);
+                    }
+                    else
+                    {
+                        OpenFile(fileStream, file.Path.ToString());
+                    }
                 }
             }
             catch (Exception e)
