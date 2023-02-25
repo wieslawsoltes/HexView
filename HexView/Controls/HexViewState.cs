@@ -7,42 +7,46 @@ namespace HexView.Controls;
 
 public class HexViewState : IDisposable
 {
-    private FileInfo _info;
-    private MemoryMappedFile? _file;
-    private MemoryMappedViewAccessor _accessor;
+    private readonly FileStream _stream;
+    private readonly MemoryMappedFile _file;
+    private readonly MemoryMappedViewAccessor _accessor;
     private long _lines;
     private int _width;
-    private int _offsetPadding;
+    private readonly int _offsetPadding;
 
     public long Lines => _lines;
 
-    // 8, 16, 24 or 32
     public int Width
     {
         get => _width;
         set
         {
             _width = value;
-            _lines = (long)Math.Ceiling((decimal)_info.Length / _width);
+            _lines = (long)Math.Ceiling((decimal)_stream.Length / _width);
         }
     }
 
-    public HexViewState(string path)
+    public HexViewState(string path) :
+        this(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
     {
-        _info = new FileInfo(path); 
+    }
+
+    public HexViewState(FileStream stream)
+    {
+        _stream = stream;
         _file = MemoryMappedFile.CreateFromFile(
-            File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read),
+            _stream,
             null, 
             0, 
             MemoryMappedFileAccess.Read,
             HandleInheritability.None,
             false); 
-        _accessor = _file.CreateViewAccessor(0, _info.Length, MemoryMappedFileAccess.Read);
+        _accessor = _file.CreateViewAccessor(0, _stream.Length, MemoryMappedFileAccess.Read);
         _width = 8; 
-        _lines = (long)Math.Ceiling((decimal)_info.Length / _width);
-        _offsetPadding = _info.Length.ToString("X").Length;
+        _lines = (long)Math.Ceiling((decimal)_stream.Length / _width);
+        _offsetPadding = _stream.Length.ToString("X").Length;
     }
-
+    
     public byte[] GetLine(long lineNumber)
     {
         var width = _width;
@@ -52,7 +56,7 @@ public class HexViewState : IDisposable
         for (var j = 0; j < width; j++)
         {
             var position = offset + j;
-            if (position < _info.Length)
+            if (position < _stream.Length)
             {
                 bytes[j] = _accessor.ReadByte(position);
             }
@@ -105,7 +109,7 @@ public class HexViewState : IDisposable
                 sb.Append("| ");
             }
 
-            if (position < _info.Length)
+            if (position < _stream.Length)
             {
                 if (toBase == 16)
                 {
@@ -140,6 +144,7 @@ public class HexViewState : IDisposable
     public void Dispose()
     {
         _accessor.Dispose();
-        _file?.Dispose();
+        _file.Dispose();
+        _stream.Dispose();
     }
 }
