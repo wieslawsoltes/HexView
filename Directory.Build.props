@@ -1,6 +1,5 @@
 ﻿<Project>
   <PropertyGroup>
-    <AvaloniaVersion>11.0.0-preview5</AvaloniaVersion>
-    <XamlNameReferenceGeneratorVersion>1.6.1</XamlNameReferenceGeneratorVersion>
+    <AvaloniaVersion>11.0.0-preview6</AvaloniaVersion>
   </PropertyGroup>
 </Project>

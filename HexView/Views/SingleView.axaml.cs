@@ -44,7 +44,7 @@ public partial class SingleView : UserControl
     {
         e.DragEffects &= (DragDropEffects.Copy | DragDropEffects.Link);
 
-        if (!e.Data.Contains(DataFormats.FileNames))
+        if (!e.Data.Contains(DataFormats.Files))
         {
             e.DragEffects = DragDropEffects.None;
         }
@@ -52,7 +52,7 @@ public partial class SingleView : UserControl
 
     private void Drop(object? sender, DragEventArgs e)
     {
-        if (e.Data.Contains(DataFormats.FileNames))
+        if (e.Data.Contains(DataFormats.Files))
         {
             var path = e.Data.GetFileNames()?.FirstOrDefault();
             if (path is { })
@@ -127,11 +127,11 @@ public partial class SingleView : UserControl
         });
 
         var file = result.FirstOrDefault();
-        if (file is not null && file.CanOpenRead)
+        if (file is not null)
         {
             try
             {
-                await using var stream = await file.OpenReadAsync();
+                var stream = await file.OpenReadAsync();
                 if (stream is FileStream fileStream)
                 {
                     if (file.Path.IsAbsoluteUri)
