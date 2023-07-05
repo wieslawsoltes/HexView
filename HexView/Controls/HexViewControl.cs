@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using HexView.Model;
 
@@ -136,9 +137,9 @@ public class HexViewControl : Control, ILogicalScrollable
             _foreground);
     }
 
-    protected override void OnLoaded()
+    protected override void OnLoaded(RoutedEventArgs routedEventArgs)
     {
-        base.OnLoaded();
+        base.OnLoaded(routedEventArgs);
 
         Invalidate();
         InvalidateScrollable();

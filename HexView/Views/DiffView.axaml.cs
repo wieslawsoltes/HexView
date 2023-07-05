@@ -2,6 +2,7 @@
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using HexView.Controls;
 using HexView.Model;
 using HexView.Services;
@@ -81,9 +82,9 @@ public partial class DiffView : UserControl
         }
     }
 
-    protected override void OnLoaded()
+    protected override void OnLoaded(RoutedEventArgs routedEventArgs)
     {
-        base.OnLoaded();
+        base.OnLoaded(routedEventArgs);
 #if DEBUG
         //var path = @"/Users/wieslawsoltes/Documents/GitHub/Acdparser/clippitMS/CLIPPIT.ACS";
         var path = @"c:\Users\Administrator\Documents\GitHub\Acdparser\clippitMS\CLIPPIT.ACS";
@@ -122,9 +123,9 @@ public partial class DiffView : UserControl
         _updating = false;
     }
 
-    protected override void OnUnloaded()
+    protected override void OnUnloaded(RoutedEventArgs routedEventArgs)
     {
-        base.OnUnloaded();
+        base.OnUnloaded(routedEventArgs);
         
         _lineReader1?.Dispose();
         _lineReader2?.Dispose();
