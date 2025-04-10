@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexView", "HexView\HexView.csproj", "{DE055189-83CD-4AE3-BD7A-7A38E6C90D92}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{57B5C431-566C-4FE4-80DF-23B304C9B554}"
@@ -7,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{57B5C431
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
 		global.json = global.json
 		NuGet.Config = NuGet.Config
-		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3CA4B5EA-750D-4724-B696-D1EE0AE93963}"
@@ -17,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexView.Desktop", "HexView.Desktop\HexView.Desktop.csproj", "{8F934DA2-8B62-42EE-BCC7-337E23C586AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexView.Android", "HexView.Android\HexView.Android.csproj", "{4A6B067E-E04F-463B-8837-08ABBFD70F15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexView.Console", "HexView.Console\HexView.Console.csproj", "{40AAE2C9-3684-4451-BDF6-035FE3CFF19C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +41,18 @@ Global
 		{4A6B067E-E04F-463B-8837-08ABBFD70F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A6B067E-E04F-463B-8837-08ABBFD70F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A6B067E-E04F-463B-8837-08ABBFD70F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40AAE2C9-3684-4451-BDF6-035FE3CFF19C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40AAE2C9-3684-4451-BDF6-035FE3CFF19C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40AAE2C9-3684-4451-BDF6-035FE3CFF19C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40AAE2C9-3684-4451-BDF6-035FE3CFF19C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DE055189-83CD-4AE3-BD7A-7A38E6C90D92} = {3CA4B5EA-750D-4724-B696-D1EE0AE93963}
 		{8F934DA2-8B62-42EE-BCC7-337E23C586AD} = {3CA4B5EA-750D-4724-B696-D1EE0AE93963}
 		{4A6B067E-E04F-463B-8837-08ABBFD70F15} = {3CA4B5EA-750D-4724-B696-D1EE0AE93963}
+		{40AAE2C9-3684-4451-BDF6-035FE3CFF19C} = {3CA4B5EA-750D-4724-B696-D1EE0AE93963}
 	EndGlobalSection
 EndGlobal

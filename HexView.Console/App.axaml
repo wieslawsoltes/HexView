@@ -1,0 +1,18 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:themes="clr-namespace:Consolonia.Themes;assembly=Consolonia.Themes"
+             xmlns:local="clr-namespace:HexView.Console"
+             xmlns:controls="clr-namespace:HexView.Controls;assembly=HexView"
+             x:Class="HexView.Console.App"
+             RequestedThemeVariant="Default">
+  <Application.Resources>
+    <x:Double x:Key="Spacing">1</x:Double>
+    <Thickness x:Key="FullMargin">1,1,1,1</Thickness>
+    <Thickness x:Key="LeftRightBottomMargin">1,0,1,1</Thickness>
+  </Application.Resources>
+  
+  <Application.Styles>
+    <themes:MaterialTheme />
+  </Application.Styles>
+
+</Application>

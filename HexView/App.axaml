@@ -6,6 +6,10 @@
   <Application.Resources>
     <FontFamily x:Key="RobotoMonoFont">avares://HexView/Assets#Roboto Mono</FontFamily>
     <FontFamily x:Key="ConsolasFont">Consolas</FontFamily>
+    
+    <x:Double x:Key="Spacing">4</x:Double>
+    <Thickness x:Key="FullMargin">4,4,4,4</Thickness>
+    <Thickness x:Key="LeftRightBottomMargin">4,0,4,4</Thickness>
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />
