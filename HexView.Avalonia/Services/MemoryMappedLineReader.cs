@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.IO.MemoryMappedFiles;
-using HexView.Model;
+using HexView.Avalonia.Model;
 
-namespace HexView.Services;
+namespace HexView.Avalonia.Services;
 
 public class MemoryMappedLineReader : ILineReader
 {

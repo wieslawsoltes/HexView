@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using HexView.Model;
+using HexView.Avalonia.Model;
 
-namespace HexView.Services;
+namespace HexView.Avalonia.Services;
 
 public class HexFormatter : IHexFormatter
 {
