@@ -2,10 +2,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="HexView.App"
              Name="HexView"
-             RequestedThemeVariant="Light">
+             RequestedThemeVariant="Default">
   <Application.Resources>
     <FontFamily x:Key="RobotoMonoFont">avares://HexView/Assets#Roboto Mono</FontFamily>
     <FontFamily x:Key="ConsolasFont">Consolas</FontFamily>
+    
+    <x:Double x:Key="Spacing">4</x:Double>
+    <Thickness x:Key="FullMargin">4,4,4,4</Thickness>
+    <Thickness x:Key="LeftRightBottomMargin">4,0,4,4</Thickness>
+    <x:Double x:Key="FontSize">13</x:Double>
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />

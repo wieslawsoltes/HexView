@@ -130,17 +130,14 @@ public partial class SingleView : UserControl
         {
             try
             {
-                var stream = await file.OpenReadAsync();
-                if (stream is FileStream fileStream)
+                var fileStream = File.OpenRead(file.Path.LocalPath);
+                if (file.Path.IsAbsoluteUri)
                 {
-                    if (file.Path.IsAbsoluteUri)
-                    {
-                        OpenFile(fileStream, file.Path.AbsolutePath);
-                    }
-                    else
-                    {
-                        OpenFile(fileStream, file.Path.ToString());
-                    }
+                    OpenFile(fileStream, file.Path.AbsolutePath);
+                }
+                else
+                {
+                    OpenFile(fileStream, file.Path.ToString());
                 }
             }
             catch (Exception e)
