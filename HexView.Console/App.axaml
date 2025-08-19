@@ -9,6 +9,8 @@
     <x:Double x:Key="Spacing">1</x:Double>
     <Thickness x:Key="FullMargin">1,1,1,1</Thickness>
     <Thickness x:Key="LeftRightBottomMargin">1,0,1,1</Thickness>
+    <x:Double x:Key="FontSize">1</x:Double>
+
   </Application.Resources>
   
   <Application.Styles>

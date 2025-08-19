@@ -12,7 +12,7 @@
           Grid.Column="0"
           Grid.ColumnSpan="3">
       <StackPanel Orientation="Horizontal"
-                  Spacing="4">
+                  Spacing="{StaticResource Spacing}">
         <ComboBox Name="ToBaseComboBox" SelectedIndex="3">
           <ComboBox.Items>
             <x:Int32>2</x:Int32>
@@ -43,7 +43,7 @@
       <HexViewControl Name="HexViewControl1"
                       ToBase="{Binding #ToBaseComboBox.SelectedItem}"
                       BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                      TextElement.FontSize="13"
+                      TextElement.FontSize="{StaticResource FontSize}"
                       TextElement.Foreground="{DynamicResource TextControlForeground}"
                       DragDrop.AllowDrop="True">
         <TextElement.FontFamily>
@@ -64,7 +64,7 @@
       <HexViewControl Name="HexViewControl2"
                       ToBase="{Binding #ToBaseComboBox.SelectedItem}"
                       BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                      TextElement.FontSize="13"
+                      TextElement.FontSize="{StaticResource FontSize}"
                       TextElement.Foreground="{DynamicResource TextControlForeground}"
                       DragDrop.AllowDrop="True">
         <TextElement.FontFamily>

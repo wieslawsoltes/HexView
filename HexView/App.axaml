@@ -10,6 +10,7 @@
     <x:Double x:Key="Spacing">4</x:Double>
     <Thickness x:Key="FullMargin">4,4,4,4</Thickness>
     <Thickness x:Key="LeftRightBottomMargin">4,0,4,4</Thickness>
+    <x:Double x:Key="FontSize">13</x:Double>
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />

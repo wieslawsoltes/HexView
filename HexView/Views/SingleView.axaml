@@ -60,7 +60,7 @@
       <HexViewControl Name="HexViewControl1"
                       ToBase="{Binding #ToBaseComboBox.SelectedItem}"
                       BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                      TextElement.FontSize="13"
+                      TextElement.FontSize="{StaticResource FontSize}"
                       TextElement.Foreground="{DynamicResource TextControlForeground}"
                       DragDrop.AllowDrop="True"
                       Margin="{StaticResource LeftRightBottom}">
