@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace HexView.Model;
+namespace HexView.Avalonia.Model;
 
 public interface IHexFormatter
 {

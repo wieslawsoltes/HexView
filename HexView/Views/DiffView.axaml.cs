@@ -3,9 +3,8 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using HexView.Controls;
-using HexView.Model;
-using HexView.Services;
+using HexView.Avalonia.Model;
+using HexView.Avalonia.Services;
 
 namespace HexView.Views;
 

@@ -10,9 +10,8 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
-using HexView.Controls;
-using HexView.Model;
-using HexView.Services;
+using HexView.Avalonia.Model;
+using HexView.Avalonia.Services;
 
 namespace HexView.Views;
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace HexView.Model;
+namespace HexView.Avalonia.Model;
 
 public interface ILineReader : IDisposable
 {
