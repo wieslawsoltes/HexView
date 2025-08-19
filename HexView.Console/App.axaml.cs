@@ -1,6 +1,4 @@
-using Avalonia;
 using Avalonia.Markup.Xaml;
-using Consolonia;
 
 namespace HexView.Console
 {
