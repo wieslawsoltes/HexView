@@ -144,6 +144,7 @@ public class HexViewControl : Control, ILogicalScrollable
         {
             InvalidateVisual();
             EnsureCaretVisible();
+            CaretMoved?.Invoke(_caretOffset);
         }
     }
 
@@ -183,6 +184,47 @@ public class HexViewControl : Control, ILogicalScrollable
     }
 
     public IReadOnlyDictionary<long, byte> GetEdits() => _edits;
+
+    public long CaretOffset => _caretOffset;
+
+    public void MoveCaretTo(long offset, int nibbleIndex = 0, bool ensureVisible = true)
+    {
+        if (HexFormatter is null)
+        {
+            return;
+        }
+        var max = Math.Max(0, HexFormatter.Length - 1);
+        _caretOffset = Math.Max(0, Math.Min(max, offset));
+        _nibbleIndex = nibbleIndex == 0 ? 0 : 1;
+        InvalidateVisual();
+        if (ensureVisible)
+        {
+            EnsureCaretVisible();
+        }
+        CaretMoved?.Invoke(_caretOffset);
+    }
+
+    public bool TryGetByteAt(long offset, out byte value)
+    {
+        value = 0;
+        if (HexFormatter is null || LineReader is null) return false;
+        if (offset < 0 || offset >= HexFormatter.Length) return false;
+        if (_edits.TryGetValue(offset, out var v))
+        {
+            value = v; return true;
+        }
+        Span<byte> buf = stackalloc byte[1];
+        var tmp = new byte[1];
+        var read = LineReader.Read(offset, tmp, 1);
+        if (read == 1)
+        {
+            value = tmp[0];
+            return true;
+        }
+        return false;
+    }
+
+    public event Action<long>? CaretMoved;
 
     Size IScrollable.Extent => _extent;
 
@@ -549,6 +591,7 @@ public class HexViewControl : Control, ILogicalScrollable
             EnsureCaretVisible();
             _isDragging = true;
             e.Pointer.Capture(this);
+            CaretMoved?.Invoke(_caretOffset);
             return;
         }
         for (var j = 0; j < width; j++)
@@ -563,6 +606,7 @@ public class HexViewControl : Control, ILogicalScrollable
                 _nibbleIndex = toBase == 16 && digitsPerByte >= 2 && (c - startCol) >= 1 ? 1 : 0;
                 InvalidateVisual();
                 EnsureCaretVisible();
+                CaretMoved?.Invoke(_caretOffset);
                 found = true;
                 break;
             }
@@ -582,6 +626,7 @@ public class HexViewControl : Control, ILogicalScrollable
                     _nibbleIndex = 0;
                     InvalidateVisual();
                     EnsureCaretVisible();
+                    CaretMoved?.Invoke(_caretOffset);
                     break;
                 }
             }
@@ -590,6 +635,7 @@ public class HexViewControl : Control, ILogicalScrollable
         // start drag-to-move caret while pointer pressed
         _isDragging = true;
         e.Pointer.Capture(this);
+        CaretMoved?.Invoke(_caretOffset);
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
