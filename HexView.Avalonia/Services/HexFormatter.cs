@@ -19,6 +19,8 @@ public class HexFormatter : IHexFormatter
         _offsetPadding = _length.ToString("X").Length;
     }
 
+    public long Length => _length;
+
     public long Lines => _lines;
 
     public int Width
@@ -102,4 +104,6 @@ public class HexFormatter : IHexFormatter
             sb.Append(char.IsControl(c) ? ' ' : c);
         }
     }
+
+    public int OffsetPadding => _offsetPadding;
 }
