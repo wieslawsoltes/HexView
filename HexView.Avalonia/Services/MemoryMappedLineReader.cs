@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using HexView.Avalonia.Model;
 
@@ -55,5 +56,20 @@ public class MemoryMappedLineReader : ILineReader
         _accessor.Dispose();
         _file.Dispose();
         _stream.Dispose();
+    }
+
+    public int Read(long offset, byte[] buffer, int count)
+    {
+        if (offset < 0 || offset >= _stream.Length || count <= 0)
+        {
+            return 0;
+        }
+
+        var max = (int)Math.Min(count, _stream.Length - offset);
+        for (var i = 0; i < max; i++)
+        {
+            buffer[i] = _accessor.ReadByte(offset + i);
+        }
+        return max;
     }
 }

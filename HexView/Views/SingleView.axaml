@@ -55,6 +55,21 @@
         <TextBlock Text="bytes" 
                    VerticalAlignment="Center"
                    Margin="{StaticResource FullMargin}"/>
+        <Separator Width="16"/>
+        <ComboBox Name="SearchModeComboBox" SelectedIndex="0" MinWidth="100"
+                  Margin="{StaticResource FullMargin}">
+          <ComboBox.Items>
+            <x:String>Address</x:String>
+            <x:String>Value</x:String>
+          </ComboBox.Items>
+        </ComboBox>
+        <TextBox Name="SearchTextBox" MinWidth="200"
+                 Watermark="Address (hex/dec) or hex bytes"
+                 Margin="{StaticResource FullMargin}"/>
+        <Button Name="FindPrevButton" Content="Prev" Click="FindPrevButton_OnClick"
+                Margin="{StaticResource FullMargin}"/>
+        <Button Name="FindNextButton" Content="Next" Click="FindNextButton_OnClick"
+                Margin="{StaticResource FullMargin}"/>
       </StackPanel>
     </Grid>
     <ScrollViewer Name="ScrollViewer1"
