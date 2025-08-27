@@ -19,6 +19,7 @@ public partial class SingleView : UserControl
 {
     private ILineReader? _lineReader1;
     private IHexFormatter? _hexFormatter1;
+    private string? _currentPath;
 
     public SingleView()
     {
@@ -37,6 +38,7 @@ public partial class SingleView : UserControl
         HexViewControl1.HexFormatter = _hexFormatter1;
         HexViewControl1.InvalidateScrollable();
         PathTextBox.Text = path;
+        _currentPath = path;
     }
 
     private void DragOver(object? sender, DragEventArgs e)
@@ -150,5 +152,52 @@ public partial class SingleView : UserControl
     private async void OpenButton_OnClick(object? sender, RoutedEventArgs e)
     {
         await Open();
+    }
+
+    private void SaveEditsToFile(string path)
+    {
+        try
+        {
+            var edits = HexViewControl1.GetEdits();
+            if (edits.Count == 0)
+            {
+                return;
+            }
+
+            // Release reader to allow writing
+            _lineReader1?.Dispose();
+            _lineReader1 = null;
+
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
+            {
+                // Write edits in ascending order for more sequential IO
+                foreach (var kv in edits.OrderBy(e => e.Key))
+                {
+                    fs.Position = kv.Key;
+                    fs.WriteByte(kv.Value);
+                }
+                fs.Flush(true);
+            }
+
+            // Reopen for reading
+            var readStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            _lineReader1 = new MemoryMappedLineReader(readStream);
+            HexViewControl1.LineReader = _lineReader1;
+            // Keep existing formatter (length unchanged)
+            HexViewControl1.ClearEdits();
+            HexViewControl1.InvalidateScrollable();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void SaveButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(_currentPath))
+        {
+            SaveEditsToFile(_currentPath!);
+        }
     }
 }
