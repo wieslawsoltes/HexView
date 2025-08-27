@@ -41,6 +41,7 @@ public class HexViewControl : Control, ILogicalScrollable
     private readonly Dictionary<long, byte> _edits = new();
     private long _caretOffset;
     private int _nibbleIndex; // 0 = high nibble, 1 = low nibble
+    private bool _isDragging;
     public bool IsEditable { get; set; } = true;
 
     public int ToBase
@@ -49,6 +50,116 @@ public class HexViewControl : Control, ILogicalScrollable
         set => SetValue(ToBaseProperty, value);
     }
 
+    private bool TrySetCaretFromPoint(Point point)
+    {
+        if (HexFormatter is null)
+        {
+            return false;
+        }
+
+        var prevOffset = _caretOffset;
+        var prevNibble = _nibbleIndex;
+
+        var line = (long)Math.Floor((_offset.Y + point.Y) / _lineHeight);
+        line = Math.Max(0, Math.Min(line, HexFormatter.Lines - 1));
+
+        var col = (int)Math.Floor(point.X / Math.Max(1, _charWidth));
+        var toBase = ToBase;
+        var digitsPerByte = toBase switch { 2 => 8, 8 => 3, 10 => 3, 16 => 2, _ => 2 };
+        var prefixLen = (HexFormatter.OffsetPadding) + 2;
+        var sepEvery = 8;
+        var sepLen = 2;
+        var width = HexFormatter.Width;
+
+        if (col < prefixLen)
+        {
+            return false;
+        }
+
+        var sepsFull = (width - 1) / sepEvery;
+        var hexAreaLen = sepsFull * sepLen + width * (digitsPerByte + 1);
+        var asciiStartCol = prefixLen + hexAreaLen + 3;
+        var asciiEndCol = asciiStartCol + width;
+
+        // ASCII hit
+        if (col >= asciiStartCol && col < asciiEndCol)
+        {
+            var jA = Math.Max(0, Math.Min(width - 1, col - asciiStartCol));
+            var newOffsetA = line * width + jA;
+            if (HexFormatter.Length > 0)
+            {
+                newOffsetA = Math.Min(newOffsetA, HexFormatter.Length - 1);
+            }
+            _caretOffset = newOffsetA;
+            _nibbleIndex = 0;
+            return _caretOffset != prevOffset || _nibbleIndex != prevNibble;
+        }
+
+        // Hex hit
+        var c = col - prefixLen;
+        var found = false;
+        for (var j = 0; j < width; j++)
+        {
+            var sepsBefore = j / sepEvery;
+            var startCol = sepsBefore * sepLen + j * (digitsPerByte + 1);
+            var endCol = startCol + digitsPerByte;
+            if (c >= startCol && c < endCol)
+            {
+                _caretOffset = line * width + j;
+                _nibbleIndex = toBase == 16 && digitsPerByte >= 2 && (c - startCol) >= 1 ? 1 : 0;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            for (var j = 0; j < width; j++)
+            {
+                var sepsBefore = j / sepEvery;
+                var startCol = sepsBefore * sepLen + j * (digitsPerByte + 1);
+                if (c < startCol)
+                {
+                    var idx = Math.Max(0, j - 1);
+                    _caretOffset = line * width + idx;
+                    _nibbleIndex = 0;
+                    break;
+                }
+            }
+        }
+
+        return _caretOffset != prevOffset || _nibbleIndex != prevNibble;
+    }
+
+    protected override void OnPointerMoved(PointerEventArgs e)
+    {
+        base.OnPointerMoved(e);
+        if (!_isDragging)
+        {
+            return;
+        }
+
+        var pt = e.GetPosition(this);
+        if (TrySetCaretFromPoint(pt))
+        {
+            InvalidateVisual();
+            EnsureCaretVisible();
+        }
+    }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        base.OnPointerReleased(e);
+        if (_isDragging)
+        {
+            _isDragging = false;
+            if (e.Pointer.Captured == this)
+            {
+                e.Pointer.Capture(null);
+            }
+            e.Handled = true;
+        }
+    }
     public int BytesWidth
     {
         get => GetValue(BytesWidthProperty);
@@ -406,16 +517,40 @@ public class HexViewControl : Control, ILogicalScrollable
         var prefixLen = (HexFormatter.OffsetPadding) + 2;
         var sepEvery = 8;
         var sepLen = 2;
+        var width = HexFormatter.Width;
 
         if (col < prefixLen)
         {
             return; // clicked in offset area
         }
 
-        // Determine byte index from column within hex region
+        // Precompute ASCII area columns
+        var sepsFull = (width - 1) / sepEvery;
+        var hexAreaLen = sepsFull * sepLen + width * (digitsPerByte + 1);
+        var asciiStartCol = prefixLen + hexAreaLen + 3; // " | "
+        var asciiEndCol = asciiStartCol + width; // exclusive
+
+        // Determine byte index from column within hex or ASCII region
         var c = col - prefixLen;
         var found = false;
-        var width = HexFormatter.Width;
+        // Click in ASCII area → map directly to byte index
+        if (col >= asciiStartCol && col < asciiEndCol)
+        {
+            var j = Math.Max(0, Math.Min(width - 1, col - asciiStartCol));
+            var newOffset = line * width + j;
+            // Clamp to file length - 1
+            if (HexFormatter.Length > 0)
+            {
+                newOffset = Math.Min(newOffset, HexFormatter.Length - 1);
+            }
+            _caretOffset = newOffset;
+            _nibbleIndex = 0; // start editing with high nibble
+            InvalidateVisual();
+            EnsureCaretVisible();
+            _isDragging = true;
+            e.Pointer.Capture(this);
+            return;
+        }
         for (var j = 0; j < width; j++)
         {
             var sepsBefore = j / sepEvery;
@@ -451,6 +586,10 @@ public class HexViewControl : Control, ILogicalScrollable
                 }
             }
         }
+
+        // start drag-to-move caret while pointer pressed
+        _isDragging = true;
+        e.Pointer.Capture(this);
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
