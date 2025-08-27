@@ -308,6 +308,54 @@ public class HexViewControl : Control, ILogicalScrollable
                 ft.SetForegroundBrush(Brushes.Red, asciiCaretStart, 1);
             }
         }
+
+        // Highlight all edited bytes (excluding currently edited nibble/byte in-progress)
+        if (HexFormatter is { } fmt && _edits.Count > 0)
+        {
+            var editedBrush = Brushes.Orange;
+            var caretByteOffset = _caretOffset;
+
+            var sepsFull = (fmt.Width - 1) / sepEvery;
+            var hexAreaLen = sepsFull * sepLen + fmt.Width * (digitsPerByte + 1);
+            var asciiStartColAll = prefixLen + hexAreaLen + 3; // " | " before ASCII
+
+            for (var i = startLine; i <= endLine; i++)
+            {
+                var relLine = (int)(i - startLine);
+                var lineGlobalIndex = lineStartIndices[relLine];
+                var baseOffset = i * fmt.Width;
+
+                for (var j = 0; j < fmt.Width; j++)
+                {
+                    var pos = baseOffset + j;
+                    if (_edits.ContainsKey(pos))
+                    {
+                        // Hex column highlight (only if hex mode)
+                        if (toBase == 16)
+                        {
+                            var sepsB = j / sepEvery;
+                            var startCol = prefixLen + sepsB * sepLen + j * (digitsPerByte + 1);
+                            if (pos == caretByteOffset)
+                            {
+                                // While caret is on an edited byte, color only the other nibble
+                                var otherNibbleCol = startCol + (_nibbleIndex == 0 ? 1 : 0);
+                                ft.SetForegroundBrush(editedBrush, lineGlobalIndex + otherNibbleCol, 1);
+                            }
+                            else
+                            {
+                                // Color both hex chars for edited byte
+                                ft.SetForegroundBrush(editedBrush, lineGlobalIndex + startCol + 0, 1);
+                                ft.SetForegroundBrush(editedBrush, lineGlobalIndex + startCol + 1, 1);
+                            }
+                        }
+
+                        // ASCII column highlight
+                        var asciiPos = lineGlobalIndex + asciiStartColAll + j;
+                        ft.SetForegroundBrush(editedBrush, asciiPos, 1);
+                    }
+                }
+            }
+        }
         
         context.DrawText(ft, origin);
     }
