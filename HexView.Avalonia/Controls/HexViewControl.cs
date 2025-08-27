@@ -678,6 +678,7 @@ public class HexViewControl : Control, ILogicalScrollable
 
         var indexInLine = (int)(_caretOffset % width);
         var current = bytes[indexInLine];
+        var byteOffset = _caretOffset;
         byte updated;
 
         if (_nibbleIndex == 0)
@@ -689,14 +690,14 @@ public class HexViewControl : Control, ILogicalScrollable
         {
             updated = (byte)((current & 0xF0) | nibble);
             _nibbleIndex = 0;
-            // advance caret to next byte
-            if (_caretOffset < HexFormatter.Length - 1)
+            // advance caret to next byte (if not at end)
+            if (byteOffset < HexFormatter.Length - 1)
             {
-                _caretOffset++;
+                _caretOffset = byteOffset + 1;
             }
         }
 
-        _edits[_caretOffset - (_nibbleIndex == 0 ? 1 : 0)] = updated;
+        _edits[byteOffset] = updated;
         InvalidateVisual();
         EnsureCaretVisible();
     }
