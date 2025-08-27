@@ -8,7 +8,7 @@
              x:CompileBindings="True" x:DataType="views:SingleView">
   <Grid ColumnDefinitions="*"
         RowDefinitions="Auto,Auto,*">
-    <Grid ColumnDefinitions="*,Auto"
+    <Grid ColumnDefinitions="*,Auto,Auto"
           Grid.Row="0"
           Grid.Column="0">
       <TextBox Name="PathTextBox"
@@ -19,6 +19,11 @@
               Content="..." 
               Margin="{StaticResource FullMargin}"
               Grid.Column="1" />
+      <Button Name="SaveButton" 
+              Click="SaveButton_OnClick"
+              Content="Save" 
+              Margin="{StaticResource FullMargin}"
+              Grid.Column="2" />
     </Grid>
     <Grid Grid.Row="1"
           Grid.Column="0">
