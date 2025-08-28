@@ -29,6 +29,11 @@ public partial class DiffView : UserControl
     private IHexFormatter? _hexFormatter1;
     private ILineReader? _lineReader2;
     private IHexFormatter? _hexFormatter2;
+    private ByteOverlay? _overlay1;
+    private ByteOverlayLineReader? _overlayReader1;
+    private ByteOverlay? _overlay2;
+    private ByteOverlayLineReader? _overlayReader2;
+    private System.Collections.Generic.SortedSet<long> _diffOffsets = new();
     private bool _updating;
 
     public DiffView()
@@ -46,9 +51,12 @@ public partial class DiffView : UserControl
     {
         _lineReader1?.Dispose();
         _lineReader1 = new MemoryMappedLineReader(stream);
-        _hexFormatter1 = new HexFormatter(stream.Length);
-        HexViewControl1.LineReader = _lineReader1;
+        _overlay1 = new ByteOverlay(_lineReader1);
+        _overlayReader1 = new ByteOverlayLineReader(_overlay1);
+        _hexFormatter1 = new HexFormatter(_overlay1.Length);
+        HexViewControl1.LineReader = _overlayReader1;
         HexViewControl1.HexFormatter = _hexFormatter1;
+        HexViewControl1.ByteWriteAction = (off, val) => { _overlay1!.OverwriteByte(off, val); if (LockStepCheckBox.IsChecked == true && _overlay2 is { }) _overlay2.OverwriteByte(off, val); RecomputeDiffOffsets(); };
         HexViewControl1.InvalidateScrollable();
         // TODO: path
     }
@@ -57,9 +65,12 @@ public partial class DiffView : UserControl
     {
         _lineReader2?.Dispose();
         _lineReader2 = new MemoryMappedLineReader(stream);
-        _hexFormatter2 = new HexFormatter(stream.Length);
-        HexViewControl2.LineReader = _lineReader2;
+        _overlay2 = new ByteOverlay(_lineReader2);
+        _overlayReader2 = new ByteOverlayLineReader(_overlay2);
+        _hexFormatter2 = new HexFormatter(_overlay2.Length);
+        HexViewControl2.LineReader = _overlayReader2;
         HexViewControl2.HexFormatter = _hexFormatter2;
+        HexViewControl2.ByteWriteAction = (off, val) => { _overlay2!.OverwriteByte(off, val); if (LockStepCheckBox.IsChecked == true && _overlay1 is { }) _overlay1.OverwriteByte(off, val); RecomputeDiffOffsets(); };
         HexViewControl2.InvalidateScrollable();
         // TODO: path
     }
@@ -137,7 +148,60 @@ public partial class DiffView : UserControl
         _updating = false;
     }
 
-    protected override void OnUnloaded(RoutedEventArgs routedEventArgs)
+    
+
+    private void RecomputeDiffOffsets()
+    {
+        _diffOffsets.Clear();
+        if (_overlayReader1 is null || _overlayReader2 is null) return;
+        long len = System.Math.Min(_overlayReader1.Length, _overlayReader2.Length);
+        int chunk = 262144;
+        var buf1 = new byte[chunk];
+        var buf2 = new byte[chunk];
+        long pos = 0;
+        while (pos < len)
+        {
+            int toRead = (int)System.Math.Min(chunk, len - pos);
+            int r1 = _overlayReader1.Read(pos, buf1, toRead);
+            int r2 = _overlayReader2.Read(pos, buf2, toRead);
+            int r = System.Math.Min(r1, r2);
+            for (int i = 0; i < r; i++)
+            {
+                if (buf1[i] != buf2[i])
+                {
+                    _diffOffsets.Add(pos + i);
+                }
+            }
+            pos += r;
+            if (r <= 0) break;
+        }
+        HexViewControl1.DifferencesProvider = (start, end) => _diffOffsets.GetViewBetween(start, end);
+        HexViewControl2.DifferencesProvider = (start, end) => _diffOffsets.GetViewBetween(start, end);
+        DiffCountTextBlock.Text = _diffOffsets.Count.ToString();
+        HexViewControl1.InvalidateVisual();
+        HexViewControl2.InvalidateVisual();
+    }
+
+    private void PrevDiffButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_diffOffsets.Count == 0) return;
+        var off = HexViewControl1.CaretOffset;
+        var view = _diffOffsets.GetViewBetween(0, System.Math.Max(0, off - 1));
+        long target = view.Count > 0 ? System.Linq.Enumerable.Last(view) : System.Linq.Enumerable.Last(_diffOffsets);
+        HexViewControl1.MoveCaretTo(target);
+        HexViewControl2.MoveCaretTo(target);
+    }
+
+    private void NextDiffButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_diffOffsets.Count == 0) return;
+        var off = HexViewControl1.CaretOffset;
+        var view = _diffOffsets.GetViewBetween(System.Math.Min(off + 1, long.MaxValue), long.MaxValue);
+        long target = view.Count > 0 ? System.Linq.Enumerable.First(view) : System.Linq.Enumerable.First(_diffOffsets);
+        HexViewControl1.MoveCaretTo(target);
+        HexViewControl2.MoveCaretTo(target);
+    }
+protected override void OnUnloaded(RoutedEventArgs routedEventArgs)
     {
         base.OnUnloaded(routedEventArgs);
         
