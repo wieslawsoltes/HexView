@@ -9,14 +9,18 @@ public class HexFormatter : IHexFormatter
     private readonly long _length;
     private long _lines;
     private int _width;
-    private readonly int _offsetPadding;
+    private int _groupSize = 8;
+    private bool _showGroupSeparator = true;
+    private int _addressWidthOverride = 0;
+    private Encoding _encoding = Encoding.ASCII;
+    private bool _useControlGlyph = true;
+    private char _controlGlyph = '·';
 
     public HexFormatter(long length)
     {
         _length = length;
         _width = 8; 
         _lines = (long)Math.Ceiling((decimal)_length / _width);
-        _offsetPadding = _length.ToString("X").Length;
     }
 
     public long Length => _length;
@@ -43,7 +47,8 @@ public class HexFormatter : IHexFormatter
         var width = _width;
         var offset = lineNumber * width;
 
-        sb.Append($"{offset.ToString($"X{_offsetPadding}")}: ");
+        var pad = OffsetPadding;
+        sb.Append($"{offset.ToString($"X{pad}")}: ");
 
         var toBasePadding = toBase switch
         {
@@ -67,10 +72,13 @@ public class HexFormatter : IHexFormatter
         {
             var position = offset + j;
 
-            var isSplit = j > 0 && j % 8 == 0;
-            if (isSplit)
+            if (_showGroupSeparator)
             {
-                sb.Append("| ");
+                var isSplit = j > 0 && j % Math.Max(1, _groupSize) == 0;
+                if (isSplit)
+                {
+                    sb.Append("| ");
+                }
             }
 
             if (position < _length)
@@ -99,11 +107,32 @@ public class HexFormatter : IHexFormatter
 
         for (var j = 0; j < width; j++)
         {
-            var c = (char)bytes[j];
+            char c;
+            if (_encoding is { })
+            {
+                var s = _encoding.GetString(new[] { bytes[j] });
+                c = string.IsNullOrEmpty(s) ? ' ' : s[0];
+            }
+            else
+            {
+                c = (char)bytes[j];
+            }
 
-            sb.Append(char.IsControl(c) ? ' ' : c);
+            if (char.IsControl(c) && _useControlGlyph)
+            {
+                c = _controlGlyph;
+            }
+
+            sb.Append(c);
         }
     }
 
-    public int OffsetPadding => _offsetPadding;
+    public int OffsetPadding => _addressWidthOverride > 0 ? _addressWidthOverride : _length.ToString("X").Length;
+
+    public int GroupSize { get => _groupSize; set => _groupSize = Math.Max(1, value); }
+    public bool ShowGroupSeparator { get => _showGroupSeparator; set => _showGroupSeparator = value; }
+    public int AddressWidthOverride { get => _addressWidthOverride; set => _addressWidthOverride = Math.Max(0, value); }
+    public Encoding Encoding { get => _encoding; set => _encoding = value ?? Encoding.ASCII; }
+    public bool UseControlGlyph { get => _useControlGlyph; set => _useControlGlyph = value; }
+    public char ControlGlyph { get => _controlGlyph; set => _controlGlyph = value; }
 }

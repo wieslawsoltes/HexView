@@ -7,7 +7,7 @@
              x:Class="HexView.Views.SingleView"
              x:CompileBindings="True" x:DataType="views:SingleView">
   <Grid ColumnDefinitions="*"
-        RowDefinitions="Auto,Auto,*">
+        RowDefinitions="Auto,Auto,Auto,*,Auto">
     <Grid ColumnDefinitions="*,Auto,Auto"
           Grid.Row="0"
           Grid.Column="0">
@@ -55,6 +55,27 @@
         <TextBlock Text="bytes" 
                    VerticalAlignment="Center"
                    Margin="{StaticResource FullMargin}"/>
+        <TextBlock Text="group" VerticalAlignment="Center" Margin="{StaticResource FullMargin}"/>
+        <ComboBox Name="GroupSizeComboBox" SelectedIndex="1" Margin="{StaticResource FullMargin}" SelectionChanged="GroupSizeComboBox_OnSelectionChanged">
+          <ComboBox.Items>
+            <x:Int32>4</x:Int32>
+            <x:Int32>8</x:Int32>
+            <x:Int32>16</x:Int32>
+          </ComboBox.Items>
+        </ComboBox>
+        <CheckBox Name="ShowSepsCheckBox" Content="separators" IsChecked="True" Margin="{StaticResource FullMargin}" Checked="ShowSepsCheckBox_OnChanged" Unchecked="ShowSepsCheckBox_OnChanged"/>
+        <TextBlock Text="addr" VerticalAlignment="Center" Margin="{StaticResource FullMargin}"/>
+        <TextBox Name="AddrWidthTextBox" MinWidth="60" Margin="{StaticResource FullMargin}" KeyUp="AddrWidthTextBox_OnKeyUp"/>
+        <TextBlock Text="code page" VerticalAlignment="Center" Margin="{StaticResource FullMargin}"/>
+        <ComboBox Name="EncodingComboBox" SelectedIndex="0" Margin="{StaticResource FullMargin}" SelectionChanged="EncodingComboBox_OnSelectionChanged">
+          <ComboBox.Items>
+            <x:String>ASCII</x:String>
+            <x:String>UTF-8</x:String>
+            <x:String>UTF-16LE</x:String>
+            <x:String>UTF-16BE</x:String>
+          </ComboBox.Items>
+        </ComboBox>
+        <CheckBox Name="ControlGlyphCheckBox" Content="control glyph" IsChecked="True" Margin="{StaticResource FullMargin}" Checked="ControlGlyphCheckBox_OnChanged" Unchecked="ControlGlyphCheckBox_OnChanged"/>
         <Separator Width="16"/>
         <ComboBox Name="SearchModeComboBox" SelectedIndex="0" MinWidth="100"
                   Margin="{StaticResource FullMargin}">
@@ -72,10 +93,80 @@
                 Margin="{StaticResource FullMargin}"/>
       </StackPanel>
     </Grid>
+    <Grid Grid.Row="2"
+          Grid.Column="0">
+      <WrapPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Edit" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <ComboBox Name="EditModeComboBox" SelectedIndex="0" MinWidth="100" SelectionChanged="EditModeComboBox_OnSelectionChanged"
+                      Margin="{StaticResource FullMargin}">
+              <ComboBox.Items>
+                <x:String>Overwrite</x:String>
+                <x:String>Insert</x:String>
+              </ComboBox.Items>
+            </ComboBox>
+            <Button Name="UndoButton" Content="Undo" Click="UndoButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="RedoButton" Content="Redo" Click="RedoButton_OnClick" Margin="{StaticResource FullMargin}"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Selection" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <TextBox Name="SelStartTextBox" MinWidth="80" Watermark="Sel Start" Margin="{StaticResource FullMargin}"/>
+            <TextBox Name="SelLenTextBox" MinWidth="80" Watermark="Sel Len" Margin="{StaticResource FullMargin}"/>
+            <Button Name="SelApplyButton" Content="Apply" Click="SelApplyButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="SelClearButton" Content="Clear" Click="SelClearButton_OnClick" Margin="{StaticResource FullMargin}"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Ops" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <Button Name="FillZeroButton" Content="Zero" Click="FillZeroButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="IncrementButton" Content="Inc" Click="IncrementButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="RandomizeButton" Content="Rnd" Click="RandomizeButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="DeleteButton" Content="Del" Click="DeleteButton_OnClick" Margin="{StaticResource FullMargin}" ToolTip.Tip="Insert mode only"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Clipboard" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <Button Name="CopyHexButton" Content="Copy Hex" Click="CopyHexButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="CopyAsciiButton" Content="Copy ASCII" Click="CopyAsciiButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="PasteHexButton" Content="Paste Hex" Click="PasteHexButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="PasteAsciiButton" Content="Paste ASCII" Click="PasteAsciiButton_OnClick" Margin="{StaticResource FullMargin}"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Replace" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <TextBox Name="ReplaceTextBox" MinWidth="200" Watermark="Replace bytes (hex)" Margin="{StaticResource FullMargin}"/>
+            <Button Name="ReplaceNextButton" Content="Replace" Click="ReplaceNextButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="ReplaceAllButton" Content="Replace All" Click="ReplaceAllButton_OnClick" Margin="{StaticResource FullMargin}"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Navigate" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <Button Name="BackButton" Content="Back" Click="BackButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="ForwardButton" Content="Forward" Click="ForwardButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="BookmarkButton" Content="Bookmark" Click="BookmarkButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="NextChangeButton" Content="Next Change" Click="NextChangeButton_OnClick" Margin="{StaticResource FullMargin}"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Margin="{StaticResource FullMargin}">
+          <TextBlock Text="Output" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
+          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
+            <Button Name="SaveAsButton" Content="Save As" Click="SaveAsButton_OnClick" Margin="{StaticResource FullMargin}"/>
+            <Button Name="ExportPatchButton" Content="Export Patch" Click="ExportPatchButton_OnClick" Margin="{StaticResource FullMargin}"/>
+          </StackPanel>
+        </StackPanel>
+      </WrapPanel>
+    </Grid>
     <ScrollViewer Name="ScrollViewer1"
                   HorizontalScrollBarVisibility="Disabled" 
                   VerticalScrollBarVisibility="Auto"
-                  Grid.Row="2"
+                  Grid.Row="3"
                   Grid.Column="0">
       <HexViewControl Name="HexViewControl1"
                       ToBase="{Binding #ToBaseComboBox.SelectedItem}"
@@ -91,5 +182,19 @@
         </TextElement.FontFamily>
       </HexViewControl>
     </ScrollViewer>
+    <Grid Grid.Row="4" Grid.Column="0">
+      <WrapPanel>
+        <TextBlock Text="Offset:" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Name="StatusOffset" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Text="Byte:" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Name="StatusByte" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Text="ASCII:" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Name="StatusAscii" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Text="Length:" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Name="StatusLength" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Text="Sel:" Margin="{StaticResource FullMargin}"/>
+        <TextBlock Name="StatusSel" Margin="{StaticResource FullMargin}"/>
+      </WrapPanel>
+    </Grid>
   </Grid>
 </UserControl>
