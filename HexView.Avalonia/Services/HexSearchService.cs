@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Services;
@@ -114,6 +115,108 @@ public static class HexSearchService
         return null;
     }
 
+    // Wildcard pattern: "DE AD ?? EF" => pattern bytes and mask bytes (FF=match, 00=wildcard)
+    public static bool TryParseWildcardPattern(string? text, out byte[] pattern, out byte[] mask)
+    {
+        pattern = Array.Empty<byte>();
+        mask = Array.Empty<byte>();
+        if (string.IsNullOrWhiteSpace(text)) return false;
+        var tokens = text.Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        var p = new byte[tokens.Length];
+        var m = new byte[tokens.Length];
+        for (int i = 0; i < tokens.Length; i++)
+        {
+            var t = tokens[i];
+            if (t == "??" || t == "??")
+            {
+                p[i] = 0; m[i] = 0; continue;
+            }
+            if (t.Length != 2 || !byte.TryParse(t, System.Globalization.NumberStyles.HexNumber, null, out p[i]))
+            {
+                return false;
+            }
+            m[i] = 0xFF;
+        }
+        pattern = p; mask = m; return pattern.Length > 0;
+    }
+
+    public static long? FindNextValue(ILineReader reader, long length, byte[] pattern, byte[] mask, long startOffset)
+    {
+        if (pattern is null || mask is null || pattern.Length == 0 || pattern.Length != mask.Length) return null;
+        const int chunkSize = 64 * 1024;
+        var buffer = new byte[Math.Max(chunkSize, pattern.Length * 2)];
+        long pos = startOffset;
+        bool wrapped = false;
+        while (true)
+        {
+            var read = reader.Read(pos, buffer, buffer.Length);
+            if (read <= 0)
+            {
+                if (wrapped) break; pos = 0; wrapped = true; continue;
+            }
+            int idx = IndexOfMasked(buffer, read, pattern, mask);
+            if (idx >= 0) return pos + idx;
+            pos += Math.Max(1, read - (pattern.Length - 1));
+            if (pos >= length)
+            { if (wrapped) break; pos = 0; wrapped = true; }
+        }
+        return null;
+    }
+
+    private static int IndexOfMasked(byte[] buffer, int count, byte[] pattern, byte[] mask)
+    {
+        int lastStart = count - pattern.Length;
+        for (int i = 0; i <= lastStart; i++)
+        {
+            int j = 0; for (; j < pattern.Length; j++) if ((buffer[i + j] & mask[j]) != (pattern[j] & mask[j])) break; if (j == pattern.Length) return i;
+        }
+        return -1;
+    }
+
+    public static byte[] BuildTextPattern(string text, string encoding)
+    {
+        Encoding enc = encoding.ToUpperInvariant() switch
+        {
+            "ASCII" => Encoding.ASCII,
+            "UTF8" => Encoding.UTF8,
+            "UTF-8" => Encoding.UTF8,
+            "UTF16" => Encoding.Unicode,
+            "UTF-16" => Encoding.Unicode,
+            "UTF16LE" => Encoding.Unicode,
+            "UTF-16LE" => Encoding.Unicode,
+            "UTF16BE" => Encoding.BigEndianUnicode,
+            "UTF-16BE" => Encoding.BigEndianUnicode,
+            _ => Encoding.ASCII
+        };
+        return enc.GetBytes(text ?? string.Empty);
+    }
+
+    // Replace helpers (value-based)
+    public static long? ReplaceNext(ByteOverlay overlay, ILineReader reader, byte[] find, byte[] replace, long startOffset)
+    {
+        var found = FindNextValue(reader, reader.Length, find, startOffset);
+        if (found.HasValue)
+        {
+            overlay.ReplaceRange(found.Value, find.Length, replace);
+        }
+        return found;
+    }
+
+    public static int ReplaceAll(ByteOverlay overlay, ILineReader reader, byte[] find, byte[] replace)
+    {
+        int count = 0;
+        long pos = 0;
+        while (true)
+        {
+            var found = FindNextValue(reader, reader.Length, find, pos);
+            if (!found.HasValue) break;
+            overlay.ReplaceRange(found.Value, find.Length, replace);
+            count++;
+            pos = found.Value + replace.Length; // continue after replaced range
+            if (pos >= reader.Length) break;
+        }
+        return count;
+    }
     private static int IndexOf(byte[] buffer, int count, byte[] pattern)
     {
         if (pattern.Length == 0 || count < pattern.Length) return -1;

@@ -21,6 +21,23 @@ public class HexViewControl : Control, ILogicalScrollable
     public static readonly StyledProperty<int> BytesWidthProperty = 
         AvaloniaProperty.Register<HexViewControl, int>(nameof(BytesWidth), defaultValue: 8);
 
+    // Themed brushes
+    public static readonly StyledProperty<IBrush> CaretBrushProperty =
+        AvaloniaProperty.Register<HexViewControl, IBrush>(nameof(CaretBrush), Brushes.Red);
+    public static readonly StyledProperty<IBrush> EditedBrushProperty =
+        AvaloniaProperty.Register<HexViewControl, IBrush>(nameof(EditedBrush), Brushes.Orange);
+    public static readonly StyledProperty<IBrush> SelectionBrushProperty =
+        AvaloniaProperty.Register<HexViewControl, IBrush>(nameof(SelectionBrush), Brushes.LightBlue);
+    public static readonly StyledProperty<IBrush> MatchBrushProperty =
+        AvaloniaProperty.Register<HexViewControl, IBrush>(nameof(MatchBrush), Brushes.Yellow);
+    public static readonly StyledProperty<IBrush> DiffBrushProperty =
+        AvaloniaProperty.Register<HexViewControl, IBrush>(nameof(DiffBrush), Brushes.LightGreen);
+
+    public static readonly StyledProperty<long> SelectionStartProperty =
+        AvaloniaProperty.Register<HexViewControl, long>(nameof(SelectionStart), 0L);
+    public static readonly StyledProperty<long> SelectionLengthProperty =
+        AvaloniaProperty.Register<HexViewControl, long>(nameof(SelectionLength), 0L);
+
     private volatile bool _updating;
     private Size _extent;
     private Size _viewport;
@@ -42,6 +59,10 @@ public class HexViewControl : Control, ILogicalScrollable
     private long _caretOffset;
     private int _nibbleIndex; // 0 = high nibble, 1 = low nibble
     private bool _isDragging;
+    private bool _dragSelecting;
+    private long _selectionAnchor;
+    private long _lastClickOffset;
+    private long _lastClickTimestampMs;
     public bool IsEditable { get; set; } = true;
 
     public int ToBase
@@ -145,6 +166,10 @@ public class HexViewControl : Control, ILogicalScrollable
             InvalidateVisual();
             EnsureCaretVisible();
             CaretMoved?.Invoke(_caretOffset);
+            if (_dragSelecting)
+            {
+                UpdateSelectionFromAnchor(_caretOffset);
+            }
         }
     }
 
@@ -154,6 +179,7 @@ public class HexViewControl : Control, ILogicalScrollable
         if (_isDragging)
         {
             _isDragging = false;
+            _dragSelecting = false;
             if (e.Pointer.Captured == this)
             {
                 e.Pointer.Capture(null);
@@ -175,6 +201,44 @@ public class HexViewControl : Control, ILogicalScrollable
     {
         Focusable = true;
         IsTabStop = true;
+    }
+
+    public IBrush CaretBrush
+    {
+        get => GetValue(CaretBrushProperty);
+        set => SetValue(CaretBrushProperty, value);
+    }
+    public IBrush EditedBrush
+    {
+        get => GetValue(EditedBrushProperty);
+        set => SetValue(EditedBrushProperty, value);
+    }
+    public IBrush SelectionBrush
+    {
+        get => GetValue(SelectionBrushProperty);
+        set => SetValue(SelectionBrushProperty, value);
+    }
+    public IBrush MatchBrush
+    {
+        get => GetValue(MatchBrushProperty);
+        set => SetValue(MatchBrushProperty, value);
+    }
+    public IBrush DiffBrush
+    {
+        get => GetValue(DiffBrushProperty);
+        set => SetValue(DiffBrushProperty, value);
+    }
+
+    public long SelectionStart
+    {
+        get => GetValue(SelectionStartProperty);
+        set => SetValue(SelectionStartProperty, value);
+    }
+
+    public long SelectionLength
+    {
+        get => GetValue(SelectionLengthProperty);
+        set => SetValue(SelectionLengthProperty, value);
     }
 
     public void ClearEdits()
@@ -225,6 +289,14 @@ public class HexViewControl : Control, ILogicalScrollable
     }
 
     public event Action<long>? CaretMoved;
+    public event Action<long, long>? SelectionChanged;
+
+    // Optional hook to forward byte overwrites to an external editing service
+    public Action<long, byte>? ByteWriteAction { get; set; }
+
+    // Optional provider for edited offsets to support external editing overlays
+    // Signature: (startOffset, endOffset) -> offsets within inclusive range
+    public Func<long, long, System.Collections.Generic.IEnumerable<long>>? EditedOffsetsProvider { get; set; }
 
     Size IScrollable.Extent => _extent;
 
@@ -320,6 +392,22 @@ public class HexViewControl : Control, ILogicalScrollable
         InvalidateScrollable();
     }
 
+    protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+    {
+        base.OnPointerWheelChanged(e);
+        // Ctrl+wheel zooms font size
+        if ((e.KeyModifiers & KeyModifiers.Control) != 0)
+        {
+            var size = TextElement.GetFontSize(this);
+            var delta = e.Delta.Y > 0 ? 1 : -1;
+            var newSize = Math.Max(6, size + delta);
+            TextElement.SetFontSize(this, newSize);
+            Invalidate();
+            InvalidateScrollable();
+            e.Handled = true;
+        }
+    }
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -406,8 +494,8 @@ public class HexViewControl : Control, ILogicalScrollable
         var lineStartIndices = new List<int>(); // string index of each visible line start
         var digitsPerByte = toBase switch { 2 => 8, 8 => 3, 10 => 3, 16 => 2, _ => 2 };
         var prefixLen = (HexFormatter?.OffsetPadding ?? 0) + 2; // "XXXX: "
-        var sepEvery = 8;
-        var sepLen = 2; // "| "
+        var sepEvery = HexFormatter?.GroupSize ?? 8;
+        var sepLen = (HexFormatter?.ShowGroupSeparator ?? true) ? 2 : 0; // "| "
 
         // Build visible text, applying overlay edits per line
         for (var i = startLine; i <= endLine; i++)
@@ -435,6 +523,44 @@ public class HexViewControl : Control, ILogicalScrollable
         var ft = CreateFormattedText(text);
         var origin = new Point();
 
+        // Draw selection background (hex columns and ASCII columns) before text
+        if (HexFormatter is { } selFmt && SelectionLength > 0)
+        {
+            var selStart = Math.Max(0, SelectionStart);
+            var selEnd = Math.Max(selStart, selStart + SelectionLength - 1);
+            var selectionBrush = SelectionBrush;
+
+            var sepsFullSel = (selFmt.Width - 1) / sepEvery;
+            var hexAreaLenSel = sepsFullSel * sepLen + selFmt.Width * (digitsPerByte + 1);
+            var asciiStartColSel = prefixLen + hexAreaLenSel + 3;
+
+            for (var i = startLine; i <= endLine; i++)
+            {
+                var lineY = (i - startLine) * _lineHeight;
+                var baseOffset = i * selFmt.Width;
+                for (var j = 0; j < selFmt.Width; j++)
+                {
+                    var pos = baseOffset + j;
+                    if (pos < selStart || pos > selEnd)
+                        continue;
+
+                    var sepsB = j / sepEvery;
+                    var startCol = prefixLen + sepsB * sepLen + j * (digitsPerByte + 1);
+                    var xHex = startCol * _charWidth;
+                    var wHex = digitsPerByte * _charWidth;
+                    var rectHex = new Rect(xHex, lineY, wHex, _lineHeight);
+                    context.DrawRectangle(selectionBrush, null, rectHex);
+
+                    var xAsc = (asciiStartColSel + j) * _charWidth;
+                    var rectAsc = new Rect(xAsc, lineY, _charWidth, _lineHeight);
+                    context.DrawRectangle(selectionBrush, null, rectAsc);
+                }
+            }
+        }
+
+        var caretBrush = CaretBrush;
+        var editedBrush = EditedBrush;
+
         // Caret highlight in hex area when visible and base 16
         if (toBase == 16 && HexFormatter is { } formatter)
         {
@@ -451,26 +577,51 @@ public class HexViewControl : Control, ILogicalScrollable
                 var caretStart = lineGlobalIndex + startCol + (_nibbleIndex == 0 ? 0 : 1);
 
                 // Ensure within this line bounds; highlight one nibble (1 char)
-                ft.SetForegroundBrush(Brushes.Red, caretStart, 1);
+                ft.SetForegroundBrush(caretBrush, caretStart, 1);
 
                 // Also highlight corresponding ASCII character column
                 var sepsFull = (formatter.Width - 1) / sepEvery;
                 var hexAreaLen = sepsFull * sepLen + formatter.Width * (digitsPerByte + 1);
                 var asciiStartCol = prefixLen + hexAreaLen + 3; // " | "
                 var asciiCaretStart = lineGlobalIndex + asciiStartCol + byteIndex;
-                ft.SetForegroundBrush(Brushes.Red, asciiCaretStart, 1);
+                ft.SetForegroundBrush(caretBrush, asciiCaretStart, 1);
             }
         }
 
         // Highlight all edited bytes (excluding currently edited nibble/byte in-progress)
-        if (HexFormatter is { } fmt && _edits.Count > 0)
+        if (HexFormatter is { } fmt)
         {
-            var editedBrush = Brushes.Orange;
             var caretByteOffset = _caretOffset;
 
             var sepsFull = (fmt.Width - 1) / sepEvery;
             var hexAreaLen = sepsFull * sepLen + fmt.Width * (digitsPerByte + 1);
             var asciiStartColAll = prefixLen + hexAreaLen + 3; // " | " before ASCII
+
+            // Build a set of edited offsets for the current visible range
+            var visibleStart = startLine * fmt.Width;
+            var visibleEnd = endLine * fmt.Width + (fmt.Width - 1);
+            var editedSet = new System.Collections.Generic.HashSet<long>();
+            if (_edits.Count > 0)
+            {
+                foreach (var kv in _edits)
+                {
+                    var pos = kv.Key;
+                    if (pos >= visibleStart && pos <= visibleEnd) editedSet.Add(pos);
+                }
+            }
+            if (EditedOffsetsProvider is not null)
+            {
+                foreach (var pos in EditedOffsetsProvider(visibleStart, visibleEnd))
+                {
+                    editedSet.Add(pos);
+                }
+            }
+
+            if (editedSet.Count == 0)
+            {
+                // nothing to highlight
+                goto DrawText;
+            }
 
             for (var i = startLine; i <= endLine; i++)
             {
@@ -481,7 +632,7 @@ public class HexViewControl : Control, ILogicalScrollable
                 for (var j = 0; j < fmt.Width; j++)
                 {
                     var pos = baseOffset + j;
-                    if (_edits.ContainsKey(pos))
+                    if (editedSet.Contains(pos))
                     {
                         // Hex column highlight (only if hex mode)
                         if (toBase == 16)
@@ -509,7 +660,7 @@ public class HexViewControl : Control, ILogicalScrollable
                 }
             }
         }
-        
+DrawText:
         context.DrawText(ft, origin);
     }
 
@@ -592,6 +743,47 @@ public class HexViewControl : Control, ILogicalScrollable
             _isDragging = true;
             e.Pointer.Capture(this);
             CaretMoved?.Invoke(_caretOffset);
+        // Selection handling (hex area)
+        var shift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
+        if (shift)
+        {
+            if (!_dragSelecting)
+            {
+                _selectionAnchor = SelectionLength > 0 ? SelectionStart : _caretOffset;
+            }
+            _dragSelecting = true;
+            // seed selection
+            SelectionStart = System.Math.Min(_selectionAnchor, _caretOffset);
+            SelectionLength = System.Math.Abs(_caretOffset - _selectionAnchor) + 1;
+            SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+        }
+        else
+        {
+            _dragSelecting = true;
+            _selectionAnchor = _caretOffset;
+            SelectionStart = _caretOffset;
+            SelectionLength = 1;
+            SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+        }
+            // Selection handling (Shift+Click starts/extends selection; otherwise start drag selection)
+            var isShift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
+            if (isShift)
+            {
+                if (!_dragSelecting)
+                {
+                    _selectionAnchor = SelectionLength > 0 ? SelectionStart : _caretOffset;
+                }
+                _dragSelecting = true;
+                UpdateSelectionFromAnchor(_caretOffset);
+            }
+            else
+            {
+                _dragSelecting = true;
+                _selectionAnchor = _caretOffset;
+                SelectionStart = _caretOffset;
+                SelectionLength = 1;
+                SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+            }
             return;
         }
         for (var j = 0; j < width; j++)
@@ -636,6 +828,38 @@ public class HexViewControl : Control, ILogicalScrollable
         _isDragging = true;
         e.Pointer.Capture(this);
         CaretMoved?.Invoke(_caretOffset);
+    }
+
+
+    private void UpdateSelectionFromAnchor(long current)
+    {
+        var start = System.Math.Min(_selectionAnchor, current);
+        var end = System.Math.Max(_selectionAnchor, current);
+        SelectionStart = start;
+        SelectionLength = end - start + 1;
+        SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+        InvalidateVisual();
+    }
+
+    private void SelectAsciiWordAtCaret()
+    {
+        if (LineReader is null || HexFormatter is null) return;
+        var width = HexFormatter.Width;
+        var line = _caretOffset / width;
+        var lineStart = line * width;
+        var idx = (int)(_caretOffset - lineStart);
+        var bytes = LineReader.GetLine(line, width);
+        bool Printable(byte b) => b >= 0x21 && b <= 0x7E;
+        int left = idx;
+        while (left > 0 && Printable(bytes[left - 1])) left--;
+        int right = idx;
+        while (right + 1 < width && Printable(bytes[right + 1])) right++;
+        SelectionStart = lineStart + left;
+        SelectionLength = right - left + 1;
+        _selectionAnchor = SelectionStart;
+        _dragSelecting = false;
+        SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+        InvalidateVisual();
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
@@ -697,7 +921,14 @@ public class HexViewControl : Control, ILogicalScrollable
             }
         }
 
-        _edits[byteOffset] = updated;
+        if (ByteWriteAction is not null)
+        {
+            ByteWriteAction(byteOffset, updated);
+        }
+        else
+        {
+            _edits[byteOffset] = updated;
+        }
         InvalidateVisual();
         EnsureCaretVisible();
     }
@@ -777,6 +1008,21 @@ public class HexViewControl : Control, ILogicalScrollable
                 EnsureCaretVisible();
                 e.Handled = true;
                 break;
+        }
+
+        // Selection with Shift+Arrows: extend selection from anchor
+        if ((e.KeyModifiers & KeyModifiers.Shift) != 0)
+        {
+            if (!_dragSelecting)
+            {
+                _selectionAnchor = SelectionLength > 0 ? SelectionStart : _caretOffset;
+                _dragSelecting = true;
+            }
+            UpdateSelectionFromAnchor(_caretOffset);
+        }
+        else
+        {
+            _dragSelecting = false;
         }
     }
 }

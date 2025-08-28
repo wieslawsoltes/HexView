@@ -72,4 +72,6 @@ public class MemoryMappedLineReader : ILineReader
         }
         return max;
     }
+
+    public long Length => _stream.Length;
 }
