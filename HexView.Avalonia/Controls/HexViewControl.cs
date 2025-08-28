@@ -312,6 +312,8 @@ public class HexViewControl : Control, ILogicalScrollable
     // Optional provider for edited offsets to support external editing overlays
     // Signature: (startOffset, endOffset) -> offsets within inclusive range
     public Func<long, long, System.Collections.Generic.IEnumerable<long>>? EditedOffsetsProvider { get; set; }
+    // Optional provider for diff offsets (bytes that differ between views)
+    public Func<long, long, System.Collections.Generic.IEnumerable<long>>? DifferencesProvider { get; set; }
 
     Size IScrollable.Extent => _extent;
 
@@ -603,6 +605,32 @@ public class HexViewControl : Control, ILogicalScrollable
             }
         }
 
+        // Highlight byte differences (diff view)
+        if (HexFormatter is { } diffFmt && DifferencesProvider is not null)
+        {
+            var sepsFull = (diffFmt.Width - 1) / sepEvery;
+            var hexAreaLen = sepsFull * sepLen + diffFmt.Width * (digitsPerByte + 1);
+            var asciiStartColAll = prefixLen + hexAreaLen + 3;
+
+            var visibleStart = startLine * diffFmt.Width;
+            var visibleEnd = endLine * diffFmt.Width + (diffFmt.Width - 1);
+            foreach (var pos in DifferencesProvider(visibleStart, visibleEnd))
+            {
+                var line = (int)((pos / diffFmt.Width) - startLine);
+                if (line < 0 || line > (endLine - startLine)) continue;
+                var j = (int)(pos % diffFmt.Width);
+                var lineGlobalIndex = lineStartIndices[line];
+                // Hex columns
+                var sepsB = j / sepEvery;
+                var startCol = prefixLen + sepsB * sepLen + j * (digitsPerByte + 1);
+                // both hex chars
+                ft.SetForegroundBrush(DiffBrush, lineGlobalIndex + startCol, System.Math.Min(2, digitsPerByte));
+                // ASCII column
+                var asciiPos = lineGlobalIndex + asciiStartColAll + j;
+                ft.SetForegroundBrush(DiffBrush, asciiPos, 1);
+            }
+        }
+
         // Highlight all edited bytes (excluding currently edited nibble/byte in-progress)
         if (HexFormatter is { } fmt)
         {
@@ -663,8 +691,7 @@ public class HexViewControl : Control, ILogicalScrollable
                             else
                             {
                                 // Color both hex chars for edited byte
-                                ft.SetForegroundBrush(editedBrush, lineGlobalIndex + startCol + 0, 1);
-                                ft.SetForegroundBrush(editedBrush, lineGlobalIndex + startCol + 1, 1);
+                                ft.SetForegroundBrush(editedBrush, lineGlobalIndex + startCol, System.Math.Min(2, digitsPerByte));
                             }
                         }
 
