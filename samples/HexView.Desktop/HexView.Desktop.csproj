@@ -16,6 +16,6 @@
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HexView\HexView.csproj" />
+    <ProjectReference Include="..\HexView.Base\HexView.Base.csproj" />
   </ItemGroup>
 </Project>

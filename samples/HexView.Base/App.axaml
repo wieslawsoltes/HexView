@@ -4,7 +4,7 @@
              Name="HexView"
              RequestedThemeVariant="Default">
   <Application.Resources>
-    <FontFamily x:Key="RobotoMonoFont">avares://HexView/Assets#Roboto Mono</FontFamily>
+    <FontFamily x:Key="RobotoMonoFont">avares://HexView.Base/Assets#Roboto Mono</FontFamily>
     <FontFamily x:Key="ConsolasFont">Consolas</FontFamily>
     
     <x:Double x:Key="Spacing">4</x:Double>
