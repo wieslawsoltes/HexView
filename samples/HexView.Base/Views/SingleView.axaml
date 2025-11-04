@@ -6,195 +6,447 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HexView.Views.SingleView"
              x:CompileBindings="True" x:DataType="views:SingleView">
-  <Grid ColumnDefinitions="*"
-        RowDefinitions="Auto,Auto,Auto,*,Auto">
-    <Grid ColumnDefinitions="*,Auto,Auto"
-          Grid.Row="0"
-          Grid.Column="0">
-      <TextBox Name="PathTextBox"
-               Margin="{StaticResource FullMargin}"
-               Grid.Column="0" />
-      <Button Name="OpenButton" 
-              Click="OpenButton_OnClick"
-              Content="..." 
-              Margin="{StaticResource FullMargin}"
-              Grid.Column="1" />
-      <Button Name="SaveButton" 
-              Click="SaveButton_OnClick"
-              Content="Save" 
-              Margin="{StaticResource FullMargin}"
-              Grid.Column="2" />
-    </Grid>
-    <Grid Grid.Row="1"
-          Grid.Column="0">
-      <StackPanel Orientation="Horizontal"
-                  Spacing="{StaticResource Spacing}">
-        <ComboBox Name="ToBaseComboBox" 
-                  SelectedIndex="3"
-                  Margin="{StaticResource FullMargin}">
-          <ComboBox.Items>
-            <x:Int32>2</x:Int32>
-            <x:Int32>8</x:Int32>
-            <x:Int32>10</x:Int32>
-            <x:Int32>16</x:Int32>
-          </ComboBox.Items>
-        </ComboBox>
-        <TextBlock Text="base" 
-                   VerticalAlignment="Center"
-                   Margin="{StaticResource FullMargin}"/>
-        <ComboBox Name="BytesWidthComboBox" 
-                  SelectedIndex="1"
-                  Margin="{StaticResource FullMargin}">
-          <ComboBox.Items>
-            <x:Int32>8</x:Int32>
-            <x:Int32>16</x:Int32>
-            <x:Int32>24</x:Int32>
-            <x:Int32>32</x:Int32>
-          </ComboBox.Items>
-        </ComboBox>
-        <TextBlock Text="bytes" 
-                   VerticalAlignment="Center"
-                   Margin="{StaticResource FullMargin}"/>
-        <TextBlock Text="group" VerticalAlignment="Center" Margin="{StaticResource FullMargin}"/>
-        <ComboBox Name="GroupSizeComboBox" SelectedIndex="1" Margin="{StaticResource FullMargin}" SelectionChanged="GroupSizeComboBox_OnSelectionChanged">
-          <ComboBox.Items>
-            <x:Int32>4</x:Int32>
-            <x:Int32>8</x:Int32>
-            <x:Int32>16</x:Int32>
-          </ComboBox.Items>
-        </ComboBox>
-        <CheckBox Name="ShowSepsCheckBox" Content="separators" IsChecked="True" Margin="{StaticResource FullMargin}" Checked="ShowSepsCheckBox_OnChanged" Unchecked="ShowSepsCheckBox_OnChanged"/>
-        <TextBlock Text="addr" VerticalAlignment="Center" Margin="{StaticResource FullMargin}"/>
-        <TextBox Name="AddrWidthTextBox" MinWidth="60" Margin="{StaticResource FullMargin}" KeyUp="AddrWidthTextBox_OnKeyUp"/>
-        <TextBlock Text="code page" VerticalAlignment="Center" Margin="{StaticResource FullMargin}"/>
-        <ComboBox Name="EncodingComboBox" SelectedIndex="0" Margin="{StaticResource FullMargin}" SelectionChanged="EncodingComboBox_OnSelectionChanged">
-          <ComboBox.Items>
-            <x:String>ASCII</x:String>
-            <x:String>UTF-8</x:String>
-            <x:String>UTF-16LE</x:String>
-            <x:String>UTF-16BE</x:String>
-          </ComboBox.Items>
-        </ComboBox>
-        <CheckBox Name="ControlGlyphCheckBox" Content="control glyph" IsChecked="True" Margin="{StaticResource FullMargin}" Checked="ControlGlyphCheckBox_OnChanged" Unchecked="ControlGlyphCheckBox_OnChanged"/>
-        <Separator Width="16"/>
-        <ComboBox Name="SearchModeComboBox" SelectedIndex="0" MinWidth="100"
-                  Margin="{StaticResource FullMargin}">
-          <ComboBox.Items>
-            <x:String>Address</x:String>
-            <x:String>Value</x:String>
-          </ComboBox.Items>
-        </ComboBox>
-        <TextBox Name="SearchTextBox" MinWidth="200"
-                 Watermark="Address (hex/dec) or hex bytes"
-                 Margin="{StaticResource FullMargin}"/>
-        <Button Name="FindPrevButton" Content="Prev" Click="FindPrevButton_OnClick"
-                Margin="{StaticResource FullMargin}"/>
-        <Button Name="FindNextButton" Content="Next" Click="FindNextButton_OnClick"
-                Margin="{StaticResource FullMargin}"/>
-      </StackPanel>
-    </Grid>
-    <Grid Grid.Row="2"
-          Grid.Column="0">
-      <WrapPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Edit" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <ComboBox Name="EditModeComboBox" SelectedIndex="0" MinWidth="100" SelectionChanged="EditModeComboBox_OnSelectionChanged"
-                      Margin="{StaticResource FullMargin}">
+
+  <UserControl.Styles>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Foreground" Value="{DynamicResource TextControlForeground}" />
+      <Setter Property="Opacity" Value="0.65" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.tool">
+      <Setter Property="Padding" Value="6,4" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.tool:pointerover">
+      <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
+    </Style>
+    <Style Selector="Button.tool > TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ComboBox.compact">
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Padding" Value="10,4" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBox.search">
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Padding" Value="10,5" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="Border.status-card">
+      <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="10,5" />
+    </Style>
+    <Style Selector="MenuItem TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+    <!-- Row 0: Menu Bar -->
+    <Menu Grid.Row="0">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Open..." Click="OpenButton_OnClick" InputGesture="Ctrl+O">
+          <MenuItem.Icon>
+            <TextBlock Text="📂" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="_Save" Click="SaveButton_OnClick" InputGesture="Ctrl+S">
+          <MenuItem.Icon>
+            <TextBlock Text="💾" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="Save _As..." Click="SaveAsButton_OnClick" InputGesture="Ctrl+Shift+S">
+          <MenuItem.Icon>
+            <TextBlock Text="📝" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Export _Patch..." Click="ExportPatchButton_OnClick">
+          <MenuItem.Icon>
+            <TextBlock Text="📄" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+      </MenuItem>
+
+      <MenuItem Header="_Edit">
+        <MenuItem Header="_Undo" Click="UndoButton_OnClick" InputGesture="Ctrl+Z">
+          <MenuItem.Icon>
+            <TextBlock Text="↶" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="_Redo" Click="RedoButton_OnClick" InputGesture="Ctrl+Y">
+          <MenuItem.Icon>
+            <TextBlock Text="↷" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Select _All" Click="SelectAllMenuItem_OnClick" InputGesture="Ctrl+A" />
+        <Separator />
+        <MenuItem Header="Copy as _Hex" Click="CopyHexButton_OnClick" InputGesture="Ctrl+C" />
+        <MenuItem Header="Copy as _Text" Click="CopyAsciiButton_OnClick" InputGesture="Ctrl+Shift+C" />
+        <MenuItem Header="Paste _Hex" Click="PasteHexButton_OnClick" InputGesture="Ctrl+V" />
+        <MenuItem Header="Paste _ASCII" Click="PasteAsciiButton_OnClick" InputGesture="Ctrl+Shift+V" />
+        <Separator />
+        <MenuItem Header="Edit Mode">
+          <MenuItem Name="OverwriteModeMenuItem" Header="_Overwrite" Click="OverwriteModeMenuItem_OnClick" />
+          <MenuItem Name="InsertModeMenuItem" Header="_Insert" Click="InsertModeMenuItem_OnClick" />
+        </MenuItem>
+      </MenuItem>
+
+      <MenuItem Header="_Selection">
+        <MenuItem Header="_Apply Selection..." Click="SelApplyButton_OnClick" InputGesture="Ctrl+Shift+A" />
+        <MenuItem Header="_Clear Selection" Click="SelClearButton_OnClick" InputGesture="Escape" />
+        <Separator />
+        <MenuItem Header="Fill with _Zero" Click="FillZeroButton_OnClick" />
+        <MenuItem Header="_Increment" Click="IncrementButton_OnClick" />
+        <MenuItem Header="_Randomize" Click="RandomizeButton_OnClick" />
+        <MenuItem Header="_Delete" Click="DeleteButton_OnClick" InputGesture="Delete" />
+      </MenuItem>
+
+      <MenuItem Header="_Search">
+        <MenuItem Header="_Find..." Click="FindMenuItem_OnClick" InputGesture="Ctrl+F">
+          <MenuItem.Icon>
+            <TextBlock Text="🔍" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="Find _Next" Click="FindNextButton_OnClick" InputGesture="F3" />
+        <MenuItem Header="Find _Previous" Click="FindPrevButton_OnClick" InputGesture="Shift+F3" />
+        <Separator />
+        <MenuItem Header="_Replace..." Click="ReplaceMenuItem_OnClick" InputGesture="Ctrl+H" />
+        <MenuItem Header="Replace _All" Click="ReplaceAllButton_OnClick" />
+        <Separator />
+        <MenuItem Header="_Go to Address..." Click="GoToAddressMenuItem_OnClick" InputGesture="Ctrl+G" />
+      </MenuItem>
+
+      <MenuItem Header="_Navigate">
+        <MenuItem Header="_Back" Click="BackButton_OnClick" InputGesture="Alt+Left">
+          <MenuItem.Icon>
+            <TextBlock Text="◀" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="_Forward" Click="ForwardButton_OnClick" InputGesture="Alt+Right">
+          <MenuItem.Icon>
+            <TextBlock Text="▶" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="Add _Bookmark" Click="BookmarkButton_OnClick" InputGesture="Ctrl+B">
+          <MenuItem.Icon>
+            <TextBlock Text="★" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Name="BookmarksMenuItem" Header="_Bookmarks">
+          <MenuItem.Icon>
+            <TextBlock Text="📑" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <Separator />
+        <MenuItem Header="_Next Change" Click="NextChangeButton_OnClick" />
+      </MenuItem>
+
+      <MenuItem Header="_View">
+        <MenuItem Header="Display Base">
+          <MenuItem Name="Base2MenuItem" Header="_Binary (2)" Click="BaseMenuItem_OnClick" Tag="2" />
+          <MenuItem Name="Base8MenuItem" Header="_Octal (8)" Click="BaseMenuItem_OnClick" Tag="8" />
+          <MenuItem Name="Base10MenuItem" Header="_Decimal (10)" Click="BaseMenuItem_OnClick" Tag="10" />
+          <MenuItem Name="Base16MenuItem" Header="_Hexadecimal (16)" Click="BaseMenuItem_OnClick" Tag="16" IsChecked="True" />
+        </MenuItem>
+        <MenuItem Header="Bytes per Line">
+          <MenuItem Name="Width8MenuItem" Header="_8 bytes" Click="WidthMenuItem_OnClick" Tag="8" />
+          <MenuItem Name="Width16MenuItem" Header="_16 bytes" Click="WidthMenuItem_OnClick" Tag="16" IsChecked="True" />
+          <MenuItem Name="Width24MenuItem" Header="_24 bytes" Click="WidthMenuItem_OnClick" Tag="24" />
+          <MenuItem Name="Width32MenuItem" Header="_32 bytes" Click="WidthMenuItem_OnClick" Tag="32" />
+        </MenuItem>
+        <MenuItem Header="Group Size">
+          <MenuItem Name="GroupSize4MenuItem" Header="_4 bytes" Click="GroupSizeMenuItem_OnClick" Tag="4" />
+          <MenuItem Name="GroupSize8MenuItem" Header="_8 bytes" Click="GroupSizeMenuItem_OnClick" Tag="8" IsChecked="True" />
+          <MenuItem Name="GroupSize16MenuItem" Header="_16 bytes" Click="GroupSizeMenuItem_OnClick" Tag="16" />
+        </MenuItem>
+        <MenuItem Header="Encoding">
+          <MenuItem Name="EncodingAsciiMenuItem" Header="_ASCII" Click="EncodingMenuItem_OnClick" Tag="ASCII" IsChecked="True" />
+          <MenuItem Name="EncodingUtf8MenuItem" Header="_UTF-8" Click="EncodingMenuItem_OnClick" Tag="UTF-8" />
+          <MenuItem Name="EncodingUtf16LEMenuItem" Header="UTF-16_LE" Click="EncodingMenuItem_OnClick" Tag="UTF-16LE" />
+          <MenuItem Name="EncodingUtf16BEMenuItem" Header="UTF-16_BE" Click="EncodingMenuItem_OnClick" Tag="UTF-16BE" />
+        </MenuItem>
+        <Separator />
+        <MenuItem Name="ShowSeparatorsMenuItem" Header="Show _Separators" Click="ShowSeparatorsMenuItem_OnClick" IsChecked="True" />
+        <MenuItem Name="ShowControlGlyphMenuItem" Header="Show _Control Glyphs" Click="ShowControlGlyphMenuItem_OnClick" IsChecked="True" />
+        <Separator />
+        <MenuItem Header="Zoom In" Click="ZoomInMenuItem_OnClick" InputGesture="Ctrl+Add">
+          <MenuItem.Icon>
+            <TextBlock Text="🔍+" FontSize="14" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="Zoom Out" Click="ZoomOutMenuItem_OnClick" InputGesture="Ctrl+Subtract">
+          <MenuItem.Icon>
+            <TextBlock Text="🔍-" FontSize="14" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="Reset Zoom" Click="ZoomResetMenuItem_OnClick" InputGesture="Ctrl+D0">
+          <MenuItem.Icon>
+            <TextBlock Text="↺" FontSize="16" />
+          </MenuItem.Icon>
+        </MenuItem>
+      </MenuItem>
+    </Menu>
+
+    <!-- Row 1: File Path Bar -->
+    <Border Grid.Row="1" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,0,0,1" Padding="14,8">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+        <TextBlock Grid.Column="0" Text="📄" FontSize="18"
+                   VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="File:" Classes="label"
+                   VerticalAlignment="Center" HorizontalAlignment="Left" />
+        <TextBox Name="PathTextBox" Grid.Column="2" BorderThickness="0"
+                 Background="Transparent" VerticalAlignment="Center"
+                 Watermark="No file opened" FontSize="13" Padding="4,0" />
+        <Button Name="OpenButton" Click="OpenButton_OnClick"
+                Grid.Column="3" Classes="tool" MinWidth="95" Padding="12,6"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+          <TextBlock Text="Open File..." FontSize="13" />
+        </Button>
+      </Grid>
+    </Border>
+
+    <!-- Row 2: Toolbar - Essential Controls Only -->
+    <Border Grid.Row="2" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,0,0,1" Padding="14,10">
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+
+        <!-- Left: Quick Display & Edit Controls -->
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+          <!-- Display Settings Group -->
+          <Border Classes="card" Padding="12,7">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Text="Base:" Classes="label" />
+              <ComboBox Name="ToBaseComboBox" SelectedIndex="3" Width="72" Classes="compact">
+                <ComboBox.Items>
+                  <x:Int32>2</x:Int32>
+                  <x:Int32>8</x:Int32>
+                  <x:Int32>10</x:Int32>
+                  <x:Int32>16</x:Int32>
+                </ComboBox.Items>
+              </ComboBox>
+
+              <Rectangle Width="1" Height="20" Fill="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                         Margin="6,0" Opacity="0.25" VerticalAlignment="Center" />
+
+              <TextBlock Text="Width:" Classes="label" />
+              <ComboBox Name="BytesWidthComboBox" SelectedIndex="1" Width="72" Classes="compact">
+                <ComboBox.Items>
+                  <x:Int32>8</x:Int32>
+                  <x:Int32>16</x:Int32>
+                  <x:Int32>24</x:Int32>
+                  <x:Int32>32</x:Int32>
+                </ComboBox.Items>
+              </ComboBox>
+            </StackPanel>
+          </Border>
+
+          <!-- Undo/Redo Group -->
+          <Border Classes="card" Padding="7,7">
+            <StackPanel Orientation="Horizontal" Spacing="3">
+              <Button Name="UndoButton" Click="UndoButton_OnClick"
+                      Width="34" Height="30" Classes="tool" ToolTip.Tip="Undo (Ctrl+Z)"
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <TextBlock Text="↶" FontSize="16" />
+              </Button>
+              <Button Name="RedoButton" Click="RedoButton_OnClick"
+                      Width="34" Height="30" Classes="tool" ToolTip.Tip="Redo (Ctrl+Y)"
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <TextBlock Text="↷" FontSize="16" />
+              </Button>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- Right: Search Controls -->
+        <Border Grid.Column="2" Classes="card" Padding="12,7">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="🔍" FontSize="16"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.5" />
+            <ComboBox Name="SearchModeComboBox" SelectedIndex="0" Width="88" Classes="compact">
+              <ComboBox.Items>
+                <x:String>Address</x:String>
+                <x:String>Value</x:String>
+              </ComboBox.Items>
+            </ComboBox>
+            <TextBox Name="SearchTextBox" Width="320" Classes="search"
+                     Watermark="Search: 0x1234 or DE AD BE EF" />
+            <Button Name="FindPrevButton" Click="FindPrevButton_OnClick"
+                    Width="34" Height="30" Classes="tool" ToolTip.Tip="Previous (Shift+F3)"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <TextBlock Text="◀" FontSize="14" />
+            </Button>
+            <Button Name="FindNextButton" Click="FindNextButton_OnClick"
+                    Width="34" Height="30" Classes="tool" ToolTip.Tip="Next (F3)"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+              <TextBlock Text="▶" FontSize="14" />
+            </Button>
+          </StackPanel>
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- Row 3: Hex Viewer -->
+    <Border Grid.Row="3" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
+            Padding="12,10,12,0">
+      <ScrollViewer Name="ScrollViewer1"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+        <HexViewControl Name="HexViewControl1"
+                        ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                        BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
+                        TextElement.FontSize="{StaticResource FontSize}"
+                        TextElement.Foreground="{DynamicResource TextControlForeground}"
+                        DragDrop.AllowDrop="True"
+                        Margin="0,0,0,10">
+          <TextElement.FontFamily>
+            <OnPlatform Default="{StaticResource RobotoMonoFont}">
+              <On Options="Windows" Content="{StaticResource ConsolasFont}" />
+            </OnPlatform>
+          </TextElement.FontFamily>
+        </HexViewControl>
+      </ScrollViewer>
+    </Border>
+
+    <!-- Row 4: Status Bar -->
+    <Border Grid.Row="4" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,1,0,0" Padding="14,8">
+      <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
+
+        <!-- Offset -->
+        <Border Grid.Column="0" Classes="status-card">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Offset:" Classes="label" FontSize="11" />
+            <TextBlock Name="StatusOffset" MinWidth="90" FontSize="12" FontFamily="Consolas,monospace"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Byte Value -->
+        <Border Grid.Column="1" Classes="status-card">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Byte:" Classes="label" FontSize="11" />
+            <TextBlock Name="StatusByte" MinWidth="45" FontSize="12" FontFamily="Consolas,monospace"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- ASCII -->
+        <Border Grid.Column="2" Classes="status-card">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="ASCII:" Classes="label" FontSize="11" />
+            <TextBlock Name="StatusAscii" MinWidth="30" FontSize="12"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Length -->
+        <Border Grid.Column="3" Classes="status-card">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Length:" Classes="label" FontSize="11" />
+            <TextBlock Name="StatusLength" MinWidth="90" FontSize="12" FontFamily="Consolas,monospace"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Selection (expandable) -->
+        <Border Grid.Column="4" Classes="status-card">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Selection:" Classes="label" FontSize="11" />
+            <TextBlock Name="StatusSel" MinWidth="120" FontSize="12" FontFamily="Consolas,monospace"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <!-- Edit Mode -->
+        <Border Grid.Column="5" Classes="status-card">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Mode:" Classes="label" FontSize="11" />
+            <ComboBox Name="EditModeComboBox" SelectedIndex="0" MinWidth="90" Height="24"
+                      SelectionChanged="EditModeComboBox_OnSelectionChanged" Padding="8,2" FontSize="12"
+                      BorderThickness="1" CornerRadius="4" VerticalAlignment="Center">
               <ComboBox.Items>
                 <x:String>Overwrite</x:String>
                 <x:String>Insert</x:String>
               </ComboBox.Items>
             </ComboBox>
-            <Button Name="UndoButton" Content="Undo" Click="UndoButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="RedoButton" Content="Redo" Click="RedoButton_OnClick" Margin="{StaticResource FullMargin}"/>
           </StackPanel>
-        </StackPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Selection" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <TextBox Name="SelStartTextBox" MinWidth="80" Watermark="Sel Start" Margin="{StaticResource FullMargin}"/>
-            <TextBox Name="SelLenTextBox" MinWidth="80" Watermark="Sel Len" Margin="{StaticResource FullMargin}"/>
-            <Button Name="SelApplyButton" Content="Apply" Click="SelApplyButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="SelClearButton" Content="Clear" Click="SelClearButton_OnClick" Margin="{StaticResource FullMargin}"/>
-          </StackPanel>
-        </StackPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Ops" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <Button Name="FillZeroButton" Content="Zero" Click="FillZeroButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="IncrementButton" Content="Inc" Click="IncrementButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="RandomizeButton" Content="Rnd" Click="RandomizeButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="DeleteButton" Content="Del" Click="DeleteButton_OnClick" Margin="{StaticResource FullMargin}" ToolTip.Tip="Insert mode only"/>
-          </StackPanel>
-        </StackPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Clipboard" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <Button Name="CopyHexButton" Content="Copy Hex" Click="CopyHexButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="CopyAsciiButton" Content="Copy ASCII" Click="CopyAsciiButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="PasteHexButton" Content="Paste Hex" Click="PasteHexButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="PasteAsciiButton" Content="Paste ASCII" Click="PasteAsciiButton_OnClick" Margin="{StaticResource FullMargin}"/>
-          </StackPanel>
-        </StackPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Replace" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <TextBox Name="ReplaceTextBox" MinWidth="200" Watermark="Replace bytes (hex)" Margin="{StaticResource FullMargin}"/>
-            <Button Name="ReplaceNextButton" Content="Replace" Click="ReplaceNextButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="ReplaceAllButton" Content="Replace All" Click="ReplaceAllButton_OnClick" Margin="{StaticResource FullMargin}"/>
-          </StackPanel>
-        </StackPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Navigate" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <Button Name="BackButton" Content="Back" Click="BackButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="ForwardButton" Content="Forward" Click="ForwardButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="BookmarkButton" Content="Bookmark" Click="BookmarkButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="NextChangeButton" Content="Next Change" Click="NextChangeButton_OnClick" Margin="{StaticResource FullMargin}"/>
-          </StackPanel>
-        </StackPanel>
-        <StackPanel Margin="{StaticResource FullMargin}">
-          <TextBlock Text="Output" FontWeight="Bold" Margin="{StaticResource FullMargin}"/>
-          <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing}">
-            <Button Name="SaveAsButton" Content="Save As" Click="SaveAsButton_OnClick" Margin="{StaticResource FullMargin}"/>
-            <Button Name="ExportPatchButton" Content="Export Patch" Click="ExportPatchButton_OnClick" Margin="{StaticResource FullMargin}"/>
-          </StackPanel>
-        </StackPanel>
-      </WrapPanel>
-    </Grid>
-    <ScrollViewer Name="ScrollViewer1"
-                  HorizontalScrollBarVisibility="Disabled" 
-                  VerticalScrollBarVisibility="Auto"
-                  Grid.Row="3"
-                  Grid.Column="0">
-      <HexViewControl Name="HexViewControl1"
-                      ToBase="{Binding #ToBaseComboBox.SelectedItem}"
-                      BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                      TextElement.FontSize="{StaticResource FontSize}"
-                      TextElement.Foreground="{DynamicResource TextControlForeground}"
-                      DragDrop.AllowDrop="True"
-                      Margin="{StaticResource LeftRightBottom}">
-        <TextElement.FontFamily>
-          <OnPlatform Default="{StaticResource RobotoMonoFont}">
-            <On Options="Windows" Content="{StaticResource ConsolasFont}" />
-          </OnPlatform>
-        </TextElement.FontFamily>
-      </HexViewControl>
-    </ScrollViewer>
-    <Grid Grid.Row="4" Grid.Column="0">
-      <WrapPanel>
-        <TextBlock Text="Offset:" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Name="StatusOffset" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Text="Byte:" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Name="StatusByte" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Text="ASCII:" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Name="StatusAscii" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Text="Length:" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Name="StatusLength" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Text="Sel:" Margin="{StaticResource FullMargin}"/>
-        <TextBlock Name="StatusSel" Margin="{StaticResource FullMargin}"/>
-      </WrapPanel>
-    </Grid>
+        </Border>
+
+      </Grid>
+    </Border>
+
+    <!-- Hidden Controls for Menu Bindings -->
+    <StackPanel Grid.Row="3" IsVisible="False">
+      <ComboBox Name="GroupSizeComboBox" SelectedIndex="1" SelectionChanged="GroupSizeComboBox_OnSelectionChanged">
+        <ComboBox.Items>
+          <x:Int32>4</x:Int32>
+          <x:Int32>8</x:Int32>
+          <x:Int32>16</x:Int32>
+        </ComboBox.Items>
+      </ComboBox>
+      <CheckBox Name="ShowSepsCheckBox" IsChecked="True" Checked="ShowSepsCheckBox_OnChanged" Unchecked="ShowSepsCheckBox_OnChanged"/>
+      <TextBox Name="AddrWidthTextBox" KeyUp="AddrWidthTextBox_OnKeyUp"/>
+      <ComboBox Name="EncodingComboBox" SelectedIndex="0" SelectionChanged="EncodingComboBox_OnSelectionChanged">
+        <ComboBox.Items>
+          <x:String>ASCII</x:String>
+          <x:String>UTF-8</x:String>
+          <x:String>UTF-16LE</x:String>
+          <x:String>UTF-16BE</x:String>
+        </ComboBox.Items>
+      </ComboBox>
+      <CheckBox Name="ControlGlyphCheckBox" IsChecked="True" Checked="ControlGlyphCheckBox_OnChanged" Unchecked="ControlGlyphCheckBox_OnChanged"/>
+      <TextBox Name="SelStartTextBox"/>
+      <TextBox Name="SelLenTextBox"/>
+      <TextBox Name="ReplaceTextBox"/>
+      <Button Name="DeleteButton" Click="DeleteButton_OnClick" />
+      <Button Name="SaveAsButton" Click="SaveAsButton_OnClick" />
+      <Button Name="CopyHexButton" Click="CopyHexButton_OnClick" />
+      <Button Name="CopyAsciiButton" Click="CopyAsciiButton_OnClick" />
+      <Button Name="PasteHexButton" Click="PasteHexButton_OnClick" />
+      <Button Name="PasteAsciiButton" Click="PasteAsciiButton_OnClick" />
+      <Button Name="FillZeroButton" Click="FillZeroButton_OnClick" />
+      <Button Name="IncrementButton" Click="IncrementButton_OnClick" />
+      <Button Name="RandomizeButton" Click="RandomizeButton_OnClick" />
+      <Button Name="ReplaceNextButton" Click="ReplaceNextButton_OnClick" />
+      <Button Name="ReplaceAllButton" Click="ReplaceAllButton_OnClick" />
+      <Button Name="BackButton" Click="BackButton_OnClick" />
+      <Button Name="ForwardButton" Click="ForwardButton_OnClick" />
+      <Button Name="BookmarkButton" Click="BookmarkButton_OnClick" />
+      <Button Name="NextChangeButton" Click="NextChangeButton_OnClick" />
+      <Button Name="ExportPatchButton" Click="ExportPatchButton_OnClick" />
+      <Button Name="SelApplyButton" Click="SelApplyButton_OnClick" />
+      <Button Name="SelClearButton" Click="SelClearButton_OnClick" />
+    </StackPanel>
+
   </Grid>
 </UserControl>

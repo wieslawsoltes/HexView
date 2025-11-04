@@ -12,11 +12,12 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Documents;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using HexView.Avalonia.Model;
 using HexView.Avalonia.Services;
-using System.Linq;
 
 namespace HexView.Views;
 
@@ -40,6 +41,69 @@ public partial class SingleView : UserControl
         HexViewControl1.CaretMoved += HexViewControl1OnCaretMoved;
         HexViewControl1.SelectionChanged += HexViewControl1OnSelectionChanged;
         HexViewControl1.KeyDown += HexViewControl1OnKeyDown;
+
+        // Sync menu items with combobox changes
+        ToBaseComboBox.SelectionChanged += (s, e) => UpdateBaseMenuItems();
+        BytesWidthComboBox.SelectionChanged += (s, e) => UpdateWidthMenuItems();
+        GroupSizeComboBox.SelectionChanged += (s, e) => UpdateGroupSizeMenuItems();
+        EncodingComboBox.SelectionChanged += (s, e) => UpdateEncodingMenuItems();
+        EditModeComboBox.SelectionChanged += (s, e) => UpdateEditModeMenuItems();
+
+        // Sync menu items with checkbox changes
+        ShowSepsCheckBox.IsCheckedChanged += (s, e) =>
+        {
+            ShowSeparatorsMenuItem.IsChecked = ShowSepsCheckBox.IsChecked ?? false;
+        };
+        ControlGlyphCheckBox.IsCheckedChanged += (s, e) =>
+        {
+            ShowControlGlyphMenuItem.IsChecked = ControlGlyphCheckBox.IsChecked ?? false;
+        };
+
+        // Update bookmarks menu when opened
+        BookmarksMenuItem.SubmenuOpened += BookmarksMenuItem_OnSubmenuOpened;
+    }
+
+    private void UpdateBaseMenuItems()
+    {
+        if (ToBaseComboBox.SelectedItem is int baseValue)
+        {
+            Base2MenuItem.IsChecked = baseValue == 2;
+            Base8MenuItem.IsChecked = baseValue == 8;
+            Base10MenuItem.IsChecked = baseValue == 10;
+            Base16MenuItem.IsChecked = baseValue == 16;
+        }
+    }
+
+    private void UpdateWidthMenuItems()
+    {
+        if (BytesWidthComboBox.SelectedItem is int width)
+        {
+            Width8MenuItem.IsChecked = width == 8;
+            Width16MenuItem.IsChecked = width == 16;
+            Width24MenuItem.IsChecked = width == 24;
+            Width32MenuItem.IsChecked = width == 32;
+        }
+    }
+
+    private void UpdateGroupSizeMenuItems()
+    {
+        if (GroupSizeComboBox.SelectedItem is int groupSize)
+        {
+            GroupSize4MenuItem.IsChecked = groupSize == 4;
+            GroupSize8MenuItem.IsChecked = groupSize == 8;
+            GroupSize16MenuItem.IsChecked = groupSize == 16;
+        }
+    }
+
+    private void UpdateEncodingMenuItems()
+    {
+        if (EncodingComboBox.SelectedItem is string encoding)
+        {
+            EncodingAsciiMenuItem.IsChecked = encoding == "ASCII";
+            EncodingUtf8MenuItem.IsChecked = encoding == "UTF-8";
+            EncodingUtf16LEMenuItem.IsChecked = encoding == "UTF-16LE";
+            EncodingUtf16BEMenuItem.IsChecked = encoding == "UTF-16BE";
+        }
     }
 
     private void HexViewControl1OnCaretMoved(long offset)
@@ -672,11 +736,29 @@ public partial class SingleView : UserControl
     {
         if (HexViewControl1.HexFormatter is null || HexViewControl1.LineReader is null)
         {
+            // Flash search box to indicate no file is loaded
+            SearchTextBox.BorderBrush = Brushes.Red;
+            System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+            {
+                Dispatcher.UIThread.Post(() => SearchTextBox.BorderBrush = null);
+            });
             return;
         }
 
         var mode = (SearchModeComboBox.SelectedItem as string) ?? "Address";
         var query = SearchTextBox.Text;
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            // Flash search box to indicate empty query
+            SearchTextBox.BorderBrush = Brushes.Orange;
+            SearchTextBox.Focus();
+            System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+            {
+                Dispatcher.UIThread.Post(() => SearchTextBox.BorderBrush = null);
+            });
+            return;
+        }
 
         if (string.Equals(mode, "Address", StringComparison.OrdinalIgnoreCase))
         {
@@ -685,11 +767,26 @@ public partial class SingleView : UserControl
                 var max = Math.Max(0, HexViewControl1.HexFormatter.Length - 1);
                 MoveCaretToOffset(Math.Max(0, Math.Min(max, addr)));
             }
+            else
+            {
+                // Flash search box to indicate invalid address
+                SearchTextBox.BorderBrush = Brushes.Red;
+                System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+                {
+                    Dispatcher.UIThread.Post(() => SearchTextBox.BorderBrush = null);
+                });
+            }
             return;
         }
 
         if (!HexSearchService.TryParseHexBytes(query, out var pattern))
         {
+            // Flash search box to indicate invalid hex pattern
+            SearchTextBox.BorderBrush = Brushes.Red;
+            System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+            {
+                Dispatcher.UIThread.Post(() => SearchTextBox.BorderBrush = null);
+            });
             return;
         }
 
@@ -700,6 +797,21 @@ public partial class SingleView : UserControl
         if (found.HasValue)
         {
             MoveCaretToOffset(found.Value);
+            // Flash green to indicate success
+            SearchTextBox.BorderBrush = Brushes.Green;
+            System.Threading.Tasks.Task.Delay(300).ContinueWith(_ =>
+            {
+                Dispatcher.UIThread.Post(() => SearchTextBox.BorderBrush = null);
+            });
+        }
+        else
+        {
+            // Flash yellow to indicate not found
+            SearchTextBox.BorderBrush = Brushes.Yellow;
+            System.Threading.Tasks.Task.Delay(300).ContinueWith(_ =>
+            {
+                Dispatcher.UIThread.Post(() => SearchTextBox.BorderBrush = null);
+            });
         }
     }
 
@@ -989,6 +1101,183 @@ public partial class SingleView : UserControl
                 DeleteButton_OnClick(null, null!);
                 e.Handled = true;
             }
+        }
+    }
+
+    // Menu event handlers
+    private void BaseMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.Tag is string tagStr && int.TryParse(tagStr, out var baseValue))
+        {
+            ToBaseComboBox.SelectedItem = baseValue;
+        }
+    }
+
+    private void WidthMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.Tag is string tagStr && int.TryParse(tagStr, out var width))
+        {
+            BytesWidthComboBox.SelectedItem = width;
+        }
+    }
+
+    private void GroupSizeMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.Tag is string tagStr && int.TryParse(tagStr, out var groupSize))
+        {
+            GroupSizeComboBox.SelectedItem = groupSize;
+        }
+    }
+
+    private void EncodingMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.Tag is string encoding)
+        {
+            EncodingComboBox.SelectedItem = encoding;
+        }
+    }
+
+    private void OverwriteModeMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        EditModeComboBox.SelectedIndex = 0;
+    }
+
+    private void InsertModeMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        EditModeComboBox.SelectedIndex = 1;
+    }
+
+    private void UpdateEditModeMenuItems()
+    {
+        OverwriteModeMenuItem.IsChecked = EditModeComboBox.SelectedIndex == 0;
+        InsertModeMenuItem.IsChecked = EditModeComboBox.SelectedIndex == 1;
+    }
+
+    private void ShowSeparatorsMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem)
+        {
+            ShowSepsCheckBox.IsChecked = !ShowSepsCheckBox.IsChecked;
+            ShowSeparatorsMenuItem.IsChecked = ShowSepsCheckBox.IsChecked ?? false;
+        }
+    }
+
+    private void ShowControlGlyphMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem)
+        {
+            ControlGlyphCheckBox.IsChecked = !ControlGlyphCheckBox.IsChecked;
+            ShowControlGlyphMenuItem.IsChecked = ControlGlyphCheckBox.IsChecked ?? false;
+        }
+    }
+
+    private void FindMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Focus search box (same as Ctrl+F)
+        SearchTextBox.Focus();
+    }
+
+    private void ReplaceMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Focus replace box (same as Ctrl+H)
+        ReplaceTextBox.Focus();
+    }
+
+    private void GoToAddressMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Switch to Address mode and focus search (same as Ctrl+G)
+        SearchModeComboBox.SelectedItem = "Address";
+        SearchTextBox.Focus();
+    }
+
+    private void SelectAllMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Select all bytes (same as Ctrl+A)
+        if (_overlay1 is { })
+        {
+            _selection1?.Set(0, _overlay1.Length);
+            HexViewControl1.SelectionStart = 0;
+            HexViewControl1.SelectionLength = _overlay1.Length;
+            HexViewControl1.InvalidateVisual();
+            StatusSel.Text = _overlay1.Length.ToString();
+        }
+    }
+
+    private void ZoomInMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Zoom in (same as Ctrl++)
+        var size = TextElement.GetFontSize(HexViewControl1);
+        TextElement.SetFontSize(HexViewControl1, size + 1);
+        HexViewControl1.InvalidateScrollable();
+    }
+
+    private void ZoomOutMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Zoom out (same as Ctrl+-)
+        var size = TextElement.GetFontSize(HexViewControl1);
+        TextElement.SetFontSize(HexViewControl1, Math.Max(6, size - 1));
+        HexViewControl1.InvalidateScrollable();
+    }
+
+    private void ZoomResetMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Reset zoom (same as Ctrl+0)
+        TextElement.SetFontSize(HexViewControl1, 12);
+        HexViewControl1.InvalidateScrollable();
+    }
+
+    private void BookmarksMenuItem_OnSubmenuOpened(object? sender, RoutedEventArgs e)
+    {
+        // Clear existing bookmark items
+        BookmarksMenuItem.Items.Clear();
+
+        if (_navigation1 is null)
+        {
+            var emptyItem = new MenuItem { Header = "(No bookmarks)", IsEnabled = false };
+            BookmarksMenuItem.Items.Add(emptyItem);
+            return;
+        }
+
+        var bookmarks = _navigation1.GetBookmarks().ToList();
+
+        if (bookmarks.Count == 0)
+        {
+            var emptyItem = new MenuItem { Header = "(No bookmarks)", IsEnabled = false };
+            BookmarksMenuItem.Items.Add(emptyItem);
+        }
+        else
+        {
+            // Add bookmark items
+            foreach (var offset in bookmarks)
+            {
+                var menuItem = new MenuItem
+                {
+                    Header = $"0x{offset:X}",
+                    Tag = offset
+                };
+                menuItem.Click += (s, args) =>
+                {
+                    if (s is MenuItem item && item.Tag is long bookmarkOffset)
+                    {
+                        HexViewControl1.MoveCaretTo(bookmarkOffset);
+                    }
+                };
+                BookmarksMenuItem.Items.Add(menuItem);
+            }
+
+            // Add separator and "Clear All" option
+            BookmarksMenuItem.Items.Add(new Separator());
+            var clearAllItem = new MenuItem { Header = "Clear _All Bookmarks" };
+            clearAllItem.Click += (s, args) =>
+            {
+                if (_navigation1 is null) return;
+                var allBookmarks = _navigation1.GetBookmarks().ToList();
+                foreach (var offset in allBookmarks)
+                {
+                    _navigation1.RemoveBookmark(offset);
+                }
+            };
+            BookmarksMenuItem.Items.Add(clearAllItem);
         }
     }
 
