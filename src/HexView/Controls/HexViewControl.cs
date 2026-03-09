@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using Avalonia;
@@ -41,6 +44,11 @@ public class HexViewControl : Control, ILogicalScrollable
     public static readonly StyledProperty<long> SelectionLengthProperty =
         AvaloniaProperty.Register<HexViewControl, long>(nameof(SelectionLength), 0L);
 
+    public static readonly DirectProperty<HexViewControl, ObservableCollection<HexAnnotation>> AnnotationsProperty =
+        AvaloniaProperty.RegisterDirect<HexViewControl, ObservableCollection<HexAnnotation>>(nameof(Annotations),
+            o => o.Annotations,
+            (o, v) => o.Annotations = v);
+
     private volatile bool _updating;
     private Size _extent;
     private Size _viewport;
@@ -57,15 +65,20 @@ public class HexViewControl : Control, ILogicalScrollable
     private Size _pageScrollSize = new(10, 10);
     private double _charWidth;
 
+    private ObservableCollection<HexAnnotation> _annotations = new();
+    private readonly HashSet<HexAnnotation> _trackedAnnotations = new();
+
     // Editing state
     private readonly Dictionary<long, byte> _edits = new();
     private long _caretOffset;
     private int _nibbleIndex; // 0 = high nibble, 1 = low nibble
     private bool _isDragging;
     private bool _dragSelecting;
+    private bool _isAnnotationDragging;
+    private HexAnnotation? _draggedAnnotation;
+    private long _annotationDragAnchor;
+    private long _annotationStartOriginal;
     private long _selectionAnchor;
-    private long _lastClickOffset;
-    private long _lastClickTimestampMs;
     public bool IsEditable { get; set; } = true;
 
     public int ToBase
@@ -74,15 +87,15 @@ public class HexViewControl : Control, ILogicalScrollable
         set => SetValue(ToBaseProperty, value);
     }
 
-    private bool TrySetCaretFromPoint(Point point)
+    private bool TryGetOffsetFromPoint(Point point, out long offset, out int nibbleIndex)
     {
+        offset = 0;
+        nibbleIndex = 0;
+
         if (HexFormatter is null)
         {
             return false;
         }
-
-        var prevOffset = _caretOffset;
-        var prevNibble = _nibbleIndex;
 
         var line = (long)Math.Floor((_offset.Y + point.Y) / _lineHeight);
         line = Math.Max(0, Math.Min(line, HexFormatter.Lines - 1));
@@ -90,9 +103,9 @@ public class HexViewControl : Control, ILogicalScrollable
         var col = (int)Math.Floor(point.X / Math.Max(1, _charWidth));
         var toBase = ToBase;
         var digitsPerByte = toBase switch { 2 => 8, 8 => 3, 10 => 3, 16 => 2, _ => 2 };
-        var prefixLen = (HexFormatter.OffsetPadding) + 2;
-        var sepEvery = 8;
-        var sepLen = 2;
+        var prefixLen = HexFormatter.OffsetPadding + 2;
+        var sepEvery = Math.Max(1, HexFormatter.GroupSize);
+        var sepLen = HexFormatter.ShowGroupSeparator ? 2 : 0;
         var width = HexFormatter.Width;
 
         if (col < prefixLen)
@@ -105,23 +118,19 @@ public class HexViewControl : Control, ILogicalScrollable
         var asciiStartCol = prefixLen + hexAreaLen + 3;
         var asciiEndCol = asciiStartCol + width;
 
-        // ASCII hit
         if (col >= asciiStartCol && col < asciiEndCol)
         {
             var jA = Math.Max(0, Math.Min(width - 1, col - asciiStartCol));
-            var newOffsetA = line * width + jA;
+            offset = line * width + jA;
             if (HexFormatter.Length > 0)
             {
-                newOffsetA = Math.Min(newOffsetA, HexFormatter.Length - 1);
+                offset = Math.Min(offset, HexFormatter.Length - 1);
             }
-            _caretOffset = newOffsetA;
-            _nibbleIndex = 0;
-            return _caretOffset != prevOffset || _nibbleIndex != prevNibble;
+            nibbleIndex = 0;
+            return true;
         }
 
-        // Hex hit
         var c = col - prefixLen;
-        var found = false;
         for (var j = 0; j < width; j++)
         {
             var sepsBefore = j / sepEvery;
@@ -129,42 +138,123 @@ public class HexViewControl : Control, ILogicalScrollable
             var endCol = startCol + digitsPerByte;
             if (c >= startCol && c < endCol)
             {
-                _caretOffset = line * width + j;
-                _nibbleIndex = toBase == 16 && digitsPerByte >= 2 && (c - startCol) >= 1 ? 1 : 0;
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            for (var j = 0; j < width; j++)
-            {
-                var sepsBefore = j / sepEvery;
-                var startCol = sepsBefore * sepLen + j * (digitsPerByte + 1);
-                if (c < startCol)
+                offset = line * width + j;
+                nibbleIndex = toBase == 16 && digitsPerByte >= 2 && (c - startCol) >= 1 ? 1 : 0;
+                if (HexFormatter.Length > 0)
                 {
-                    var idx = Math.Max(0, j - 1);
-                    _caretOffset = line * width + idx;
-                    _nibbleIndex = 0;
-                    break;
+                    offset = Math.Min(offset, HexFormatter.Length - 1);
                 }
+                return true;
             }
         }
 
+        for (var j = 0; j < width; j++)
+        {
+            var sepsBefore = j / sepEvery;
+            var startCol = sepsBefore * sepLen + j * (digitsPerByte + 1);
+            if (c < startCol)
+            {
+                var idx = Math.Max(0, j - 1);
+                offset = line * width + idx;
+                nibbleIndex = 0;
+                if (HexFormatter.Length > 0)
+                {
+                    offset = Math.Min(offset, HexFormatter.Length - 1);
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TrySetCaretFromPoint(Point point)
+    {
+        var prevOffset = _caretOffset;
+        var prevNibble = _nibbleIndex;
+
+        if (!TryGetOffsetFromPoint(point, out var offset, out var nibbleIndex))
+        {
+            return false;
+        }
+
+        _caretOffset = offset;
+        _nibbleIndex = nibbleIndex;
         return _caretOffset != prevOffset || _nibbleIndex != prevNibble;
+    }
+
+    private HexAnnotation? FindAnnotationAtOffset(long offset)
+    {
+        if (_annotations.Count == 0)
+        {
+            return null;
+        }
+
+        foreach (var annotation in _annotations)
+        {
+            if (annotation.Length <= 0)
+            {
+                continue;
+            }
+
+            if (annotation.Contains(offset))
+            {
+                return annotation;
+            }
+        }
+
+        return null;
+    }
+
+    private long ClampAnnotationStart(HexAnnotation annotation, long desiredStart)
+    {
+        var start = Math.Max(0, desiredStart);
+
+        if (HexFormatter is null)
+        {
+            return start;
+        }
+
+        var maxStart = Math.Max(0, HexFormatter.Length - Math.Max(1, annotation.Length));
+        return Math.Min(start, maxStart);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
+
+        if (_isAnnotationDragging && _draggedAnnotation is { } annotation)
+        {
+            var pt = e.GetPosition(this);
+            if (TryGetOffsetFromPoint(pt, out var offset, out _))
+            {
+                var delta = offset - _annotationDragAnchor;
+                var newStart = ClampAnnotationStart(annotation, _annotationStartOriginal + delta);
+                if (newStart != annotation.Start)
+                {
+                    annotation.Start = newStart;
+                    _caretOffset = newStart;
+                    _nibbleIndex = 0;
+                    SelectionStart = newStart;
+                    SelectionLength = annotation.Length;
+                    SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+                    CaretMoved?.Invoke(_caretOffset);
+                    EnsureCaretVisible();
+                    AnnotationMoved?.Invoke(annotation);
+                    InvalidateVisual();
+                }
+            }
+            e.Handled = true;
+            return;
+        }
+
         if (!_isDragging)
         {
             return;
         }
 
-        var pt = e.GetPosition(this);
-        if (TrySetCaretFromPoint(pt))
+        var caretPt = e.GetPosition(this);
+        if (TrySetCaretFromPoint(caretPt))
         {
             InvalidateVisual();
             EnsureCaretVisible();
@@ -179,6 +269,19 @@ public class HexViewControl : Control, ILogicalScrollable
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+
+        if (_isAnnotationDragging)
+        {
+            _isAnnotationDragging = false;
+            _draggedAnnotation = null;
+            if (e.Pointer.Captured == this)
+            {
+                e.Pointer.Capture(null);
+            }
+            e.Handled = true;
+            return;
+        }
+
         if (_isDragging)
         {
             _isDragging = false;
@@ -204,6 +307,7 @@ public class HexViewControl : Control, ILogicalScrollable
     {
         Focusable = true;
         IsTabStop = true;
+        AttachAnnotations(_annotations);
     }
 
     public IBrush CaretBrush
@@ -244,6 +348,24 @@ public class HexViewControl : Control, ILogicalScrollable
         set => SetValue(SelectionLengthProperty, value);
     }
 
+    public ObservableCollection<HexAnnotation> Annotations
+    {
+        get => _annotations;
+        set
+        {
+            var next = value ?? new ObservableCollection<HexAnnotation>();
+            if (ReferenceEquals(_annotations, next))
+            {
+                return;
+            }
+
+            DetachAnnotations(_annotations);
+            SetAndRaise(AnnotationsProperty, ref _annotations, next);
+            AttachAnnotations(_annotations);
+            InvalidateVisual();
+        }
+    }
+
     public void ClearEdits()
     {
         _edits.Clear();
@@ -253,6 +375,76 @@ public class HexViewControl : Control, ILogicalScrollable
     public IReadOnlyDictionary<long, byte> GetEdits() => _edits;
 
     public long CaretOffset => _caretOffset;
+
+    private void AttachAnnotations(ObservableCollection<HexAnnotation> annotations)
+    {
+        if (annotations is INotifyCollectionChanged observable)
+        {
+            observable.CollectionChanged += OnAnnotationsChanged;
+        }
+
+        SyncTrackedAnnotations(annotations);
+    }
+
+    private void DetachAnnotations(ObservableCollection<HexAnnotation> annotations)
+    {
+        if (annotations is INotifyCollectionChanged observable)
+        {
+            observable.CollectionChanged -= OnAnnotationsChanged;
+        }
+
+        foreach (var annotation in _trackedAnnotations)
+        {
+            annotation.PropertyChanged -= OnAnnotationPropertyChanged;
+        }
+
+        _trackedAnnotations.Clear();
+    }
+
+    private void OnAnnotationsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (sender is ObservableCollection<HexAnnotation> annotations)
+        {
+            SyncTrackedAnnotations(annotations);
+        }
+
+        InvalidateVisual();
+    }
+
+    private void SyncTrackedAnnotations(IEnumerable<HexAnnotation> annotations)
+    {
+        var current = new HashSet<HexAnnotation>();
+        foreach (var annotation in annotations)
+        {
+            current.Add(annotation);
+            if (_trackedAnnotations.Add(annotation))
+            {
+                annotation.PropertyChanged += OnAnnotationPropertyChanged;
+            }
+        }
+
+        var removed = new List<HexAnnotation>();
+        foreach (var annotation in _trackedAnnotations)
+        {
+            if (!current.Contains(annotation))
+            {
+                removed.Add(annotation);
+            }
+        }
+
+        foreach (var annotation in removed)
+        {
+            annotation.PropertyChanged -= OnAnnotationPropertyChanged;
+            _trackedAnnotations.Remove(annotation);
+        }
+    }
+
+    private void OnAnnotationPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        InvalidateVisual();
+    }
+
+    public event Action<HexAnnotation>? AnnotationMoved;
 
     public void MoveCaretTo(long offset, int nibbleIndex = 0, bool ensureVisible = true)
     {
@@ -482,36 +674,40 @@ public class HexViewControl : Control, ILogicalScrollable
 
             return;
         }
+
+        // Cache non-null references for analysis
+        var formatterNonNull = HexFormatter;
+        var readerNonNull = LineReader;
    
         var toBase = ToBase;
         var bytesWidth = BytesWidth;
 
-        if (bytesWidth != HexFormatter.Width)
+        if (bytesWidth != formatterNonNull.Width)
         {
-            HexFormatter.Width = bytesWidth;
+            formatterNonNull.Width = bytesWidth;
         }
 
         var startLine = (long)Math.Ceiling(_offset.Y / _lineHeight);
         var lines = _viewport.Height / _lineHeight;
-        var endLine = (long)Math.Min(Math.Floor(startLine + lines), HexFormatter.Lines - 1);
+        var endLine = (long)Math.Min(Math.Floor(startLine + lines), formatterNonNull.Lines - 1);
 
         var sb = new StringBuilder();
         var lineStartIndices = new List<int>(); // string index of each visible line start
         var digitsPerByte = toBase switch { 2 => 8, 8 => 3, 10 => 3, 16 => 2, _ => 2 };
-        var prefixLen = (HexFormatter?.OffsetPadding ?? 0) + 2; // "XXXX: "
-        var sepEvery = HexFormatter?.GroupSize ?? 8;
-        var sepLen = (HexFormatter?.ShowGroupSeparator ?? true) ? 2 : 0; // "| "
+        var prefixLen = (formatterNonNull.OffsetPadding) + 2; // "XXXX: "
+        var sepEvery = Math.Max(1, formatterNonNull.GroupSize);
+        var sepLen = formatterNonNull.ShowGroupSeparator ? 2 : 0; // "| "
 
         // Build visible text, applying overlay edits per line
         for (var i = startLine; i <= endLine; i++)
         {
             lineStartIndices.Add(sb.Length);
 
-            var bytes = LineReader.GetLine(i, HexFormatter.Width);
+            var bytes = readerNonNull.GetLine(i, formatterNonNull.Width);
 
             // Apply overlay edits for this line
-            var baseOffset = i * HexFormatter.Width;
-            for (var j = 0; j < HexFormatter.Width; j++)
+            var baseOffset = i * formatterNonNull.Width;
+            for (var j = 0; j < formatterNonNull.Width; j++)
             {
                 var pos = baseOffset + j;
                 if (_edits.TryGetValue(pos, out var v))
@@ -520,13 +716,95 @@ public class HexViewControl : Control, ILogicalScrollable
                 }
             }
 
-            HexFormatter.AddLine(bytes, i, sb, toBase);
+            formatterNonNull.AddLine(bytes, i, sb, toBase);
             sb.AppendLine();
         }
 
         var text = sb.ToString();
         var ft = CreateFormattedText(text);
         var origin = new Point();
+
+        // Draw annotations first so selection overlays stay visible
+        if (_annotations.Count > 0)
+        {
+            var visibleStart = startLine * formatterNonNull.Width;
+            var visibleEnd = endLine * formatterNonNull.Width + (formatterNonNull.Width - 1);
+            var sepsFullAnn = (formatterNonNull.Width - 1) / sepEvery;
+            var hexAreaLenAnn = sepsFullAnn * sepLen + formatterNonNull.Width * (digitsPerByte + 1);
+            var asciiStartColAnn = prefixLen + hexAreaLenAnn + 3;
+
+            foreach (var annotation in _annotations)
+            {
+                if (annotation.Length <= 0)
+                {
+                    continue;
+                }
+
+                var rangeStart = Math.Max(annotation.Start, visibleStart);
+                var rangeEnd = Math.Min(annotation.End, visibleEnd);
+                if (rangeStart > rangeEnd)
+                {
+                    continue;
+                }
+
+                var baseColor = annotation.Color;
+                var fillBrush = new SolidColorBrush(Color.FromArgb(48, baseColor.R, baseColor.G, baseColor.B));
+                var strokeBrush = new SolidColorBrush(Color.FromArgb(160, baseColor.R, baseColor.G, baseColor.B));
+                var strokePen = new Pen(strokeBrush, 1);
+
+                var firstLine = rangeStart / formatterNonNull.Width;
+                var lastLine = rangeEnd / formatterNonNull.Width;
+
+                for (var lineIndex = firstLine; lineIndex <= lastLine; lineIndex++)
+                {
+                    var lineY = (lineIndex - startLine) * _lineHeight;
+                    var lineOffset = lineIndex * formatterNonNull.Width;
+                    var jStart = (int)Math.Max(0, rangeStart - lineOffset);
+                    var jEnd = (int)Math.Min(formatterNonNull.Width - 1, rangeEnd - lineOffset);
+
+                    var sepsBeforeStart = jStart / sepEvery;
+                    var startCol = prefixLen + sepsBeforeStart * sepLen + jStart * (digitsPerByte + 1);
+                    var sepsBeforeEnd = jEnd / sepEvery;
+                    var endCol = prefixLen + sepsBeforeEnd * sepLen + jEnd * (digitsPerByte + 1) + digitsPerByte;
+
+                    var x = startCol * _charWidth;
+                    var w = Math.Max(_charWidth, (endCol - startCol) * _charWidth);
+                    var hexRect = new Rect(x, lineY, w, _lineHeight);
+                    context.DrawRectangle(fillBrush, strokePen, hexRect);
+
+                    var asciiX = (asciiStartColAnn + jStart) * _charWidth;
+                    var asciiW = (jEnd - jStart + 1) * _charWidth;
+                    var asciiRect = new Rect(asciiX, lineY, asciiW, _lineHeight);
+                    context.DrawRectangle(fillBrush, strokePen, asciiRect);
+
+                    if (lineIndex == firstLine && !string.IsNullOrWhiteSpace(annotation.Label))
+                    {
+                        var labelBrush = _foreground ?? Brushes.Black;
+                        var labelText = new FormattedText(annotation.Label,
+                            CultureInfo.CurrentCulture,
+                            FlowDirection.LeftToRight,
+                            _typeface,
+                            Math.Max(10, _fontSize - 1),
+                            labelBrush);
+
+                        const double padX = 6;
+                        const double padY = 2;
+                        var viewWidth = Bounds.Width > 0 ? Bounds.Width : (_viewport.Width > 0 ? _viewport.Width : labelText.Width + padX * 2);
+                        var labelWidth = labelText.Width + padX * 2;
+                        var labelHeight = labelText.Height + padY * 2;
+                        var labelX = Math.Max(0, viewWidth - labelWidth - 8);
+                        var labelY = lineY;
+                        var labelRect = new Rect(labelX, labelY, labelWidth, labelHeight);
+
+                        var labelFill = new SolidColorBrush(Color.FromArgb(180, baseColor.R, baseColor.G, baseColor.B));
+                        context.DrawRectangle(labelFill, strokePen, labelRect);
+
+                        var labelPos = new Point(labelRect.X + padX, labelRect.Y + padY);
+                        context.DrawText(labelText, labelPos);
+                    }
+                }
+            }
+        }
 
         // Draw selection background (hex columns and ASCII columns) before text
         if (HexFormatter is { } selFmt && SelectionLength > 0)
@@ -731,61 +1009,38 @@ DrawText:
         Focus();
 
         var point = e.GetPosition(this);
-        var line = (long)Math.Floor((_offset.Y + point.Y) / _lineHeight);
-        line = Math.Max(0, Math.Min(line, HexFormatter.Lines - 1));
-
-        var col = (int)Math.Floor(point.X / Math.Max(1, _charWidth));
-        var toBase = ToBase;
-        var digitsPerByte = toBase switch { 2 => 8, 8 => 3, 10 => 3, 16 => 2, _ => 2 };
-        var prefixLen = (HexFormatter.OffsetPadding) + 2;
-        var sepEvery = 8;
-        var sepLen = 2;
-        var width = HexFormatter.Width;
-
-        if (col < prefixLen)
+        if (!TryGetOffsetFromPoint(point, out var offset, out var nibbleIndex))
         {
-            return; // clicked in offset area
+            return;
         }
 
-        // Precompute ASCII area columns
-        var sepsFull = (width - 1) / sepEvery;
-        var hexAreaLen = sepsFull * sepLen + width * (digitsPerByte + 1);
-        var asciiStartCol = prefixLen + hexAreaLen + 3; // " | "
-        var asciiEndCol = asciiStartCol + width; // exclusive
-
-        // Determine byte index from column within hex or ASCII region
-        var c = col - prefixLen;
-        var found = false;
-        // Click in ASCII area → map directly to byte index
-        if (col >= asciiStartCol && col < asciiEndCol)
+        var hitAnnotation = FindAnnotationAtOffset(offset);
+        if (hitAnnotation is { IsDraggable: true } && (e.KeyModifiers & KeyModifiers.Control) != 0)
         {
-            var j = Math.Max(0, Math.Min(width - 1, col - asciiStartCol));
-            var newOffset = line * width + j;
-            // Clamp to file length - 1
-            if (HexFormatter.Length > 0)
-            {
-                newOffset = Math.Min(newOffset, HexFormatter.Length - 1);
-            }
-            _caretOffset = newOffset;
-            _nibbleIndex = 0; // start editing with high nibble
-            InvalidateVisual();
-            EnsureCaretVisible();
-            _isDragging = true;
+            _draggedAnnotation = hitAnnotation;
+            _annotationDragAnchor = offset;
+            _annotationStartOriginal = hitAnnotation.Start;
+            _isAnnotationDragging = true;
             e.Pointer.Capture(this);
-            CaretMoved?.Invoke(_caretOffset);
-        // Selection handling (hex area)
-        var shift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
-        if (shift)
+            e.Handled = true;
+            return;
+        }
+
+        _caretOffset = offset;
+        _nibbleIndex = nibbleIndex;
+        InvalidateVisual();
+        EnsureCaretVisible();
+        CaretMoved?.Invoke(_caretOffset);
+
+        var isShift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
+        if (isShift)
         {
             if (!_dragSelecting)
             {
                 _selectionAnchor = SelectionLength > 0 ? SelectionStart : _caretOffset;
             }
             _dragSelecting = true;
-            // seed selection
-            SelectionStart = System.Math.Min(_selectionAnchor, _caretOffset);
-            SelectionLength = System.Math.Abs(_caretOffset - _selectionAnchor) + 1;
-            SelectionChanged?.Invoke(SelectionStart, SelectionLength);
+            UpdateSelectionFromAnchor(_caretOffset);
         }
         else
         {
@@ -795,69 +1050,10 @@ DrawText:
             SelectionLength = 1;
             SelectionChanged?.Invoke(SelectionStart, SelectionLength);
         }
-            // Selection handling (Shift+Click starts/extends selection; otherwise start drag selection)
-            var isShift = (e.KeyModifiers & KeyModifiers.Shift) != 0;
-            if (isShift)
-            {
-                if (!_dragSelecting)
-                {
-                    _selectionAnchor = SelectionLength > 0 ? SelectionStart : _caretOffset;
-                }
-                _dragSelecting = true;
-                UpdateSelectionFromAnchor(_caretOffset);
-            }
-            else
-            {
-                _dragSelecting = true;
-                _selectionAnchor = _caretOffset;
-                SelectionStart = _caretOffset;
-                SelectionLength = 1;
-                SelectionChanged?.Invoke(SelectionStart, SelectionLength);
-            }
-            return;
-        }
-        for (var j = 0; j < width; j++)
-        {
-            var sepsBefore = j / sepEvery;
-            var startCol = sepsBefore * sepLen + j * (digitsPerByte + 1);
-            var endCol = startCol + digitsPerByte; // exclusive of trailing space
-            if (c >= startCol && c < endCol)
-            {
-                _caretOffset = line * width + j;
-                // set nibble based on which character within the byte was clicked (only for base 16)
-                _nibbleIndex = toBase == 16 && digitsPerByte >= 2 && (c - startCol) >= 1 ? 1 : 0;
-                InvalidateVisual();
-                EnsureCaretVisible();
-                CaretMoved?.Invoke(_caretOffset);
-                found = true;
-                break;
-            }
-        }
 
-        if (!found)
-        {
-            // If clicked on spaces between bytes, snap to closest preceding byte
-            for (var j = 0; j < width; j++)
-            {
-                var sepsBefore = j / sepEvery;
-                var startCol = sepsBefore * sepLen + j * (digitsPerByte + 1);
-                if (c < startCol)
-                {
-                    var idx = Math.Max(0, j - 1);
-                    _caretOffset = line * width + idx;
-                    _nibbleIndex = 0;
-                    InvalidateVisual();
-                    EnsureCaretVisible();
-                    CaretMoved?.Invoke(_caretOffset);
-                    break;
-                }
-            }
-        }
-
-        // start drag-to-move caret while pointer pressed
         _isDragging = true;
         e.Pointer.Capture(this);
-        CaretMoved?.Invoke(_caretOffset);
+        e.Handled = true;
     }
 
 
