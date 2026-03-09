@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:views="clr-namespace:HexView.Views"
+             xmlns:model="clr-namespace:HexView.Avalonia.Model;assembly=HexView"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="HexView.Views.SingleView"
              x:CompileBindings="True" x:DataType="views:SingleView">
@@ -166,6 +167,16 @@
         <MenuItem Header="_Next Change" Click="NextChangeButton_OnClick" />
       </MenuItem>
 
+      <MenuItem Header="_Annotations">
+        <MenuItem Header="_Add from Selection" Click="AddAnnotationMenuItem_OnClick" InputGesture="Ctrl+M" />
+        <MenuItem Header="_Next Annotation" Click="NextAnnotationMenuItem_OnClick" InputGesture="Ctrl+OemPeriod" />
+        <MenuItem Header="_Previous Annotation" Click="PrevAnnotationMenuItem_OnClick" InputGesture="Ctrl+OemComma" />
+        <MenuItem Header="_Clear All" Click="ClearAnnotationsMenuItem_OnClick" />
+        <Separator />
+        <MenuItem Header="_Load..." Click="LoadAnnotationsMenuItem_OnClick" />
+        <MenuItem Header="_Save..." Click="SaveAnnotationsMenuItem_OnClick" />
+      </MenuItem>
+
       <MenuItem Header="_View">
         <MenuItem Header="Display Base">
           <MenuItem Name="Base2MenuItem" Header="_Binary (2)" Click="BaseMenuItem_OnClick" Tag="2" />
@@ -283,6 +294,34 @@
               </Button>
             </StackPanel>
           </Border>
+
+          <!-- Annotation quick add -->
+          <Border Classes="card" Padding="7,7">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBox Name="AnnotationLabelTextBox" Width="180" Classes="search"
+                       Watermark="Annotation label" />
+              <Button Name="AddAnnotationButton" Click="AddAnnotationButton_OnClick"
+                      Classes="tool" MinWidth="120" Padding="12,6"
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <TextBlock Text="Add Annotation" FontSize="12" />
+              </Button>
+              <ToggleButton Name="AnnotationsPanelToggle" IsChecked="False" Classes="tool" Padding="12,6"
+                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                            Click="AnnotationsPanelToggle_OnClick">
+                <TextBlock Text="Panel" FontSize="12" />
+              </ToggleButton>
+              <Button Name="PrevAnnotationButton" Click="PrevAnnotationButton_OnClick"
+                      Width="34" Height="30" Classes="tool" ToolTip.Tip="Previous annotation (Ctrl+,)"
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <TextBlock Text="◀" FontSize="14" />
+              </Button>
+              <Button Name="NextAnnotationButton" Click="NextAnnotationButton_OnClick"
+                      Width="34" Height="30" Classes="tool" ToolTip.Tip="Next annotation (Ctrl+.)"
+                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <TextBlock Text="▶" FontSize="14" />
+              </Button>
+            </StackPanel>
+          </Border>
         </StackPanel>
 
         <!-- Right: Search Controls -->
@@ -317,23 +356,67 @@
     <!-- Row 3: Hex Viewer -->
     <Border Grid.Row="3" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}"
             Padding="12,10,12,0">
-      <ScrollViewer Name="ScrollViewer1"
-                    HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto">
-        <HexViewControl Name="HexViewControl1"
-                        ToBase="{Binding #ToBaseComboBox.SelectedItem}"
-                        BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
-                        TextElement.FontSize="{StaticResource FontSize}"
-                        TextElement.Foreground="{DynamicResource TextControlForeground}"
-                        DragDrop.AllowDrop="True"
-                        Margin="0,0,0,10">
-          <TextElement.FontFamily>
-            <OnPlatform Default="{StaticResource RobotoMonoFont}">
-              <On Options="Windows" Content="{StaticResource ConsolasFont}" />
-            </OnPlatform>
-          </TextElement.FontFamily>
-        </HexViewControl>
-      </ScrollViewer>
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <ScrollViewer Name="ScrollViewer1"
+                      Grid.Column="0"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+          <HexViewControl Name="HexViewControl1"
+                          ToBase="{Binding #ToBaseComboBox.SelectedItem}"
+                          BytesWidth="{Binding #BytesWidthComboBox.SelectedItem}"
+                          TextElement.FontSize="{StaticResource FontSize}"
+                          TextElement.Foreground="{DynamicResource TextControlForeground}"
+                          DragDrop.AllowDrop="True"
+                          Margin="0,0,0,10">
+            <TextElement.FontFamily>
+              <OnPlatform Default="{StaticResource RobotoMonoFont}">
+                <On Options="Windows" Content="{StaticResource ConsolasFont}" />
+              </OnPlatform>
+            </TextElement.FontFamily>
+          </HexViewControl>
+        </ScrollViewer>
+
+        <Border Grid.Column="1" Name="AnnotationsPanel"
+                Width="280"
+                IsVisible="{Binding IsChecked, ElementName=AnnotationsPanelToggle}"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="10"
+                Margin="0,0,0,10">
+          <DockPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8" DockPanel.Dock="Top">
+              <TextBlock Text="Annotations" FontWeight="SemiBold" FontSize="13" />
+              <TextBlock Text="Ctrl+drag in the hex view to move" FontSize="11" Opacity="0.7" />
+            </StackPanel>
+
+            <ListBox Name="AnnotationsListBox"
+                     DockPanel.Dock="Top"
+                     Margin="0,8,0,8"
+                     SelectionChanged="AnnotationsListBox_OnSelectionChanged">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="model:HexAnnotation">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Start, StringFormat='0x{0:X}'}" FontSize="11" Opacity="0.7" />
+                    <TextBlock Text="{Binding Length, StringFormat='len {0}'}" FontSize="11" Opacity="0.7" />
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" Spacing="8" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+              <Button Name="PanelPrevAnnotationButton" Click="PrevAnnotationButton_OnClick" Classes="tool" Padding="10,6">
+                <TextBlock Text="Prev" />
+              </Button>
+              <Button Name="PanelNextAnnotationButton" Click="NextAnnotationButton_OnClick" Classes="tool" Padding="10,6">
+                <TextBlock Text="Next" />
+              </Button>
+            </StackPanel>
+          </DockPanel>
+        </Border>
+      </Grid>
     </Border>
 
     <!-- Row 4: Status Bar -->

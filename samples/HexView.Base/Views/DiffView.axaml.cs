@@ -77,8 +77,8 @@ public partial class DiffView : UserControl
     {
         if (e.Data.Contains(DataFormats.Files))
         {
-            var path = e.Data.GetFileNames()?.FirstOrDefault();
-            if (path is { })
+            var path = e.Data.GetFiles()?.FirstOrDefault()?.Path.LocalPath;
+            if (!string.IsNullOrWhiteSpace(path))
             {
                 if (Equals(sender, HexViewControl1))
                 {

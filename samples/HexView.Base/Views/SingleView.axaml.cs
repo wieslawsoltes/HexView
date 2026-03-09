@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ public partial class SingleView : UserControl
     private EditJournal? _journal1;
     private SelectionService? _selection1;
     private NavigationService? _navigation1;
+    private readonly ObservableCollection<HexAnnotation> _annotations = new();
 
     public SingleView()
     {
@@ -40,6 +42,7 @@ public partial class SingleView : UserControl
         HexViewControl1.AddHandler(DragDrop.DragOverEvent, DragOver);
         HexViewControl1.CaretMoved += HexViewControl1OnCaretMoved;
         HexViewControl1.SelectionChanged += HexViewControl1OnSelectionChanged;
+        HexViewControl1.AnnotationMoved += HexViewControl1OnAnnotationMoved;
         HexViewControl1.KeyDown += HexViewControl1OnKeyDown;
 
         // Sync menu items with combobox changes
@@ -61,6 +64,9 @@ public partial class SingleView : UserControl
 
         // Update bookmarks menu when opened
         BookmarksMenuItem.SubmenuOpened += BookmarksMenuItem_OnSubmenuOpened;
+
+        HexViewControl1.Annotations = _annotations;
+        AnnotationsListBox.ItemsSource = _annotations;
     }
 
     private void UpdateBaseMenuItems()
@@ -183,6 +189,9 @@ public partial class SingleView : UserControl
         _journal1 = new EditJournal();
         _selection1 = new SelectionService(_overlay1);
         _navigation1 = new NavigationService(_overlay1);
+        _annotations.Clear();
+        AnnotationsListBox.SelectedItem = null;
+        ShowAnnotationsPanel(false);
         _hexFormatter1 = new HexFormatter(_overlay1.Length);
         HexViewControl1.LineReader = _overlayReader1;
         HexViewControl1.HexFormatter = _hexFormatter1;
@@ -211,8 +220,8 @@ public partial class SingleView : UserControl
     {
         if (e.Data.Contains(DataFormats.Files))
         {
-            var path = e.Data.GetFileNames()?.FirstOrDefault();
-            if (path is { })
+            var path = e.Data.GetFiles()?.FirstOrDefault()?.Path.LocalPath;
+            if (!string.IsNullOrWhiteSpace(path))
             {
                 if (Equals(sender, HexViewControl1))
                 {
@@ -221,6 +230,192 @@ public partial class SingleView : UserControl
                 }
             }
         }
+    }
+
+    private void AddAnnotationFromSelection(string? labelOverride = null)
+    {
+        if (_hexFormatter1 is null || _hexFormatter1.Length <= 0)
+        {
+            return;
+        }
+
+        var start = HexViewControl1.SelectionStart;
+        var length = HexViewControl1.SelectionLength;
+        if (length <= 0)
+        {
+            start = HexViewControl1.CaretOffset;
+            length = 1;
+        }
+
+        if (length <= 0)
+        {
+            return;
+        }
+
+        var maxStart = Math.Max(0, _hexFormatter1.Length - Math.Max(1, length));
+        start = Math.Min(start, maxStart);
+
+        var label = string.IsNullOrWhiteSpace(labelOverride)
+            ? $"0x{start:X}-0x{start + length - 1:X}"
+            : labelOverride.Trim();
+
+        var annotation = new HexAnnotation
+        {
+            Start = start,
+            Length = length,
+            Label = label,
+            Color = Colors.DeepSkyBlue,
+            IsDraggable = true
+        };
+
+        _annotations.Add(annotation);
+        AnnotationsListBox.SelectedItem = annotation;
+
+        ShowAnnotationsPanel(true);
+    }
+
+    private void ClearAnnotations()
+    {
+        _annotations.Clear();
+        AnnotationsListBox.SelectedItem = null;
+        ShowAnnotationsPanel(false);
+    }
+
+    private async Task LoadAnnotationsAsync()
+    {
+        var storageProvider = GetStorageProvider();
+        if (storageProvider is null)
+        {
+            return;
+        }
+
+        var result = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Load annotations",
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                new("Annotation files") { Patterns = new[] { "*.json" } },
+                new("All files") { Patterns = new[] { "*.*" } }
+            },
+            AllowMultiple = false
+        });
+
+        var file = result.FirstOrDefault();
+        if (file is null)
+        {
+            return;
+        }
+
+        var path = file.Path.IsAbsoluteUri ? file.Path.LocalPath : file.Path.ToString();
+        try
+        {
+            var loaded = HexAnnotationStorage.Load(path);
+
+            _annotations.Clear();
+            foreach (var annotation in loaded)
+            {
+                _annotations.Add(annotation);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return;
+        }
+
+        AnnotationsListBox.SelectedItem = null;
+        ShowAnnotationsPanel(_annotations.Count > 0);
+    }
+
+    private async Task SaveAnnotationsAsync()
+    {
+        var storageProvider = GetStorageProvider();
+        if (storageProvider is null)
+        {
+            return;
+        }
+
+        var suggestedName = string.IsNullOrWhiteSpace(_currentPath)
+            ? "annotations.json"
+            : $"{Path.GetFileNameWithoutExtension(_currentPath)}-annotations.json";
+
+        var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save annotations",
+            SuggestedFileName = suggestedName,
+            ShowOverwritePrompt = true,
+            FileTypeChoices = new List<FilePickerFileType>
+            {
+                new("Annotation files") { Patterns = new[] { "*.json" } },
+                new("All files") { Patterns = new[] { "*.*" } }
+            }
+        });
+
+        if (file is null)
+        {
+            return;
+        }
+
+        var path = file.Path.IsAbsoluteUri ? file.Path.LocalPath : file.Path.ToString();
+        try
+        {
+            HexAnnotationStorage.Save(path, _annotations);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void ShowAnnotationsPanel(bool visible)
+    {
+        if (AnnotationsPanelToggle is null)
+        {
+            return;
+        }
+
+        AnnotationsPanelToggle.IsChecked = visible;
+    }
+
+    private void SelectAnnotation(HexAnnotation annotation)
+    {
+        if (!ReferenceEquals(AnnotationsListBox.SelectedItem, annotation))
+        {
+            AnnotationsListBox.SelectedItem = annotation;
+        }
+
+        ApplySelection(annotation.Start, annotation.Length);
+        MoveCaretToOffset(annotation.Start);
+    }
+
+    private void ApplySelection(long start, long length)
+    {
+        HexViewControl1.SelectionStart = start;
+        HexViewControl1.SelectionLength = length;
+        HexViewControl1OnSelectionChanged(start, length);
+    }
+
+    private void NavigateAnnotation(bool forward)
+    {
+        if (_annotations.Count == 0)
+        {
+            return;
+        }
+
+        var ordered = _annotations.OrderBy(a => a.Start).ToList();
+        var caret = HexViewControl1.CaretOffset;
+        HexAnnotation? target = forward
+            ? ordered.FirstOrDefault(a => a.Start > caret)
+            : ordered.LastOrDefault(a => a.Start < caret);
+
+        target ??= forward ? ordered.FirstOrDefault() : ordered.LastOrDefault();
+
+        if (target is null)
+        {
+            return;
+        }
+
+        SelectAnnotation(target);
     }
 
     protected override void OnLoaded(RoutedEventArgs routedEventArgs)
@@ -361,6 +556,78 @@ public partial class SingleView : UserControl
         {
             SaveEditsToFile(_currentPath!);
         }
+    }
+
+    private void AddAnnotationButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        AddAnnotationFromSelection(AnnotationLabelTextBox?.Text);
+    }
+
+    private void AddAnnotationMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        AddAnnotationFromSelection(AnnotationLabelTextBox?.Text);
+    }
+
+    private void ClearAnnotationsMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ClearAnnotations();
+    }
+
+    private async void LoadAnnotationsMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await LoadAnnotationsAsync();
+    }
+
+    private async void SaveAnnotationsMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await SaveAnnotationsAsync();
+    }
+
+    private void AnnotationsPanelToggle_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (AnnotationsPanelToggle is null)
+        {
+            return;
+        }
+
+        var visible = AnnotationsPanelToggle.IsChecked ?? false;
+        ShowAnnotationsPanel(visible);
+    }
+
+    private void AnnotationsListBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (AnnotationsListBox.SelectedItem is HexAnnotation annotation)
+        {
+            SelectAnnotation(annotation);
+        }
+    }
+
+    private void HexViewControl1OnAnnotationMoved(HexAnnotation annotation)
+    {
+        if (!ReferenceEquals(AnnotationsListBox.SelectedItem, annotation))
+        {
+            AnnotationsListBox.SelectedItem = annotation;
+        }
+    }
+
+    private void NextAnnotationButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NavigateAnnotation(true);
+    }
+
+    private void PrevAnnotationButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NavigateAnnotation(false);
+    }
+
+    private void NextAnnotationMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NavigateAnnotation(true);
+    }
+
+    private void PrevAnnotationMenuItem_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NavigateAnnotation(false);
     }
 
     private void OverwriteByteFromEditor(long offset, byte value)
@@ -879,13 +1146,13 @@ public partial class SingleView : UserControl
     {
         _selection1?.Set(start, length);
         StatusSel.Text = length.ToString();
-        if (SelStartTextBox?.IsFocused != true)
+        if (SelStartTextBox is { } startBox && startBox.IsFocused != true)
         {
-            SelStartTextBox.Text = start.ToString();
+            startBox.Text = start.ToString();
         }
-        if (SelLenTextBox?.IsFocused != true)
+        if (SelLenTextBox is { } lenBox && lenBox.IsFocused != true)
         {
-            SelLenTextBox.Text = length.ToString();
+            lenBox.Text = length.ToString();
         }
     }
 
