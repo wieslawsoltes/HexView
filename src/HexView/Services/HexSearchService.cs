@@ -14,7 +14,7 @@ public static class HexSearchService
     {
         address = 0;
         if (string.IsNullOrWhiteSpace(text)) return false;
-        text = text.Trim();
+        text = text!.Trim();
         if (text.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
         {
             return long.TryParse(text.Substring(2), System.Globalization.NumberStyles.HexNumber, null, out address);
@@ -31,7 +31,7 @@ public static class HexSearchService
     {
         bytes = Array.Empty<byte>();
         if (string.IsNullOrWhiteSpace(text)) return false;
-        text = text.Trim();
+        text = text!.Trim();
         // Keep only hex digits
         var cleaned = new string(text.Where(Uri.IsHexDigit).ToArray());
         if (cleaned.Length < 2 || cleaned.Length % 2 != 0) return false;
@@ -50,6 +50,7 @@ public static class HexSearchService
 
     public static long? FindNextValue(ILineReader reader, long length, byte[] pattern, long startOffset)
     {
+        reader = reader ?? throw new ArgumentNullException(nameof(reader));
         if (pattern is null || pattern.Length == 0 || length <= 0) return null;
         const int chunkSize = 64 * 1024;
         var buffer = new byte[Math.Max(chunkSize, pattern.Length * 2)];
@@ -81,6 +82,7 @@ public static class HexSearchService
 
     public static long? FindPrevValue(ILineReader reader, long length, byte[] pattern, long startOffset)
     {
+        reader = reader ?? throw new ArgumentNullException(nameof(reader));
         if (pattern is null || pattern.Length == 0 || length <= 0) return null;
         const int chunkSize = 64 * 1024;
         var buffer = new byte[Math.Max(chunkSize, pattern.Length * 2)];
@@ -124,7 +126,7 @@ public static class HexSearchService
         pattern = Array.Empty<byte>();
         mask = Array.Empty<byte>();
         if (string.IsNullOrWhiteSpace(text)) return false;
-        var tokens = text.Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        var tokens = text!.Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         var p = new byte[tokens.Length];
         var m = new byte[tokens.Length];
         for (int i = 0; i < tokens.Length; i++)
@@ -145,7 +147,8 @@ public static class HexSearchService
 
     public static long? FindNextValue(ILineReader reader, long length, byte[] pattern, byte[] mask, long startOffset)
     {
-        if (pattern is null || mask is null || pattern.Length == 0 || pattern.Length != mask.Length) return null;
+        reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        if (pattern is null || mask is null || pattern.Length == 0 || pattern.Length != mask.Length || length <= 0) return null;
         const int chunkSize = 64 * 1024;
         var buffer = new byte[Math.Max(chunkSize, pattern.Length * 2)];
         long pos = startOffset;
