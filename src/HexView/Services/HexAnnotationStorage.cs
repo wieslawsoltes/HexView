@@ -11,6 +11,9 @@ using Avalonia.Media;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Loads and saves <see cref="HexAnnotation"/> collections as JSON.
+/// </summary>
 public static class HexAnnotationStorage
 {
     private static readonly JsonSerializerOptions s_options = new()

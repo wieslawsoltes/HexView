@@ -8,6 +8,9 @@ using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Provides address parsing, pattern parsing, search, and replace helpers for binary content.
+/// </summary>
 public static class HexSearchService
 {
     public static bool TryParseAddress(string? text, out long address)

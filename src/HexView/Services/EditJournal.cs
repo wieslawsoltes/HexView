@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Describes the kind of logical edit stored in <see cref="EditJournal"/>.
+/// </summary>
 public enum EditOpType
 {
     Overwrite,
@@ -15,6 +18,9 @@ public enum EditOpType
     Batch
 }
 
+/// <summary>
+/// Represents a single logical edit or edit batch applied to a <see cref="ByteOverlay"/>.
+/// </summary>
 public class EditOperation
 {
     public EditOpType Type { get; set; }
@@ -24,6 +30,9 @@ public class EditOperation
     public List<EditOperation> Children { get; set; } = new();
 }
 
+/// <summary>
+/// Records logical overlay edits and replays them for undo and redo.
+/// </summary>
 public class EditJournal
 {
     private readonly Stack<EditOperation> _undo = new();

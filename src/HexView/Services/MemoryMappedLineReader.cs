@@ -8,6 +8,9 @@ using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Reads bytes from a file stream by using a memory-mapped view.
+/// </summary>
 public class MemoryMappedLineReader : ILineReader
 {
     private readonly FileStream _stream;

@@ -7,6 +7,9 @@ using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Formats logical byte lines for display in the hex and ASCII panes.
+/// </summary>
 public class HexFormatter : IHexFormatter
 {
     private readonly long _length;

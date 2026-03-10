@@ -8,6 +8,9 @@ using Avalonia.Media;
 
 namespace HexView.Avalonia.Model;
 
+/// <summary>
+/// Describes a labeled byte range rendered as an annotation in <c>HexViewControl</c>.
+/// </summary>
 public class HexAnnotation : INotifyPropertyChanged
 {
     private long _start;
