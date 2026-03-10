@@ -236,6 +236,9 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# Lunet docs output
+site/.lunet/build/
+
 # Typescript v1 declaration files
 typings/
 
