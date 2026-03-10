@@ -1,0 +1,16 @@
+/home/runner/work/HexView/HexView/site/api-src/bin/Release/net8.0/HexView.deps.json
+/home/runner/work/HexView/HexView/site/api-src/bin/Release/net8.0/HexView.dll
+/home/runner/work/HexView/HexView/site/api-src/bin/Release/net8.0/HexView.pdb
+/home/runner/work/HexView/HexView/site/api-src/bin/Release/net8.0/HexView.xml
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.ApiDocs.csproj.AssemblyReference.cache
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/Avalonia/Resources.Inputs.cache
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.ApiDocs.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.ApiDocs.AssemblyInfoInputs.cache
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.ApiDocs.AssemblyInfo.cs
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.ApiDocs.csproj.CoreCompileInputs.cache
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.ApiDocs.sourcelink.json
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.dll
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/refint/HexView.dll
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.xml
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/HexView.pdb
+/home/runner/work/HexView/HexView/site/api-src/obj/Release/net8.0/ref/HexView.dll

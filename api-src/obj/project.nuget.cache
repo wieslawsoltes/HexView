@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "fMW86kTl0eI=",
+  "success": true,
+  "projectFilePath": "/home/runner/work/HexView/HexView/site/api-src/HexView.ApiDocs.csproj",
+  "expectedPackageFiles": [
+    "/home/runner/.nuget/packages/avalonia/11.3.12/avalonia.11.3.12.nupkg.sha512",
+    "/home/runner/.nuget/packages/avalonia.buildservices/11.3.2/avalonia.buildservices.11.3.2.nupkg.sha512",
+    "/home/runner/.nuget/packages/avalonia.remote.protocol/11.3.12/avalonia.remote.protocol.11.3.12.nupkg.sha512",
+    "/home/runner/.nuget/packages/microcom.runtime/0.11.0/microcom.runtime.0.11.0.nupkg.sha512"
+  ],
+  "logs": []
+}

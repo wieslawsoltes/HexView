@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HexView</name>
+    </assembly>
+    <members>
+        <member name="T:HexView.Avalonia.Controls.HexViewControl">
+            <summary>
+            Renders and edits binary data as offsets, byte columns, and ASCII text inside an Avalonia control.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Model.HexAnnotation">
+            <summary>
+            Describes a labeled byte range rendered as an annotation in <c>HexViewControl</c>.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Model.IHexFormatter">
+            <summary>
+            Formats logical byte lines into the offset, hex, and ASCII representation rendered by <c>HexViewControl</c>.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Model.ILineReader">
+            <summary>
+            Reads bytes by logical offset and line width for the HexView rendering pipeline.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.EditMode">
+            <summary>
+            Determines whether edits are projected as in-place overwrites or logical insert/delete operations.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.ByteOverlay">
+            <summary>
+            Projects logical edits over an underlying <see cref="T:HexView.Avalonia.Model.ILineReader"/> without mutating the original source immediately.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.ByteOverlayLineReader">
+            <summary>
+            Exposes a <see cref="T:HexView.Avalonia.Services.ByteOverlay"/> through the <see cref="T:HexView.Avalonia.Model.ILineReader"/> abstraction.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.EditOpType">
+            <summary>
+            Describes the kind of logical edit stored in <see cref="T:HexView.Avalonia.Services.EditJournal"/>.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.EditOperation">
+            <summary>
+            Represents a single logical edit or edit batch applied to a <see cref="T:HexView.Avalonia.Services.ByteOverlay"/>.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.EditJournal">
+            <summary>
+            Records logical overlay edits and replays them for undo and redo.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.HexAnnotationStorage">
+            <summary>
+            Loads and saves <see cref="T:HexView.Avalonia.Model.HexAnnotation"/> collections as JSON.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.HexFormatter">
+            <summary>
+            Formats logical byte lines for display in the hex and ASCII panes.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.HexSearchService">
+            <summary>
+            Provides address parsing, pattern parsing, search, and replace helpers for binary content.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.MemoryMappedLineReader">
+            <summary>
+            Reads bytes from a file stream by using a memory-mapped view.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.NavigationService">
+            <summary>
+            Tracks caret history, bookmarks, and changed-byte navigation for an overlay-backed document.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.SaveService">
+            <summary>
+            Saves overlay-backed content either as a full file or as a simple textual patch.
+            </summary>
+        </member>
+        <member name="T:HexView.Avalonia.Services.SelectionService">
+            <summary>
+            Applies range-based copy, paste, and mutation operations against a <see cref="T:HexView.Avalonia.Services.ByteOverlay"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

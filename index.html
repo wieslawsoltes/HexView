@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html data-lunet-theme-mode="system" data-lunet-theme-storage-key="lunet-theme" data-lunet-css-prefix="lunet" lang="en" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="lunet 1.0.11.0">
+    <script>(function(){const root=document.documentElement;const key=root.getAttribute("data-lunet-theme-storage-key")||"lunet-theme";const fallback=root.getAttribute("data-lunet-theme-mode")||"system";let stored=null;try{stored=localStorage.getItem(key);}catch(_){stored=null;}const mode=(stored==="light"||stored==="dark"||stored==="system")?stored:fallback;const prefersDark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;const resolved=mode==="system"?(prefersDark?"dark":"light"):mode;root.setAttribute("data-lunet-theme-mode",mode);root.setAttribute("data-bs-theme",resolved);}());</script>
+    <link rel='icon' href='/HexView/favicon.ico' sizes='32x32'>
+    <title>HexView for Avalonia | HexView for Avalonia</title>
+    <link rel="stylesheet" href="/HexView/css/lite.css">
+    <script src="/HexView/js/lite-defer.js" defer></script>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@wieslawsoltes">
+<meta name="twitter:title" content="HexView for Avalonia | HexView for Avalonia">
+<meta name="twitter:description" content="Avalonia Control Library HexView for Avalonia HexView is a hex editor control and sample application for Avalonia with large-file reading, overlay-based editing, search and replace, diff visualization, bookmarks, and annotation workflows. Start Getting Started Browse API GitHub Repository Start Here Getting Started Overview Understand the file pipeline, overlay model, and the main sample surfaces first. Installation Add the package, target Avalonia 11.3, and restore Lunet tooling for docs work....">
+<meta name="twitter:image" content="https://wieslawsoltes.github.io/HexView/images/logo.svg">
+<meta name="twitter:image:alt" content="HexView for Avalonia | HexView for Avalonia">
+<meta property="og:title" content="HexView for Avalonia | HexView for Avalonia">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wieslawsoltes.github.io/HexView">
+<meta property="og:description" content="Avalonia Control Library HexView for Avalonia HexView is a hex editor control and sample application for Avalonia with large-file reading, overlay-based editing, search and replace, diff visualization, bookmarks, and annotation workflows. Start Getting Started Browse API GitHub Repository Start Here Getting Started Overview Understand the file pipeline, overlay model, and the main sample surfaces first. Installation Add the package, target Avalonia 11.3, and restore Lunet tooling for docs work....">
+<meta property="og:image" content="https://wieslawsoltes.github.io/HexView/images/logo.svg">
+<meta property="og:image:alt" content="HexView for Avalonia | HexView for Avalonia">
+  </head>
+  <body>
+
+    <div id="lunet" class="container">
+      <nav class="navbar navbar-expand-md ">
+        <a class="navbar-brand" href="/HexView/">
+          <img class="lunet-logo" src="/HexView/images/logo.svg" alt="HexView for Avalonia" width="96" height="96">
+          <span class="visually-hidden">Home</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbarSupportedContent" class="collapse navbar-collapse justify-content-between">
+<ol id='nav-id-home-0' class='navbar-nav nav-level0 show '>
+  <li id='nav-item-home-1' class='nav-item  active'>
+    <span class='nav-item-row'><a href='/HexView/' class='nav-link  '><i class='bi bi-house-door' aria-hidden='true'></i> Home</a></span>  </li>
+  <li id='nav-item-home-2' class='nav-item '>
+    <span class='nav-item-row'><a href='/HexView/articles/' class='nav-link  '><i class='bi bi-book' aria-hidden='true'></i> Docs</a></span>  </li>
+  <li id='nav-item-home-3' class='nav-item '>
+    <span class='nav-item-row'><a href='/HexView/api/' class='nav-link  '><i class='bi bi-braces' aria-hidden='true'></i> API</a></span>  </li>
+</ol>
+          <ol class="navbar-nav flex-grow-1" style="padding-right: 0.5rem;">
+            <li class="nav-item w-100">
+                <div class="lunet-search dropdown w-100">
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input id="search-input" type="search" class="form-control" placeholder="Search... (Alt+s)" aria-label="Search" aria-controls="search-results" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-search-empty-message="Enter words to search..." data-search-no-results-message="No results found.">
+                    <ul id="search-results" class="dropdown-menu w-100 p-0" style="max-height: 50vh;" role="listbox" aria-labelledby="search-input"></ul>
+                  </div>
+                </div>
+            </li>
+          </ol>
+          <div class="d-flex align-items-center gap-2 flex-shrink-0 navbar-right">
+            <div class="dropdown">
+              <button
+                id="theme-mode-toggle"
+                class="btn btn-outline-secondary btn-sm lunet-theme-toggle dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="Theme">
+                <i class="bi bi-circle-half" data-lunet-theme-toggle-icon aria-hidden="true"></i>
+                <span
+                  data-lunet-theme-toggle-label
+                  data-theme-system-label="System"
+                  data-theme-light-label="Light"
+                  data-theme-dark-label="Dark">Theme</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="theme-mode-toggle">
+                <li><button class="dropdown-item" type="button" data-lunet-theme-choice="system"><i class="bi bi-circle-half me-2"></i>System</button></li>
+                <li><button class="dropdown-item" type="button" data-lunet-theme-choice="light"><i class="bi bi-sun-fill me-2"></i>Light</button></li>
+                <li><button class="dropdown-item" type="button" data-lunet-theme-choice="dark"><i class="bi bi-moon-stars-fill me-2"></i>Dark</button></li>
+              </ul>
+            </div>
+<ol id='nav-id-home2-0' class='navbar-nav nav-level0 show flex-shrink-0'>
+  <li id='nav-item-home2-1' class='nav-item '>
+    <span class='nav-item-row'><a href='https://github.com/wieslawsoltes/HexView' class='nav-link  btn btn-info'><i class="bi bi-github"></i> GitHub</a></span>  </li>
+</ol>
+          </div>
+        </div>
+      </nav>
+      <div class="lunet lunet-home">
+        <section data-prismjs-copy="" data-prismjs-copy-success="" data-prismjs-copy-timeout="1200" data-copy-tooltip="Copy to Clipboard." data-copy-tooltip-success="Copied!" data-copy-tooltip-error="Failed to copy!">
+
+<div class="container">
+<!-- lunet:summarize -->
+<div class="hv-hero">
+  <div class="hv-eyebrow"><i class="bi bi-file-binary" aria-hidden="true"></i> Avalonia Control Library</div>
+  <h1>HexView for Avalonia</h1>
+  <p class="lead"><strong>HexView</strong> is a hex editor control and sample application for Avalonia with large-file reading, overlay-based editing, search and replace, diff visualization, bookmarks, and annotation workflows.</p>
+  <div class="hv-hero-actions">
+    <a class="btn btn-primary btn-lg" href="articles/getting-started/overview"><i class="bi bi-rocket-takeoff" aria-hidden="true"></i> Start Getting Started</a>
+    <a class="btn btn-outline-secondary btn-lg" href="api"><i class="bi bi-braces" aria-hidden="true"></i> Browse API</a>
+    <a class="btn btn-outline-secondary btn-lg" href="https://github.com/wieslawsoltes/HexView"><i class="bi bi-github" aria-hidden="true"></i> GitHub Repository</a>
+  </div>
+</div>
+<h2 id="start-here">Start Here</h2>
+<div class="hv-link-grid">
+  <a class="hv-link-card" href="articles/getting-started/overview">
+    <span class="hv-link-card-title"><i class="bi bi-signpost-split" aria-hidden="true"></i> Getting Started Overview</span>
+    <p>Understand the file pipeline, overlay model, and the main sample surfaces first.</p>
+  </a>
+  <a class="hv-link-card" href="articles/getting-started/installation">
+    <span class="hv-link-card-title"><i class="bi bi-download" aria-hidden="true"></i> Installation</span>
+    <p>Add the package, target Avalonia 11.3, and restore Lunet tooling for docs work.</p>
+  </a>
+  <a class="hv-link-card" href="articles/getting-started/quickstart-control">
+    <span class="hv-link-card-title"><i class="bi bi-window" aria-hidden="true"></i> Quickstart Control</span>
+    <p>Host <code>HexViewControl</code> directly and wire a line reader plus formatter.</p>
+  </a>
+  <a class="hv-link-card" href="articles/getting-started/quickstart-sample">
+    <span class="hv-link-card-title"><i class="bi bi-layout-text-window" aria-hidden="true"></i> Quickstart Sample</span>
+    <p>Reuse the same overlay, selection, navigation, and save pipeline as the sample app.</p>
+  </a>
+</div>
+<h2 id="documentation-sections">Documentation Sections</h2>
+<div class="hv-link-grid hv-link-grid--wide">
+  <a class="hv-link-card" href="articles/concepts">
+    <span class="hv-link-card-title"><i class="bi bi-lightbulb" aria-hidden="true"></i> Concepts</span>
+    <p>Read the control architecture, reader-overlay split, rendering model, and shared terms.</p>
+  </a>
+  <a class="hv-link-card" href="articles/guides">
+    <span class="hv-link-card-title"><i class="bi bi-journal-code" aria-hidden="true"></i> Guides</span>
+    <p>Follow concrete recipes for loading files, editing, searching, diffing, saving, and troubleshooting.</p>
+  </a>
+  <a class="hv-link-card" href="articles/xaml">
+    <span class="hv-link-card-title"><i class="bi bi-filetype-xaml" aria-hidden="true"></i> XAML Usage</span>
+    <p>See how the control is hosted in XAML and how the single-view and diff-view samples are composed.</p>
+  </a>
+  <a class="hv-link-card" href="articles/advanced">
+    <span class="hv-link-card-title"><i class="bi bi-speedometer2" aria-hidden="true"></i> Advanced</span>
+    <p>Cover large-file behavior, extensibility points, the edit journal, and diagnostics notes.</p>
+  </a>
+  <a class="hv-link-card" href="articles/reference">
+    <span class="hv-link-card-title"><i class="bi bi-collection" aria-hidden="true"></i> Reference</span>
+    <p>Use namespace maps, API coverage summaries, the Lunet pipeline notes, and licensing details.</p>
+  </a>
+  <a class="hv-link-card" href="api">
+    <span class="hv-link-card-title"><i class="bi bi-braces-asterisk" aria-hidden="true"></i> API Documentation</span>
+    <p>Browse generated .NET API pages for the control, services, models, and annotations.</p>
+  </a>
+</div>
+<h2 id="repository">Repository</h2>
+<ul>
+<li>Source code and issues: <a href="https://github.com/wieslawsoltes/HexView">github.com/wieslawsoltes/HexView</a></li>
+</ul>
+
+</div>
+        </section>
+        <footer>
+          <hr>
+          <p>Copyright &copy; 2026, Wieslaw Soltes aka <a href="https://github.com/wieslawsoltes">wieslawsoltes</a> - Content licensed under the Creative Commons <a href="http://creativecommons.org/licenses/by/2.5/">CC BY 2.5</a> | Site generated by <a href="https://github.com/lunet-io/lunet">lunet</a> hosted on <a href="https://pages.github.com/">GitHub Pages</a></p>
+        </footer>
+      </div>
+    </div>
+
+  </body>
+</html>

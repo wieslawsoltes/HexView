@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">HexView logo</title>
+  <desc id="desc">A hexagon with binary and hex-inspired cells.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff9a3d"/>
+      <stop offset="100%" stop-color="#ff5a00"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#102133"/>
+      <stop offset="100%" stop-color="#1c3350"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#fff4ea"/>
+  <path d="M128 24 208 70v92l-80 46-80-46V70z" fill="url(#bg)"/>
+  <path d="M128 48 188 82v72l-60 34-60-34V82z" fill="url(#panel)" opacity="0.95"/>
+  <g fill="#ffd4b2">
+    <rect x="74" y="92" width="28" height="20" rx="4"/>
+    <rect x="114" y="92" width="28" height="20" rx="4"/>
+    <rect x="154" y="92" width="28" height="20" rx="4"/>
+    <rect x="74" y="122" width="48" height="20" rx="4"/>
+    <rect x="134" y="122" width="48" height="20" rx="4"/>
+    <rect x="74" y="152" width="28" height="20" rx="4"/>
+    <rect x="114" y="152" width="28" height="20" rx="4"/>
+    <rect x="154" y="152" width="28" height="20" rx="4"/>
+  </g>
+  <g fill="#5fd0ff">
+    <circle cx="88" cy="102" r="5"/>
+    <circle cx="128" cy="102" r="5"/>
+    <circle cx="168" cy="102" r="5"/>
+    <rect x="82" y="129" width="32" height="6" rx="3"/>
+    <rect x="122" y="129" width="12" height="6" rx="3"/>
+    <rect x="142" y="129" width="28" height="6" rx="3"/>
+    <rect x="82" y="159" width="12" height="6" rx="3"/>
+    <rect x="102" y="159" width="12" height="6" rx="3"/>
+    <rect x="122" y="159" width="12" height="6" rx="3"/>
+    <rect x="142" y="159" width="12" height="6" rx="3"/>
+    <rect x="162" y="159" width="12" height="6" rx="3"/>
+  </g>
+</svg>
