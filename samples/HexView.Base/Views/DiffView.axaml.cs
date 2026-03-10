@@ -67,7 +67,7 @@ public partial class DiffView : UserControl
     {
         e.DragEffects &= (DragDropEffects.Copy | DragDropEffects.Link);
 
-        if (!e.Data.Contains(DataFormats.Files))
+        if (e.DataTransfer.TryGetFiles() is not { } files || !files.Any())
         {
             e.DragEffects = DragDropEffects.None;
         }
@@ -75,22 +75,19 @@ public partial class DiffView : UserControl
 
     private void Drop(object? sender, DragEventArgs e)
     {
-        if (e.Data.Contains(DataFormats.Files))
+        var path = e.DataTransfer.TryGetFiles()?.FirstOrDefault()?.Path.LocalPath;
+        if (!string.IsNullOrWhiteSpace(path))
         {
-            var path = e.Data.GetFiles()?.FirstOrDefault()?.Path.LocalPath;
-            if (!string.IsNullOrWhiteSpace(path))
+            if (Equals(sender, HexViewControl1))
             {
-                if (Equals(sender, HexViewControl1))
-                {
-                    var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    OpenFile1(stream, path);
-                }
+                var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                OpenFile1(stream, path);
+            }
 
-                if (Equals(sender, HexViewControl2))
-                {
-                    var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    OpenFile2(stream, path);
-                }
+            if (Equals(sender, HexViewControl2))
+            {
+                var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                OpenFile2(stream, path);
             }
         }
     }

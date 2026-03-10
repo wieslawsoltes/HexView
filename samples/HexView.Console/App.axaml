@@ -12,7 +12,7 @@
   </Application.Resources>
   
   <Application.Styles>
-    <themes:FluentTheme />
+    <themes:ModernTheme />
   </Application.Styles>
 
 </Application>

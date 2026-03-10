@@ -12,6 +12,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Documents;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
@@ -210,7 +211,7 @@ public partial class SingleView : UserControl
     {
         e.DragEffects &= (DragDropEffects.Copy | DragDropEffects.Link);
 
-        if (!e.Data.Contains(DataFormats.Files))
+        if (e.DataTransfer.TryGetFiles() is not { } files || !files.Any())
         {
             e.DragEffects = DragDropEffects.None;
         }
@@ -218,16 +219,13 @@ public partial class SingleView : UserControl
 
     private void Drop(object? sender, DragEventArgs e)
     {
-        if (e.Data.Contains(DataFormats.Files))
+        var path = e.DataTransfer.TryGetFiles()?.FirstOrDefault()?.Path.LocalPath;
+        if (!string.IsNullOrWhiteSpace(path))
         {
-            var path = e.Data.GetFiles()?.FirstOrDefault()?.Path.LocalPath;
-            if (!string.IsNullOrWhiteSpace(path))
+            if (Equals(sender, HexViewControl1))
             {
-                if (Equals(sender, HexViewControl1))
-                {
-                    var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    OpenFile(stream, path);
-                }
+                var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                OpenFile(stream, path);
             }
         }
     }
@@ -794,7 +792,7 @@ public partial class SingleView : UserControl
     {
         if (_selection1 is null || _journal1 is null) return;
         var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
-        var text = clipboard is not null ? await clipboard.GetTextAsync() : null;
+        var text = clipboard is not null ? await clipboard.TryGetTextAsync() : null;
         if (!string.IsNullOrEmpty(text))
         {
             var insert = string.Equals((EditModeComboBox.SelectedItem as string), "Insert", StringComparison.OrdinalIgnoreCase);
@@ -839,7 +837,7 @@ public partial class SingleView : UserControl
     {
         if (_selection1 is null || _journal1 is null) return;
         var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
-        var text = clipboard is not null ? await clipboard.GetTextAsync() : null;
+        var text = clipboard is not null ? await clipboard.TryGetTextAsync() : null;
         if (!string.IsNullOrEmpty(text))
         {
             var insert = string.Equals((EditModeComboBox.SelectedItem as string), "Insert", StringComparison.OrdinalIgnoreCase);
