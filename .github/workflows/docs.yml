@@ -7,19 +7,32 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.lunet.outputs.page_url }}
     steps:
-      - id: lunet
-        name: Build and deploy Lunet site
-        uses: lunet-io/actions/lunet-build@v1
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
         with:
-          site_path: site
+          dotnet-version: |
+            10.0.x
+            8.0.x
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Build docs
+        run: |
+          chmod +x build-docs.sh
+          ./build-docs.sh
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site/.lunet/build/www
+          publish_branch: gh-pages
