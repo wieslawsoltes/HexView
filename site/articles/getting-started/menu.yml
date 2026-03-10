@@ -1,0 +1,6 @@
+getting_started:
+  - {path: readme.md, title: "Getting Started"}
+  - {path: overview.md, title: "Overview"}
+  - {path: installation.md, title: "Installation"}
+  - {path: quickstart-control.md, title: "Quickstart Control"}
+  - {path: quickstart-sample.md, title: "Quickstart Sample"}

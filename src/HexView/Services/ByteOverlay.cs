@@ -8,6 +8,9 @@ using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Determines whether edits are projected as in-place overwrites or logical insert/delete operations.
+/// </summary>
 public enum EditMode
 {
     Overwrite,
@@ -21,6 +24,9 @@ internal struct Piece
     public long Length;
 }
 
+/// <summary>
+/// Projects logical edits over an underlying <see cref="ILineReader"/> without mutating the original source immediately.
+/// </summary>
 public class ByteOverlay
 {
     private readonly List<Piece> _pieces = new();

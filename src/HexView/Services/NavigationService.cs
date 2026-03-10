@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Tracks caret history, bookmarks, and changed-byte navigation for an overlay-backed document.
+/// </summary>
 public class NavigationService
 {
     private readonly ByteOverlay _overlay;
@@ -72,4 +75,3 @@ public class NavigationService
         return offset;
     }
 }
-

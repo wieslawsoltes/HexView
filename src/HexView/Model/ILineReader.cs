@@ -5,6 +5,9 @@ using System;
 
 namespace HexView.Avalonia.Model;
 
+/// <summary>
+/// Reads bytes by logical offset and line width for the HexView rendering pipeline.
+/// </summary>
 public interface ILineReader : IDisposable
 {
     byte[] GetLine(long lineNumber, int width);

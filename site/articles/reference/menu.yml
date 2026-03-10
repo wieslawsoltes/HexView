@@ -1,0 +1,8 @@
+reference:
+  - {path: readme.md, title: "Reference"}
+  - {path: api-coverage-index.md, title: "API Coverage Index"}
+  - {path: namespace-controls.md, title: "Namespace HexView.Avalonia.Controls"}
+  - {path: namespace-services.md, title: "Namespace HexView.Avalonia.Services"}
+  - {path: namespace-model.md, title: "Namespace HexView.Avalonia.Model"}
+  - {path: lunet-docs-pipeline.md, title: "Lunet Docs Pipeline"}
+  - {path: license.md, title: "License"}

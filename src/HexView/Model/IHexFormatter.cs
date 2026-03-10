@@ -5,6 +5,9 @@ using System.Text;
 
 namespace HexView.Avalonia.Model;
 
+/// <summary>
+/// Formats logical byte lines into the offset, hex, and ASCII representation rendered by <c>HexViewControl</c>.
+/// </summary>
 public interface IHexFormatter
 {
     long Length { get; }

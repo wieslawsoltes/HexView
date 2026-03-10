@@ -7,6 +7,9 @@ using System.Text;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Applies range-based copy, paste, and mutation operations against a <see cref="ByteOverlay"/>.
+/// </summary>
 public class SelectionService
 {
     private readonly ByteOverlay _overlay;
@@ -119,4 +122,3 @@ public class SelectionService
         }
     }
 }
-

@@ -8,6 +8,9 @@ using System.Text;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Saves overlay-backed content either as a full file or as a simple textual patch.
+/// </summary>
 public static class SaveService
 {
     public static void SaveAs(ByteOverlay overlay, string path)

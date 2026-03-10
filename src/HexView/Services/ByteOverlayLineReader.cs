@@ -6,6 +6,9 @@ using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Services;
 
+/// <summary>
+/// Exposes a <see cref="ByteOverlay"/> through the <see cref="ILineReader"/> abstraction.
+/// </summary>
 public class ByteOverlayLineReader : ILineReader
 {
     private readonly ByteOverlay _overlay;
@@ -40,4 +43,3 @@ public class ByteOverlayLineReader : ILineReader
         // no-op; overlay owned by consumer
     }
 }
-

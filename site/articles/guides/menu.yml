@@ -1,0 +1,9 @@
+guides:
+  - {path: readme.md, title: "Guides"}
+  - {path: embedding-hexview-control.md, title: "Embedding HexViewControl"}
+  - {path: loading-files-and-readers.md, title: "Loading Files and Readers"}
+  - {path: search-navigation-and-selection.md, title: "Search, Navigation, and Selection"}
+  - {path: editing-and-save-workflows.md, title: "Editing and Save Workflows"}
+  - {path: annotations-and-diff-view.md, title: "Annotations and Diff View"}
+  - {path: styling-and-display-options.md, title: "Styling and Display Options"}
+  - {path: troubleshooting.md, title: "Troubleshooting"}

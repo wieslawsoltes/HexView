@@ -19,6 +19,9 @@ using HexView.Avalonia.Model;
 
 namespace HexView.Avalonia.Controls;
 
+/// <summary>
+/// Renders and edits binary data as offsets, byte columns, and ASCII text inside an Avalonia control.
+/// </summary>
 public class HexViewControl : Control, ILogicalScrollable
 {
     public static readonly StyledProperty<int> ToBaseProperty = 
