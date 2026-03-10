@@ -1,0 +1,6 @@
+advanced:
+  - {path: readme.md, title: "Advanced"}
+  - {path: large-files-and-virtualization.md, title: "Large Files and Virtualization"}
+  - {path: custom-readers-and-formatters.md, title: "Custom Readers and Formatters"}
+  - {path: edit-journal-and-piece-table.md, title: "Edit Journal and Piece Table"}
+  - {path: diagnostics-and-testing.md, title: "Diagnostics and Testing"}

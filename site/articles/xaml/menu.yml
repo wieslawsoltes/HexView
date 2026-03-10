@@ -1,0 +1,5 @@
+xaml:
+  - {path: readme.md, title: "XAML Usage"}
+  - {path: overview.md, title: "Overview"}
+  - {path: single-view-sample.md, title: "Single View Sample"}
+  - {path: diff-view-sample.md, title: "Diff View Sample"}
