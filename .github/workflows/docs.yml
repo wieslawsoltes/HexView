@@ -23,6 +23,7 @@ jobs:
             8.0.x
 
       - name: Restore local tools
+        working-directory: site
         run: dotnet tool restore
 
       - name: Build docs
