@@ -1,5 +1,9 @@
 ﻿<Project>
   <PropertyGroup>
-    <AvaloniaVersion>11.3.0</AvaloniaVersion>
+    <AvaloniaVersion>11.3.12</AvaloniaVersion>
+    <ConsoloniaVersion>11.3.9-beta.2218</ConsoloniaVersion>
+    <SystemTextJsonVersion>10.0.3</SystemTextJsonVersion>
+    <VersionPrefix>11.3.12</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
   </PropertyGroup>
 </Project>

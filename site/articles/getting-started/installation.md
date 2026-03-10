@@ -12,7 +12,7 @@ Install the control package into an Avalonia application:
 dotnet add package HexView
 ```
 
-The current project targets Avalonia `11.3.0`, so keep the host app on a compatible Avalonia line.
+The current project targets Avalonia `11.3.12`, so keep the host app on a compatible Avalonia line.
 
 ## Namespace
 

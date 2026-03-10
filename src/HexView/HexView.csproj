@@ -11,8 +11,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>11.3.0</VersionPrefix>
-    <VersionSuffix>beta.2</VersionSuffix>
     <Authors>Wiesław Šoltés</Authors>
     <Company>Wiesław Šoltés</Company>
     <Description>A HexView control for Avalonia.</Description>
@@ -25,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 
 </Project>

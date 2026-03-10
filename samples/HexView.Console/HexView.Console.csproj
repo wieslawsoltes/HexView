@@ -9,7 +9,7 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="Consolonia" Version="11.2.5-beta.1298" />
+      <PackageReference Include="Consolonia" Version="$(ConsoloniaVersion)" />
     </ItemGroup>
     
     <ItemGroup>
