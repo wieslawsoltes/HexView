@@ -22,7 +22,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
     - name: Build Release
       run: dotnet build --configuration Release
     - name: Test Release
@@ -39,7 +39,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
     - name: Pack NuGet Package
       run: dotnet pack src/HexView/HexView.csproj --configuration Release --output ./artifacts
     - name: Upload NuGet Artifact

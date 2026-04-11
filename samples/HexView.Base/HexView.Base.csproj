@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="ProDiagnostics" Version="$(AvaloniaVersion)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\HexView\HexView.csproj" />
