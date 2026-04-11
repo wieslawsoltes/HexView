@@ -302,6 +302,26 @@ public class HexViewControl : Control, ILogicalScrollable
         set => SetValue(BytesWidthProperty, value);
     }
 
+    public bool CanHorizontallyScroll
+    {
+        get => _canHorizontallyScroll;
+        set
+        {
+            _canHorizontallyScroll = value;
+            InvalidateMeasure();
+        }
+    }
+
+    public bool CanVerticallyScroll
+    {
+        get => _canVerticallyScroll;
+        set
+        {
+            _canVerticallyScroll = value;
+            InvalidateMeasure();
+        }
+    }
+
     public IHexFormatter? HexFormatter { get;  set; }
 
     public ILineReader? LineReader { get;  set; }
@@ -518,24 +538,20 @@ public class HexViewControl : Control, ILogicalScrollable
 
     Size IScrollable.Viewport => _viewport;
 
+    bool IScrollable.CanHorizontallyScroll => CanHorizontallyScroll;
+
     bool ILogicalScrollable.CanHorizontallyScroll
     {
-        get => _canHorizontallyScroll;
-        set
-        {
-            _canHorizontallyScroll = value;
-            InvalidateMeasure();
-        }
+        get => CanHorizontallyScroll;
+        set => CanHorizontallyScroll = value;
     }
+
+    bool IScrollable.CanVerticallyScroll => CanVerticallyScroll;
 
     bool ILogicalScrollable.CanVerticallyScroll
     {
-        get => _canVerticallyScroll;
-        set
-        {
-            _canVerticallyScroll = value;
-            InvalidateMeasure();
-        }
+        get => CanVerticallyScroll;
+        set => CanVerticallyScroll = value;
     }
 
     bool ILogicalScrollable.IsLogicalScrollEnabled => true;
