@@ -551,8 +551,9 @@ HexView uses a layered architecture for flexibility and performance:
 
 ## Requirements
 
-- .NET 9.0 or later
-- Avalonia 11.2 or later
+- .NET 8.0 or later for consuming the `HexView` package
+- .NET SDK 10.0.x for building this repository as configured
+- Avalonia 12.0.0
 
 ## Building from Source
 
