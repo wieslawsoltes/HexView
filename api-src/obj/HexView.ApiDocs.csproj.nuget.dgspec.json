@@ -5,7 +5,7 @@
   },
   "projects": {
     "/home/runner/work/HexView/HexView/site/api-src/HexView.ApiDocs.csproj": {
-      "version": "11.3.12",
+      "version": "12.0.0",
       "restore": {
         "projectUniqueName": "/home/runner/work/HexView/HexView/site/api-src/HexView.ApiDocs.csproj",
         "projectName": "HexView",
@@ -39,7 +39,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -47,7 +47,7 @@
           "dependencies": {
             "Avalonia": {
               "target": "Package",
-              "version": "[11.3.12, )"
+              "version": "[12.0.0, )"
             }
           },
           "imports": [
@@ -66,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

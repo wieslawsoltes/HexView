@@ -59,12 +59,16 @@
 						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#RaiseScrollInvalidated(System.EventArgs)",
 						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#ScrollInvalidated",
 						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#ScrollSize",
+						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll",
+						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll",
 						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#Extent",
 						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#Offset",
 						"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#Viewport",
 						"HexView.Avalonia.Controls.HexViewControl.BytesWidth",
 						"HexView.Avalonia.Controls.HexViewControl.BytesWidthProperty",
 						"HexView.Avalonia.Controls.HexViewControl.ByteWriteAction",
+						"HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll",
+						"HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll",
 						"HexView.Avalonia.Controls.HexViewControl.CaretBrush",
 						"HexView.Avalonia.Controls.HexViewControl.CaretBrushProperty",
 						"HexView.Avalonia.Controls.HexViewControl.CaretMoved",
@@ -135,7 +139,7 @@
 					"example":[
 					],
 					"syntax": {
-						"content":"public class HexViewControl : Control, IAvaloniaObjectDebug, INotifyPropertyChanged, IDataContextProvider, ILogical, IThemeVariantHost, IResourceHost2, IResourceHost, IResourceNode, IStyleHost, ISetLogicalParent, ISetInheritanceParent, ISupportInitialize, IAvaloniaListItemValidator<ILogical>, IStyleable, INamed, IAvaloniaListItemValidator<Visual>, IInputElement, IDataTemplateHost, IVisualBrushInitialize, ISetterValue, ILogicalScrollable, IScrollable"
+						"content":"public class HexViewControl : Control, IAvaloniaObjectDebug, INotifyPropertyChanged, IDataContextProvider, ILogical, IThemeVariantHost, IResourceHost, IResourceNode, IStyleHost, ISetLogicalParent, ISetInheritanceParent, ISupportInitialize, INamed, IAvaloniaListItemValidator<ILogical>, IAvaloniaListItemValidator<Visual>, IInputElement, IDataTemplateHost, IVisualBrushInitialize, ISetterValue, ILogicalScrollable, IScrollable"
 					}
 					,
 					"inheritance":[
@@ -160,7 +164,6 @@
 						"Avalonia.Controls.ISetLogicalParent",
 						"Avalonia.Controls.ISetInheritanceParent",
 						"System.ComponentModel.ISupportInitialize",
-						"Avalonia.Styling.IStyleable",
 						"Avalonia.INamed",
 						"Avalonia.Input.IInputElement",
 						"Avalonia.Controls.Templates.IDataTemplateHost",
@@ -174,7 +177,6 @@
 						"Avalonia.Controls.Control.ContextMenuProperty",
 						"Avalonia.Controls.Control.ContextFlyoutProperty",
 						"Avalonia.Controls.Control.RequestBringIntoViewEvent",
-						"Avalonia.Controls.Control.ContextRequestedEvent",
 						"Avalonia.Controls.Control.LoadedEvent",
 						"Avalonia.Controls.Control.UnloadedEvent",
 						"Avalonia.Controls.Control.SizeChangedEvent",
@@ -184,10 +186,11 @@
 						"Avalonia.Controls.Control.OnSizeChanged(Avalonia.Controls.SizeChangedEventArgs)",
 						"Avalonia.Controls.Control.OnAttachedToVisualTreeCore(Avalonia.VisualTreeAttachmentEventArgs)",
 						"Avalonia.Controls.Control.OnDetachedFromVisualTreeCore(Avalonia.VisualTreeAttachmentEventArgs)",
-						"Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.GotFocusEventArgs)",
-						"Avalonia.Controls.Control.OnLostFocus(Avalonia.Interactivity.RoutedEventArgs)",
+						"Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.FocusChangedEventArgs)",
+						"Avalonia.Controls.Control.OnLostFocus(Avalonia.Input.FocusChangedEventArgs)",
 						"Avalonia.Controls.Control.OnCreateAutomationPeer",
 						"Avalonia.Controls.Control.OnKeyUp(Avalonia.Input.KeyEventArgs)",
+						"Avalonia.Controls.Control.UpdateDataValidation(Avalonia.AvaloniaProperty,Avalonia.Data.BindingValueType,System.Exception)",
 						"Avalonia.Controls.Control.FocusAdorner",
 						"Avalonia.Controls.Control.DataTemplates",
 						"Avalonia.Controls.Control.ContextMenu",
@@ -195,7 +198,6 @@
 						"Avalonia.Controls.Control.IsLoaded",
 						"Avalonia.Controls.Control.Tag",
 						"Avalonia.Controls.Control.Avalonia#Controls#Templates#IDataTemplateHost#IsDataTemplatesInitialized",
-						"Avalonia.Controls.Control.ContextRequested",
 						"Avalonia.Controls.Control.Loaded",
 						"Avalonia.Controls.Control.Unloaded",
 						"Avalonia.Controls.Control.SizeChanged",
@@ -209,7 +211,9 @@
 						"Avalonia.Input.InputElement.IsPointerOverProperty",
 						"Avalonia.Input.InputElement.IsTabStopProperty",
 						"Avalonia.Input.InputElement.GotFocusEvent",
+						"Avalonia.Input.InputElement.GettingFocusEvent",
 						"Avalonia.Input.InputElement.LostFocusEvent",
+						"Avalonia.Input.InputElement.LosingFocusEvent",
 						"Avalonia.Input.InputElement.KeyDownEvent",
 						"Avalonia.Input.InputElement.KeyUpEvent",
 						"Avalonia.Input.InputElement.TabIndexProperty",
@@ -222,15 +226,48 @@
 						"Avalonia.Input.InputElement.PointerReleasedEvent",
 						"Avalonia.Input.InputElement.PointerCaptureLostEvent",
 						"Avalonia.Input.InputElement.PointerWheelChangedEvent",
+						"Avalonia.Input.InputElement.ContextRequestedEvent",
+						"Avalonia.Input.InputElement.ContextCanceledEvent",
+						"Avalonia.Input.InputElement.IsHoldingEnabledProperty",
+						"Avalonia.Input.InputElement.IsHoldWithMouseEnabledProperty",
+						"Avalonia.Input.InputElement.PinchEvent",
+						"Avalonia.Input.InputElement.PinchEndedEvent",
+						"Avalonia.Input.InputElement.PullGestureEvent",
+						"Avalonia.Input.InputElement.PullGestureEndedEvent",
+						"Avalonia.Input.InputElement.SwipeGestureEvent",
+						"Avalonia.Input.InputElement.SwipeGestureEndedEvent",
+						"Avalonia.Input.InputElement.ScrollGestureEvent",
+						"Avalonia.Input.InputElement.ScrollGestureInertiaStartingEvent",
+						"Avalonia.Input.InputElement.ScrollGestureEndedEvent",
+						"Avalonia.Input.InputElement.PointerTouchPadGestureMagnifyEvent",
+						"Avalonia.Input.InputElement.PointerTouchPadGestureRotateEvent",
+						"Avalonia.Input.InputElement.PointerTouchPadGestureSwipeEvent",
 						"Avalonia.Input.InputElement.TappedEvent",
+						"Avalonia.Input.InputElement.RightTappedEvent",
 						"Avalonia.Input.InputElement.HoldingEvent",
 						"Avalonia.Input.InputElement.DoubleTappedEvent",
 						"Avalonia.Input.InputElement.Focus(Avalonia.Input.NavigationMethod,Avalonia.Input.KeyModifiers)",
 						"Avalonia.Input.InputElement.OnAccessKey(Avalonia.Interactivity.RoutedEventArgs)",
+						"Avalonia.Input.InputElement.OnGettingFocus(Avalonia.Input.FocusChangingEventArgs)",
+						"Avalonia.Input.InputElement.OnLosingFocus(Avalonia.Input.FocusChangingEventArgs)",
 						"Avalonia.Input.InputElement.OnPointerEntered(Avalonia.Input.PointerEventArgs)",
 						"Avalonia.Input.InputElement.OnPointerExited(Avalonia.Input.PointerEventArgs)",
+						"Avalonia.Input.InputElement.GetNextTabStopOverride",
+						"Avalonia.Input.InputElement.GetPreviousTabStopOverride",
+						"Avalonia.Input.InputElement.GetFirstFocusableElementOverride",
+						"Avalonia.Input.InputElement.GetLastFocusableElementOverride",
 						"Avalonia.Input.InputElement.OnPointerCaptureLost(Avalonia.Input.PointerCaptureLostEventArgs)",
+						"Avalonia.Input.InputElement.ProcessTabStopOverride(Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,System.Boolean,System.Boolean,Avalonia.Input.IInputElement@)",
+						"Avalonia.Input.InputElement.ProcessCandidateTabStopOverride(Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,System.Boolean,Avalonia.Input.IInputElement@)",
+						"Avalonia.Input.InputElement.OnTapped(Avalonia.Input.TappedEventArgs)",
+						"Avalonia.Input.InputElement.OnRightTapped(Avalonia.Input.TappedEventArgs)",
+						"Avalonia.Input.InputElement.OnDoubleTapped(Avalonia.Input.TappedEventArgs)",
+						"Avalonia.Input.InputElement.OnHolding(Avalonia.Input.HoldingRoutedEventArgs)",
 						"Avalonia.Input.InputElement.UpdateIsEffectivelyEnabled",
+						"Avalonia.Input.InputElement.GetIsHoldingEnabled(Avalonia.StyledElement)",
+						"Avalonia.Input.InputElement.SetIsHoldingEnabled(Avalonia.StyledElement,System.Boolean)",
+						"Avalonia.Input.InputElement.GetIsHoldWithMouseEnabled(Avalonia.StyledElement)",
+						"Avalonia.Input.InputElement.SetIsHoldWithMouseEnabled(Avalonia.StyledElement,System.Boolean)",
 						"Avalonia.Input.InputElement.Focusable",
 						"Avalonia.Input.InputElement.IsEnabled",
 						"Avalonia.Input.InputElement.Cursor",
@@ -245,7 +282,9 @@
 						"Avalonia.Input.InputElement.IsEnabledCore",
 						"Avalonia.Input.InputElement.GestureRecognizers",
 						"Avalonia.Input.InputElement.GotFocus",
+						"Avalonia.Input.InputElement.GettingFocus",
 						"Avalonia.Input.InputElement.LostFocus",
+						"Avalonia.Input.InputElement.LosingFocus",
 						"Avalonia.Input.InputElement.KeyDown",
 						"Avalonia.Input.InputElement.KeyUp",
 						"Avalonia.Input.InputElement.TextInput",
@@ -257,7 +296,22 @@
 						"Avalonia.Input.InputElement.PointerReleased",
 						"Avalonia.Input.InputElement.PointerCaptureLost",
 						"Avalonia.Input.InputElement.PointerWheelChanged",
+						"Avalonia.Input.InputElement.ContextRequested",
+						"Avalonia.Input.InputElement.ContextCanceled",
+						"Avalonia.Input.InputElement.Pinch",
+						"Avalonia.Input.InputElement.PinchEnded",
+						"Avalonia.Input.InputElement.PullGesture",
+						"Avalonia.Input.InputElement.PullGestureEnded",
+						"Avalonia.Input.InputElement.ScrollGesture",
+						"Avalonia.Input.InputElement.ScrollGestureInertiaStarting",
+						"Avalonia.Input.InputElement.ScrollGestureEnded",
+						"Avalonia.Input.InputElement.PointerTouchPadGestureMagnify",
+						"Avalonia.Input.InputElement.PointerTouchPadGestureRotate",
+						"Avalonia.Input.InputElement.SwipeGesture",
+						"Avalonia.Input.InputElement.SwipeGestureEnded",
+						"Avalonia.Input.InputElement.PointerTouchPadGestureSwipe",
 						"Avalonia.Input.InputElement.Tapped",
+						"Avalonia.Input.InputElement.RightTapped",
 						"Avalonia.Input.InputElement.Holding",
 						"Avalonia.Input.InputElement.DoubleTapped",
 						"Avalonia.Interactivity.Interactive.AddHandler(Avalonia.Interactivity.RoutedEvent,System.Delegate,Avalonia.Interactivity.RoutingStrategies,System.Boolean)",
@@ -312,6 +366,7 @@
 						"Avalonia.Visual.IsVisibleProperty",
 						"Avalonia.Visual.OpacityProperty",
 						"Avalonia.Visual.OpacityMaskProperty",
+						"Avalonia.Visual.CacheModeProperty",
 						"Avalonia.Visual.EffectProperty",
 						"Avalonia.Visual.HasMirrorTransformProperty",
 						"Avalonia.Visual.RenderTransformProperty",
@@ -334,6 +389,7 @@
 						"Avalonia.Visual.IsVisible",
 						"Avalonia.Visual.Opacity",
 						"Avalonia.Visual.OpacityMask",
+						"Avalonia.Visual.CacheMode",
 						"Avalonia.Visual.Effect",
 						"Avalonia.Visual.HasMirrorTransform",
 						"Avalonia.Visual.RenderTransform",
@@ -387,7 +443,6 @@
 						"Avalonia.StyledElement.Avalonia#LogicalTree#ILogical#LogicalParent",
 						"Avalonia.StyledElement.Avalonia#LogicalTree#ILogical#LogicalChildren",
 						"Avalonia.StyledElement.Avalonia#Controls#IResourceNode#HasResources",
-						"Avalonia.StyledElement.Avalonia#Styling#IStyleable#Classes",
 						"Avalonia.StyledElement.Avalonia#Styling#IStyleHost#IsStylesInitialized",
 						"Avalonia.StyledElement.Avalonia#Styling#IStyleHost#StylingParent",
 						"Avalonia.StyledElement.AttachedToLogicalTree",
@@ -418,7 +473,7 @@
 						"Avalonia.AvaloniaObject.SetValue``1(Avalonia.DirectPropertyBase{{T}},{T})",
 						"Avalonia.AvaloniaObject.SetCurrentValue(Avalonia.AvaloniaProperty,System.Object)",
 						"Avalonia.AvaloniaObject.SetCurrentValue``1(Avalonia.StyledProperty{{T}},{T})",
-						"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,Avalonia.Data.IBinding)",
+						"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,Avalonia.Data.BindingBase)",
 						"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,System.IObservable{System.Object},Avalonia.Data.BindingPriority)",
 						"Avalonia.AvaloniaObject.Bind``1(Avalonia.StyledProperty{{T}},System.IObservable{System.Object},Avalonia.Data.BindingPriority)",
 						"Avalonia.AvaloniaObject.Bind``1(Avalonia.StyledProperty{{T}},System.IObservable{{T}},Avalonia.Data.BindingPriority)",
@@ -427,12 +482,12 @@
 						"Avalonia.AvaloniaObject.Bind``1(Avalonia.DirectPropertyBase{{T}},System.IObservable{{T}})",
 						"Avalonia.AvaloniaObject.Bind``1(Avalonia.DirectPropertyBase{{T}},System.IObservable{Avalonia.Data.BindingValue{{T}}})",
 						"Avalonia.AvaloniaObject.CoerceValue(Avalonia.AvaloniaProperty)",
-						"Avalonia.AvaloniaObject.UpdateDataValidation(Avalonia.AvaloniaProperty,Avalonia.Data.BindingValueType,System.Exception)",
 						"Avalonia.AvaloniaObject.RaisePropertyChanged``1(Avalonia.DirectPropertyBase{{T}},{T},{T})",
 						"Avalonia.AvaloniaObject.SetAndRaise``1(Avalonia.DirectPropertyBase{{T}},{T}@,{T})",
 						"Avalonia.AvaloniaObject.InheritanceParent",
 						"Avalonia.AvaloniaObject.Item(Avalonia.AvaloniaProperty)",
 						"Avalonia.AvaloniaObject.Item(Avalonia.Data.IndexerDescriptor)",
+						"Avalonia.AvaloniaObject.Dispatcher",
 						"Avalonia.AvaloniaObject.PropertyChanged",
 						"Avalonia.AvaloniaObject.System#ComponentModel#INotifyPropertyChanged#PropertyChanged",
 						"System.Object.Equals(System.Object,System.Object)",
@@ -1105,6 +1160,98 @@
 					"overload":"HexView.Avalonia.Controls.HexViewControl.BytesWidth*"
 				},
 				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll",
+					"commentId":"P:HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll",
+					"id":"CanHorizontallyScroll",
+					"isEii":false,
+					"isExtensionMethod":false,
+					"parent":"HexView.Avalonia.Controls.HexViewControl",
+					"langs":[
+						"csharp",
+						"vb"
+					],
+					"name":"CanHorizontallyScroll",
+					"nameWithType":"HexViewControl.CanHorizontallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll",
+					"type": "Property"
+					,
+					"source": {
+						"remote": {
+							"path":"src/HexView/Controls/HexViewControl.cs",
+							"branch":"main",
+							"repo":"https://github.com/wieslawsoltes/HexView"
+						}
+						,
+						"id":"CanHorizontallyScroll",
+						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
+						"startLine":304,
+						"endLine":0,
+						"isExternal":false
+					}
+					,
+					"assemblies":[
+						"HexView"
+					],
+					"namespace":"HexView.Avalonia.Controls",
+					"syntax": {
+						"content":"public bool CanHorizontallyScroll { get; set; }",
+						"parameters":[
+						],
+						"return": {
+							"type":"System.Boolean"
+						}
+						
+					}
+					,
+					"overload":"HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll*"
+				},
+				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll",
+					"commentId":"P:HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll",
+					"id":"CanVerticallyScroll",
+					"isEii":false,
+					"isExtensionMethod":false,
+					"parent":"HexView.Avalonia.Controls.HexViewControl",
+					"langs":[
+						"csharp",
+						"vb"
+					],
+					"name":"CanVerticallyScroll",
+					"nameWithType":"HexViewControl.CanVerticallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll",
+					"type": "Property"
+					,
+					"source": {
+						"remote": {
+							"path":"src/HexView/Controls/HexViewControl.cs",
+							"branch":"main",
+							"repo":"https://github.com/wieslawsoltes/HexView"
+						}
+						,
+						"id":"CanVerticallyScroll",
+						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
+						"startLine":314,
+						"endLine":0,
+						"isExternal":false
+					}
+					,
+					"assemblies":[
+						"HexView"
+					],
+					"namespace":"HexView.Avalonia.Controls",
+					"syntax": {
+						"content":"public bool CanVerticallyScroll { get; set; }",
+						"parameters":[
+						],
+						"return": {
+							"type":"System.Boolean"
+						}
+						
+					}
+					,
+					"overload":"HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll*"
+				},
+				{
 					"uid":"HexView.Avalonia.Controls.HexViewControl.HexFormatter",
 					"commentId":"P:HexView.Avalonia.Controls.HexViewControl.HexFormatter",
 					"id":"HexFormatter",
@@ -1129,7 +1276,7 @@
 						,
 						"id":"HexFormatter",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":304,
+						"startLine":324,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1175,7 +1322,7 @@
 						,
 						"id":"LineReader",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":306,
+						"startLine":326,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1221,7 +1368,7 @@
 						,
 						"id":".ctor",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":308,
+						"startLine":328,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1261,7 +1408,7 @@
 						,
 						"id":"CaretBrush",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":315,
+						"startLine":335,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1307,7 +1454,7 @@
 						,
 						"id":"EditedBrush",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":320,
+						"startLine":340,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1353,7 +1500,7 @@
 						,
 						"id":"SelectionBrush",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":325,
+						"startLine":345,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1399,7 +1546,7 @@
 						,
 						"id":"MatchBrush",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":330,
+						"startLine":350,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1445,7 +1592,7 @@
 						,
 						"id":"DiffBrush",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":335,
+						"startLine":355,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1491,7 +1638,7 @@
 						,
 						"id":"SelectionStart",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":341,
+						"startLine":361,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1537,7 +1684,7 @@
 						,
 						"id":"SelectionLength",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":347,
+						"startLine":367,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1583,7 +1730,7 @@
 						,
 						"id":"Annotations",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":353,
+						"startLine":373,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1629,7 +1776,7 @@
 						,
 						"id":"ClearEdits",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":371,
+						"startLine":391,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1669,7 +1816,7 @@
 						,
 						"id":"GetEdits",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":377,
+						"startLine":397,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1713,7 +1860,7 @@
 						,
 						"id":"CaretOffset",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":379,
+						"startLine":399,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1759,7 +1906,7 @@
 						,
 						"id":"AnnotationMoved",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":449,
+						"startLine":469,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1802,7 +1949,7 @@
 						,
 						"id":"MoveCaretTo",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":451,
+						"startLine":471,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1856,7 +2003,7 @@
 						,
 						"id":"TryGetByteAt",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":468,
+						"startLine":488,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1910,7 +2057,7 @@
 						,
 						"id":"CaretMoved",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":488,
+						"startLine":508,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1953,7 +2100,7 @@
 						,
 						"id":"SelectionChanged",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":489,
+						"startLine":509,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -1996,7 +2143,7 @@
 						,
 						"id":"ByteWriteAction",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":492,
+						"startLine":512,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2042,7 +2189,7 @@
 						,
 						"id":"EditedOffsetsProvider",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":496,
+						"startLine":516,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2088,7 +2235,7 @@
 						,
 						"id":"DifferencesProvider",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":498,
+						"startLine":518,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2134,7 +2281,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.IScrollable.Extent",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":500,
+						"startLine":520,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2183,7 +2330,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.IScrollable.Offset",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":502,
+						"startLine":522,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2232,7 +2379,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.IScrollable.Viewport",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":518,
+						"startLine":538,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2254,6 +2401,55 @@
 					"overload":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#Viewport*",
 					"implements":[
 						"Avalonia.Controls.Primitives.IScrollable.Viewport"
+					]
+				},
+				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll",
+					"commentId":"P:HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll",
+					"id":"Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll",
+					"isEii":true,
+					"isExtensionMethod":false,
+					"parent":"HexView.Avalonia.Controls.HexViewControl",
+					"langs":[
+						"csharp",
+						"vb"
+					],
+					"name":"IScrollable.CanHorizontallyScroll",
+					"nameWithType":"HexViewControl.IScrollable.CanHorizontallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll",
+					"type": "Property"
+					,
+					"source": {
+						"remote": {
+							"path":"src/HexView/Controls/HexViewControl.cs",
+							"branch":"main",
+							"repo":"https://github.com/wieslawsoltes/HexView"
+						}
+						,
+						"id":"Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll",
+						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
+						"startLine":540,
+						"endLine":0,
+						"isExternal":false
+					}
+					,
+					"assemblies":[
+						"HexView"
+					],
+					"namespace":"HexView.Avalonia.Controls",
+					"syntax": {
+						"content":"bool IScrollable.CanHorizontallyScroll { get; }",
+						"parameters":[
+						],
+						"return": {
+							"type":"System.Boolean"
+						}
+						
+					}
+					,
+					"overload":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll*",
+					"implements":[
+						"Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll"
 					]
 				},
 				{
@@ -2281,7 +2477,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.CanHorizontallyScroll",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":520,
+						"startLine":542,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2303,6 +2499,55 @@
 					"overload":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#CanHorizontallyScroll*",
 					"implements":[
 						"Avalonia.Controls.Primitives.ILogicalScrollable.CanHorizontallyScroll"
+					]
+				},
+				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll",
+					"commentId":"P:HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll",
+					"id":"Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll",
+					"isEii":true,
+					"isExtensionMethod":false,
+					"parent":"HexView.Avalonia.Controls.HexViewControl",
+					"langs":[
+						"csharp",
+						"vb"
+					],
+					"name":"IScrollable.CanVerticallyScroll",
+					"nameWithType":"HexViewControl.IScrollable.CanVerticallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll",
+					"type": "Property"
+					,
+					"source": {
+						"remote": {
+							"path":"src/HexView/Controls/HexViewControl.cs",
+							"branch":"main",
+							"repo":"https://github.com/wieslawsoltes/HexView"
+						}
+						,
+						"id":"Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll",
+						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
+						"startLine":548,
+						"endLine":0,
+						"isExternal":false
+					}
+					,
+					"assemblies":[
+						"HexView"
+					],
+					"namespace":"HexView.Avalonia.Controls",
+					"syntax": {
+						"content":"bool IScrollable.CanVerticallyScroll { get; }",
+						"parameters":[
+						],
+						"return": {
+							"type":"System.Boolean"
+						}
+						
+					}
+					,
+					"overload":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll*",
+					"implements":[
+						"Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll"
 					]
 				},
 				{
@@ -2330,7 +2575,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.CanVerticallyScroll",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":530,
+						"startLine":550,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2379,7 +2624,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.IsLogicalScrollEnabled",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":540,
+						"startLine":556,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2428,7 +2673,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.ScrollInvalidated",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":542,
+						"startLine":558,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2474,7 +2719,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.ScrollSize",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":548,
+						"startLine":564,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2523,7 +2768,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.PageScrollSize",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":550,
+						"startLine":566,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2572,7 +2817,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.BringIntoView",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":552,
+						"startLine":568,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2629,7 +2874,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.GetControlInDirection",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":557,
+						"startLine":573,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2686,7 +2931,7 @@
 						,
 						"id":"Avalonia.Controls.Primitives.ILogicalScrollable.RaiseScrollInvalidated",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":562,
+						"startLine":578,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2735,7 +2980,7 @@
 						,
 						"id":"OnLoaded",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":586,
+						"startLine":602,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2782,7 +3027,7 @@
 						,
 						"id":"OnPointerWheelChanged",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":594,
+						"startLine":610,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2829,7 +3074,7 @@
 						,
 						"id":"OnPropertyChanged",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":610,
+						"startLine":626,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2876,7 +3121,7 @@
 						,
 						"id":"InvalidateScrollable",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":648,
+						"startLine":664,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2916,7 +3161,7 @@
 						,
 						"id":"Render",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":669,
+						"startLine":685,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -2963,7 +3208,7 @@
 						,
 						"id":"OnPointerPressed",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":1003,
+						"startLine":1019,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -3010,7 +3255,7 @@
 						,
 						"id":"OnTextInput",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":1093,
+						"startLine":1109,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -3057,7 +3302,7 @@
 						,
 						"id":"OnKeyDown",
 						"path":"../../../../../../../home/runner/work/HexView/HexView/src/HexView/Controls/HexViewControl.cs",
-						"startLine":1164,
+						"startLine":1180,
 						"endLine":0,
 						"isExternal":false
 					}
@@ -3279,16 +3524,6 @@
 					"fullName":"System.ComponentModel.ISupportInitialize"
 				},
 				{
-					"uid":"Avalonia.Styling.IStyleable",
-					"commentId":"T:Avalonia.Styling.IStyleable",
-					"parent":"Avalonia.Styling",
-					"isExternal": true
-					,
-					"name":"IStyleable",
-					"nameWithType":"IStyleable",
-					"fullName":"Avalonia.Styling.IStyleable"
-				},
-				{
 					"uid":"Avalonia.INamed",
 					"commentId":"T:Avalonia.INamed",
 					"parent":"Avalonia",
@@ -3399,16 +3634,6 @@
 					"fullName":"Avalonia.Controls.Control.RequestBringIntoViewEvent"
 				},
 				{
-					"uid":"Avalonia.Controls.Control.ContextRequestedEvent",
-					"commentId":"F:Avalonia.Controls.Control.ContextRequestedEvent",
-					"parent":"Avalonia.Controls.Control",
-					"isExternal": true
-					,
-					"name":"ContextRequestedEvent",
-					"nameWithType":"Control.ContextRequestedEvent",
-					"fullName":"Avalonia.Controls.Control.ContextRequestedEvent"
-				},
-				{
 					"uid":"Avalonia.Controls.Control.LoadedEvent",
 					"commentId":"F:Avalonia.Controls.Control.LoadedEvent",
 					"parent":"Avalonia.Controls.Control",
@@ -3499,24 +3724,24 @@
 					"fullName":"Avalonia.Controls.Control.OnDetachedFromVisualTreeCore(Avalonia.VisualTreeAttachmentEventArgs)"
 				},
 				{
-					"uid":"Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.GotFocusEventArgs)",
-					"commentId":"M:Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.GotFocusEventArgs)",
+					"uid":"Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.FocusChangedEventArgs)",
+					"commentId":"M:Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.FocusChangedEventArgs)",
 					"parent":"Avalonia.Controls.Control",
 					"isExternal": true
 					,
-					"name":"OnGotFocus(GotFocusEventArgs)",
-					"nameWithType":"Control.OnGotFocus(GotFocusEventArgs)",
-					"fullName":"Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.GotFocusEventArgs)"
+					"name":"OnGotFocus(FocusChangedEventArgs)",
+					"nameWithType":"Control.OnGotFocus(FocusChangedEventArgs)",
+					"fullName":"Avalonia.Controls.Control.OnGotFocus(Avalonia.Input.FocusChangedEventArgs)"
 				},
 				{
-					"uid":"Avalonia.Controls.Control.OnLostFocus(Avalonia.Interactivity.RoutedEventArgs)",
-					"commentId":"M:Avalonia.Controls.Control.OnLostFocus(Avalonia.Interactivity.RoutedEventArgs)",
+					"uid":"Avalonia.Controls.Control.OnLostFocus(Avalonia.Input.FocusChangedEventArgs)",
+					"commentId":"M:Avalonia.Controls.Control.OnLostFocus(Avalonia.Input.FocusChangedEventArgs)",
 					"parent":"Avalonia.Controls.Control",
 					"isExternal": true
 					,
-					"name":"OnLostFocus(RoutedEventArgs)",
-					"nameWithType":"Control.OnLostFocus(RoutedEventArgs)",
-					"fullName":"Avalonia.Controls.Control.OnLostFocus(Avalonia.Interactivity.RoutedEventArgs)"
+					"name":"OnLostFocus(FocusChangedEventArgs)",
+					"nameWithType":"Control.OnLostFocus(FocusChangedEventArgs)",
+					"fullName":"Avalonia.Controls.Control.OnLostFocus(Avalonia.Input.FocusChangedEventArgs)"
 				},
 				{
 					"uid":"Avalonia.Controls.Control.OnCreateAutomationPeer",
@@ -3537,6 +3762,16 @@
 					"name":"OnKeyUp(KeyEventArgs)",
 					"nameWithType":"Control.OnKeyUp(KeyEventArgs)",
 					"fullName":"Avalonia.Controls.Control.OnKeyUp(Avalonia.Input.KeyEventArgs)"
+				},
+				{
+					"uid":"Avalonia.Controls.Control.UpdateDataValidation(Avalonia.AvaloniaProperty,Avalonia.Data.BindingValueType,System.Exception)",
+					"commentId":"M:Avalonia.Controls.Control.UpdateDataValidation(Avalonia.AvaloniaProperty,Avalonia.Data.BindingValueType,System.Exception)",
+					"parent":"Avalonia.Controls.Control",
+					"isExternal": true
+					,
+					"name":"UpdateDataValidation(AvaloniaProperty, BindingValueType, Exception?)",
+					"nameWithType":"Control.UpdateDataValidation(AvaloniaProperty, BindingValueType, Exception?)",
+					"fullName":"Avalonia.Controls.Control.UpdateDataValidation(Avalonia.AvaloniaProperty, Avalonia.Data.BindingValueType, System.Exception?)"
 				},
 				{
 					"uid":"Avalonia.Controls.Control.FocusAdorner",
@@ -3607,16 +3842,6 @@
 					"name":"IDataTemplateHost.IsDataTemplatesInitialized",
 					"nameWithType":"Control.IDataTemplateHost.IsDataTemplatesInitialized",
 					"fullName":"Avalonia.Controls.Control.Avalonia.Controls.Templates.IDataTemplateHost.IsDataTemplatesInitialized"
-				},
-				{
-					"uid":"Avalonia.Controls.Control.ContextRequested",
-					"commentId":"E:Avalonia.Controls.Control.ContextRequested",
-					"parent":"Avalonia.Controls.Control",
-					"isExternal": true
-					,
-					"name":"ContextRequested",
-					"nameWithType":"Control.ContextRequested",
-					"fullName":"Avalonia.Controls.Control.ContextRequested"
 				},
 				{
 					"uid":"Avalonia.Controls.Control.Loaded",
@@ -3749,6 +3974,16 @@
 					"fullName":"Avalonia.Input.InputElement.GotFocusEvent"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.GettingFocusEvent",
+					"commentId":"F:Avalonia.Input.InputElement.GettingFocusEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GettingFocusEvent",
+					"nameWithType":"InputElement.GettingFocusEvent",
+					"fullName":"Avalonia.Input.InputElement.GettingFocusEvent"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.LostFocusEvent",
 					"commentId":"F:Avalonia.Input.InputElement.LostFocusEvent",
 					"parent":"Avalonia.Input.InputElement",
@@ -3757,6 +3992,16 @@
 					"name":"LostFocusEvent",
 					"nameWithType":"InputElement.LostFocusEvent",
 					"fullName":"Avalonia.Input.InputElement.LostFocusEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.LosingFocusEvent",
+					"commentId":"F:Avalonia.Input.InputElement.LosingFocusEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"LosingFocusEvent",
+					"nameWithType":"InputElement.LosingFocusEvent",
+					"fullName":"Avalonia.Input.InputElement.LosingFocusEvent"
 				},
 				{
 					"uid":"Avalonia.Input.InputElement.KeyDownEvent",
@@ -3879,6 +4124,166 @@
 					"fullName":"Avalonia.Input.InputElement.PointerWheelChangedEvent"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.ContextRequestedEvent",
+					"commentId":"F:Avalonia.Input.InputElement.ContextRequestedEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ContextRequestedEvent",
+					"nameWithType":"InputElement.ContextRequestedEvent",
+					"fullName":"Avalonia.Input.InputElement.ContextRequestedEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ContextCanceledEvent",
+					"commentId":"F:Avalonia.Input.InputElement.ContextCanceledEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ContextCanceledEvent",
+					"nameWithType":"InputElement.ContextCanceledEvent",
+					"fullName":"Avalonia.Input.InputElement.ContextCanceledEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.IsHoldingEnabledProperty",
+					"commentId":"F:Avalonia.Input.InputElement.IsHoldingEnabledProperty",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"IsHoldingEnabledProperty",
+					"nameWithType":"InputElement.IsHoldingEnabledProperty",
+					"fullName":"Avalonia.Input.InputElement.IsHoldingEnabledProperty"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.IsHoldWithMouseEnabledProperty",
+					"commentId":"F:Avalonia.Input.InputElement.IsHoldWithMouseEnabledProperty",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"IsHoldWithMouseEnabledProperty",
+					"nameWithType":"InputElement.IsHoldWithMouseEnabledProperty",
+					"fullName":"Avalonia.Input.InputElement.IsHoldWithMouseEnabledProperty"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PinchEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PinchEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PinchEvent",
+					"nameWithType":"InputElement.PinchEvent",
+					"fullName":"Avalonia.Input.InputElement.PinchEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PinchEndedEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PinchEndedEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PinchEndedEvent",
+					"nameWithType":"InputElement.PinchEndedEvent",
+					"fullName":"Avalonia.Input.InputElement.PinchEndedEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PullGestureEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PullGestureEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PullGestureEvent",
+					"nameWithType":"InputElement.PullGestureEvent",
+					"fullName":"Avalonia.Input.InputElement.PullGestureEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PullGestureEndedEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PullGestureEndedEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PullGestureEndedEvent",
+					"nameWithType":"InputElement.PullGestureEndedEvent",
+					"fullName":"Avalonia.Input.InputElement.PullGestureEndedEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.SwipeGestureEvent",
+					"commentId":"F:Avalonia.Input.InputElement.SwipeGestureEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"SwipeGestureEvent",
+					"nameWithType":"InputElement.SwipeGestureEvent",
+					"fullName":"Avalonia.Input.InputElement.SwipeGestureEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.SwipeGestureEndedEvent",
+					"commentId":"F:Avalonia.Input.InputElement.SwipeGestureEndedEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"SwipeGestureEndedEvent",
+					"nameWithType":"InputElement.SwipeGestureEndedEvent",
+					"fullName":"Avalonia.Input.InputElement.SwipeGestureEndedEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ScrollGestureEvent",
+					"commentId":"F:Avalonia.Input.InputElement.ScrollGestureEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ScrollGestureEvent",
+					"nameWithType":"InputElement.ScrollGestureEvent",
+					"fullName":"Avalonia.Input.InputElement.ScrollGestureEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ScrollGestureInertiaStartingEvent",
+					"commentId":"F:Avalonia.Input.InputElement.ScrollGestureInertiaStartingEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ScrollGestureInertiaStartingEvent",
+					"nameWithType":"InputElement.ScrollGestureInertiaStartingEvent",
+					"fullName":"Avalonia.Input.InputElement.ScrollGestureInertiaStartingEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ScrollGestureEndedEvent",
+					"commentId":"F:Avalonia.Input.InputElement.ScrollGestureEndedEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ScrollGestureEndedEvent",
+					"nameWithType":"InputElement.ScrollGestureEndedEvent",
+					"fullName":"Avalonia.Input.InputElement.ScrollGestureEndedEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PointerTouchPadGestureMagnifyEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PointerTouchPadGestureMagnifyEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PointerTouchPadGestureMagnifyEvent",
+					"nameWithType":"InputElement.PointerTouchPadGestureMagnifyEvent",
+					"fullName":"Avalonia.Input.InputElement.PointerTouchPadGestureMagnifyEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PointerTouchPadGestureRotateEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PointerTouchPadGestureRotateEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PointerTouchPadGestureRotateEvent",
+					"nameWithType":"InputElement.PointerTouchPadGestureRotateEvent",
+					"fullName":"Avalonia.Input.InputElement.PointerTouchPadGestureRotateEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PointerTouchPadGestureSwipeEvent",
+					"commentId":"F:Avalonia.Input.InputElement.PointerTouchPadGestureSwipeEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PointerTouchPadGestureSwipeEvent",
+					"nameWithType":"InputElement.PointerTouchPadGestureSwipeEvent",
+					"fullName":"Avalonia.Input.InputElement.PointerTouchPadGestureSwipeEvent"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.TappedEvent",
 					"commentId":"F:Avalonia.Input.InputElement.TappedEvent",
 					"parent":"Avalonia.Input.InputElement",
@@ -3887,6 +4292,16 @@
 					"name":"TappedEvent",
 					"nameWithType":"InputElement.TappedEvent",
 					"fullName":"Avalonia.Input.InputElement.TappedEvent"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.RightTappedEvent",
+					"commentId":"F:Avalonia.Input.InputElement.RightTappedEvent",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"RightTappedEvent",
+					"nameWithType":"InputElement.RightTappedEvent",
+					"fullName":"Avalonia.Input.InputElement.RightTappedEvent"
 				},
 				{
 					"uid":"Avalonia.Input.InputElement.HoldingEvent",
@@ -3929,6 +4344,26 @@
 					"fullName":"Avalonia.Input.InputElement.OnAccessKey(Avalonia.Interactivity.RoutedEventArgs)"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.OnGettingFocus(Avalonia.Input.FocusChangingEventArgs)",
+					"commentId":"M:Avalonia.Input.InputElement.OnGettingFocus(Avalonia.Input.FocusChangingEventArgs)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"OnGettingFocus(FocusChangingEventArgs)",
+					"nameWithType":"InputElement.OnGettingFocus(FocusChangingEventArgs)",
+					"fullName":"Avalonia.Input.InputElement.OnGettingFocus(Avalonia.Input.FocusChangingEventArgs)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.OnLosingFocus(Avalonia.Input.FocusChangingEventArgs)",
+					"commentId":"M:Avalonia.Input.InputElement.OnLosingFocus(Avalonia.Input.FocusChangingEventArgs)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"OnLosingFocus(FocusChangingEventArgs)",
+					"nameWithType":"InputElement.OnLosingFocus(FocusChangingEventArgs)",
+					"fullName":"Avalonia.Input.InputElement.OnLosingFocus(Avalonia.Input.FocusChangingEventArgs)"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.OnPointerEntered(Avalonia.Input.PointerEventArgs)",
 					"commentId":"M:Avalonia.Input.InputElement.OnPointerEntered(Avalonia.Input.PointerEventArgs)",
 					"parent":"Avalonia.Input.InputElement",
@@ -3949,6 +4384,46 @@
 					"fullName":"Avalonia.Input.InputElement.OnPointerExited(Avalonia.Input.PointerEventArgs)"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.GetNextTabStopOverride",
+					"commentId":"M:Avalonia.Input.InputElement.GetNextTabStopOverride",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GetNextTabStopOverride()",
+					"nameWithType":"InputElement.GetNextTabStopOverride()",
+					"fullName":"Avalonia.Input.InputElement.GetNextTabStopOverride()"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.GetPreviousTabStopOverride",
+					"commentId":"M:Avalonia.Input.InputElement.GetPreviousTabStopOverride",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GetPreviousTabStopOverride()",
+					"nameWithType":"InputElement.GetPreviousTabStopOverride()",
+					"fullName":"Avalonia.Input.InputElement.GetPreviousTabStopOverride()"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.GetFirstFocusableElementOverride",
+					"commentId":"M:Avalonia.Input.InputElement.GetFirstFocusableElementOverride",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GetFirstFocusableElementOverride()",
+					"nameWithType":"InputElement.GetFirstFocusableElementOverride()",
+					"fullName":"Avalonia.Input.InputElement.GetFirstFocusableElementOverride()"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.GetLastFocusableElementOverride",
+					"commentId":"M:Avalonia.Input.InputElement.GetLastFocusableElementOverride",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GetLastFocusableElementOverride()",
+					"nameWithType":"InputElement.GetLastFocusableElementOverride()",
+					"fullName":"Avalonia.Input.InputElement.GetLastFocusableElementOverride()"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.OnPointerCaptureLost(Avalonia.Input.PointerCaptureLostEventArgs)",
 					"commentId":"M:Avalonia.Input.InputElement.OnPointerCaptureLost(Avalonia.Input.PointerCaptureLostEventArgs)",
 					"parent":"Avalonia.Input.InputElement",
@@ -3959,6 +4434,66 @@
 					"fullName":"Avalonia.Input.InputElement.OnPointerCaptureLost(Avalonia.Input.PointerCaptureLostEventArgs)"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.ProcessTabStopOverride(Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,System.Boolean,System.Boolean,Avalonia.Input.IInputElement@)",
+					"commentId":"M:Avalonia.Input.InputElement.ProcessTabStopOverride(Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,System.Boolean,System.Boolean,Avalonia.Input.IInputElement@)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ProcessTabStopOverride(IInputElement?, IInputElement?, Boolean, Boolean, IInputElement?)",
+					"nameWithType":"InputElement.ProcessTabStopOverride(IInputElement?, IInputElement?, Boolean, Boolean, IInputElement?)",
+					"fullName":"Avalonia.Input.InputElement.ProcessTabStopOverride(Avalonia.Input.IInputElement?, Avalonia.Input.IInputElement?, System.Boolean, System.Boolean, Avalonia.Input.IInputElement?)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ProcessCandidateTabStopOverride(Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,System.Boolean,Avalonia.Input.IInputElement@)",
+					"commentId":"M:Avalonia.Input.InputElement.ProcessCandidateTabStopOverride(Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,Avalonia.Input.IInputElement,System.Boolean,Avalonia.Input.IInputElement@)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ProcessCandidateTabStopOverride(IInputElement?, IInputElement?, IInputElement?, Boolean, IInputElement?)",
+					"nameWithType":"InputElement.ProcessCandidateTabStopOverride(IInputElement?, IInputElement?, IInputElement?, Boolean, IInputElement?)",
+					"fullName":"Avalonia.Input.InputElement.ProcessCandidateTabStopOverride(Avalonia.Input.IInputElement?, Avalonia.Input.IInputElement?, Avalonia.Input.IInputElement?, System.Boolean, Avalonia.Input.IInputElement?)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.OnTapped(Avalonia.Input.TappedEventArgs)",
+					"commentId":"M:Avalonia.Input.InputElement.OnTapped(Avalonia.Input.TappedEventArgs)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"OnTapped(TappedEventArgs)",
+					"nameWithType":"InputElement.OnTapped(TappedEventArgs)",
+					"fullName":"Avalonia.Input.InputElement.OnTapped(Avalonia.Input.TappedEventArgs)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.OnRightTapped(Avalonia.Input.TappedEventArgs)",
+					"commentId":"M:Avalonia.Input.InputElement.OnRightTapped(Avalonia.Input.TappedEventArgs)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"OnRightTapped(TappedEventArgs)",
+					"nameWithType":"InputElement.OnRightTapped(TappedEventArgs)",
+					"fullName":"Avalonia.Input.InputElement.OnRightTapped(Avalonia.Input.TappedEventArgs)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.OnDoubleTapped(Avalonia.Input.TappedEventArgs)",
+					"commentId":"M:Avalonia.Input.InputElement.OnDoubleTapped(Avalonia.Input.TappedEventArgs)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"OnDoubleTapped(TappedEventArgs)",
+					"nameWithType":"InputElement.OnDoubleTapped(TappedEventArgs)",
+					"fullName":"Avalonia.Input.InputElement.OnDoubleTapped(Avalonia.Input.TappedEventArgs)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.OnHolding(Avalonia.Input.HoldingRoutedEventArgs)",
+					"commentId":"M:Avalonia.Input.InputElement.OnHolding(Avalonia.Input.HoldingRoutedEventArgs)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"OnHolding(HoldingRoutedEventArgs)",
+					"nameWithType":"InputElement.OnHolding(HoldingRoutedEventArgs)",
+					"fullName":"Avalonia.Input.InputElement.OnHolding(Avalonia.Input.HoldingRoutedEventArgs)"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.UpdateIsEffectivelyEnabled",
 					"commentId":"M:Avalonia.Input.InputElement.UpdateIsEffectivelyEnabled",
 					"parent":"Avalonia.Input.InputElement",
@@ -3967,6 +4502,46 @@
 					"name":"UpdateIsEffectivelyEnabled()",
 					"nameWithType":"InputElement.UpdateIsEffectivelyEnabled()",
 					"fullName":"Avalonia.Input.InputElement.UpdateIsEffectivelyEnabled()"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.GetIsHoldingEnabled(Avalonia.StyledElement)",
+					"commentId":"M:Avalonia.Input.InputElement.GetIsHoldingEnabled(Avalonia.StyledElement)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GetIsHoldingEnabled(StyledElement)",
+					"nameWithType":"InputElement.GetIsHoldingEnabled(StyledElement)",
+					"fullName":"Avalonia.Input.InputElement.GetIsHoldingEnabled(Avalonia.StyledElement)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.SetIsHoldingEnabled(Avalonia.StyledElement,System.Boolean)",
+					"commentId":"M:Avalonia.Input.InputElement.SetIsHoldingEnabled(Avalonia.StyledElement,System.Boolean)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"SetIsHoldingEnabled(StyledElement, Boolean)",
+					"nameWithType":"InputElement.SetIsHoldingEnabled(StyledElement, Boolean)",
+					"fullName":"Avalonia.Input.InputElement.SetIsHoldingEnabled(Avalonia.StyledElement, System.Boolean)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.GetIsHoldWithMouseEnabled(Avalonia.StyledElement)",
+					"commentId":"M:Avalonia.Input.InputElement.GetIsHoldWithMouseEnabled(Avalonia.StyledElement)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GetIsHoldWithMouseEnabled(StyledElement)",
+					"nameWithType":"InputElement.GetIsHoldWithMouseEnabled(StyledElement)",
+					"fullName":"Avalonia.Input.InputElement.GetIsHoldWithMouseEnabled(Avalonia.StyledElement)"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.SetIsHoldWithMouseEnabled(Avalonia.StyledElement,System.Boolean)",
+					"commentId":"M:Avalonia.Input.InputElement.SetIsHoldWithMouseEnabled(Avalonia.StyledElement,System.Boolean)",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"SetIsHoldWithMouseEnabled(StyledElement, Boolean)",
+					"nameWithType":"InputElement.SetIsHoldWithMouseEnabled(StyledElement, Boolean)",
+					"fullName":"Avalonia.Input.InputElement.SetIsHoldWithMouseEnabled(Avalonia.StyledElement, System.Boolean)"
 				},
 				{
 					"uid":"Avalonia.Input.InputElement.Focusable",
@@ -4109,6 +4684,16 @@
 					"fullName":"Avalonia.Input.InputElement.GotFocus"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.GettingFocus",
+					"commentId":"E:Avalonia.Input.InputElement.GettingFocus",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"GettingFocus",
+					"nameWithType":"InputElement.GettingFocus",
+					"fullName":"Avalonia.Input.InputElement.GettingFocus"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.LostFocus",
 					"commentId":"E:Avalonia.Input.InputElement.LostFocus",
 					"parent":"Avalonia.Input.InputElement",
@@ -4117,6 +4702,16 @@
 					"name":"LostFocus",
 					"nameWithType":"InputElement.LostFocus",
 					"fullName":"Avalonia.Input.InputElement.LostFocus"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.LosingFocus",
+					"commentId":"E:Avalonia.Input.InputElement.LosingFocus",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"LosingFocus",
+					"nameWithType":"InputElement.LosingFocus",
+					"fullName":"Avalonia.Input.InputElement.LosingFocus"
 				},
 				{
 					"uid":"Avalonia.Input.InputElement.KeyDown",
@@ -4229,6 +4824,146 @@
 					"fullName":"Avalonia.Input.InputElement.PointerWheelChanged"
 				},
 				{
+					"uid":"Avalonia.Input.InputElement.ContextRequested",
+					"commentId":"E:Avalonia.Input.InputElement.ContextRequested",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ContextRequested",
+					"nameWithType":"InputElement.ContextRequested",
+					"fullName":"Avalonia.Input.InputElement.ContextRequested"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ContextCanceled",
+					"commentId":"E:Avalonia.Input.InputElement.ContextCanceled",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ContextCanceled",
+					"nameWithType":"InputElement.ContextCanceled",
+					"fullName":"Avalonia.Input.InputElement.ContextCanceled"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.Pinch",
+					"commentId":"E:Avalonia.Input.InputElement.Pinch",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"Pinch",
+					"nameWithType":"InputElement.Pinch",
+					"fullName":"Avalonia.Input.InputElement.Pinch"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PinchEnded",
+					"commentId":"E:Avalonia.Input.InputElement.PinchEnded",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PinchEnded",
+					"nameWithType":"InputElement.PinchEnded",
+					"fullName":"Avalonia.Input.InputElement.PinchEnded"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PullGesture",
+					"commentId":"E:Avalonia.Input.InputElement.PullGesture",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PullGesture",
+					"nameWithType":"InputElement.PullGesture",
+					"fullName":"Avalonia.Input.InputElement.PullGesture"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PullGestureEnded",
+					"commentId":"E:Avalonia.Input.InputElement.PullGestureEnded",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PullGestureEnded",
+					"nameWithType":"InputElement.PullGestureEnded",
+					"fullName":"Avalonia.Input.InputElement.PullGestureEnded"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ScrollGesture",
+					"commentId":"E:Avalonia.Input.InputElement.ScrollGesture",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ScrollGesture",
+					"nameWithType":"InputElement.ScrollGesture",
+					"fullName":"Avalonia.Input.InputElement.ScrollGesture"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ScrollGestureInertiaStarting",
+					"commentId":"E:Avalonia.Input.InputElement.ScrollGestureInertiaStarting",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ScrollGestureInertiaStarting",
+					"nameWithType":"InputElement.ScrollGestureInertiaStarting",
+					"fullName":"Avalonia.Input.InputElement.ScrollGestureInertiaStarting"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.ScrollGestureEnded",
+					"commentId":"E:Avalonia.Input.InputElement.ScrollGestureEnded",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"ScrollGestureEnded",
+					"nameWithType":"InputElement.ScrollGestureEnded",
+					"fullName":"Avalonia.Input.InputElement.ScrollGestureEnded"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PointerTouchPadGestureMagnify",
+					"commentId":"E:Avalonia.Input.InputElement.PointerTouchPadGestureMagnify",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PointerTouchPadGestureMagnify",
+					"nameWithType":"InputElement.PointerTouchPadGestureMagnify",
+					"fullName":"Avalonia.Input.InputElement.PointerTouchPadGestureMagnify"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PointerTouchPadGestureRotate",
+					"commentId":"E:Avalonia.Input.InputElement.PointerTouchPadGestureRotate",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PointerTouchPadGestureRotate",
+					"nameWithType":"InputElement.PointerTouchPadGestureRotate",
+					"fullName":"Avalonia.Input.InputElement.PointerTouchPadGestureRotate"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.SwipeGesture",
+					"commentId":"E:Avalonia.Input.InputElement.SwipeGesture",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"SwipeGesture",
+					"nameWithType":"InputElement.SwipeGesture",
+					"fullName":"Avalonia.Input.InputElement.SwipeGesture"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.SwipeGestureEnded",
+					"commentId":"E:Avalonia.Input.InputElement.SwipeGestureEnded",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"SwipeGestureEnded",
+					"nameWithType":"InputElement.SwipeGestureEnded",
+					"fullName":"Avalonia.Input.InputElement.SwipeGestureEnded"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.PointerTouchPadGestureSwipe",
+					"commentId":"E:Avalonia.Input.InputElement.PointerTouchPadGestureSwipe",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"PointerTouchPadGestureSwipe",
+					"nameWithType":"InputElement.PointerTouchPadGestureSwipe",
+					"fullName":"Avalonia.Input.InputElement.PointerTouchPadGestureSwipe"
+				},
+				{
 					"uid":"Avalonia.Input.InputElement.Tapped",
 					"commentId":"E:Avalonia.Input.InputElement.Tapped",
 					"parent":"Avalonia.Input.InputElement",
@@ -4237,6 +4972,16 @@
 					"name":"Tapped",
 					"nameWithType":"InputElement.Tapped",
 					"fullName":"Avalonia.Input.InputElement.Tapped"
+				},
+				{
+					"uid":"Avalonia.Input.InputElement.RightTapped",
+					"commentId":"E:Avalonia.Input.InputElement.RightTapped",
+					"parent":"Avalonia.Input.InputElement",
+					"isExternal": true
+					,
+					"name":"RightTapped",
+					"nameWithType":"InputElement.RightTapped",
+					"fullName":"Avalonia.Input.InputElement.RightTapped"
 				},
 				{
 					"uid":"Avalonia.Input.InputElement.Holding",
@@ -4777,6 +5522,16 @@
 					"fullName":"Avalonia.Visual.OpacityMaskProperty"
 				},
 				{
+					"uid":"Avalonia.Visual.CacheModeProperty",
+					"commentId":"F:Avalonia.Visual.CacheModeProperty",
+					"parent":"Avalonia.Visual",
+					"isExternal": true
+					,
+					"name":"CacheModeProperty",
+					"nameWithType":"Visual.CacheModeProperty",
+					"fullName":"Avalonia.Visual.CacheModeProperty"
+				},
+				{
 					"uid":"Avalonia.Visual.EffectProperty",
 					"commentId":"F:Avalonia.Visual.EffectProperty",
 					"parent":"Avalonia.Visual",
@@ -4995,6 +5750,16 @@
 					"name":"OpacityMask",
 					"nameWithType":"Visual.OpacityMask",
 					"fullName":"Avalonia.Visual.OpacityMask"
+				},
+				{
+					"uid":"Avalonia.Visual.CacheMode",
+					"commentId":"P:Avalonia.Visual.CacheMode",
+					"parent":"Avalonia.Visual",
+					"isExternal": true
+					,
+					"name":"CacheMode",
+					"nameWithType":"Visual.CacheMode",
+					"fullName":"Avalonia.Visual.CacheMode"
 				},
 				{
 					"uid":"Avalonia.Visual.Effect",
@@ -5527,16 +6292,6 @@
 					"fullName":"Avalonia.StyledElement.Avalonia.Controls.IResourceNode.HasResources"
 				},
 				{
-					"uid":"Avalonia.StyledElement.Avalonia#Styling#IStyleable#Classes",
-					"commentId":"P:Avalonia.StyledElement.Avalonia#Styling#IStyleable#Classes",
-					"parent":"Avalonia.StyledElement",
-					"isExternal": true
-					,
-					"name":"IStyleable.Classes",
-					"nameWithType":"StyledElement.IStyleable.Classes",
-					"fullName":"Avalonia.StyledElement.Avalonia.Styling.IStyleable.Classes"
-				},
-				{
 					"uid":"Avalonia.StyledElement.Avalonia#Styling#IStyleHost#IsStylesInitialized",
 					"commentId":"P:Avalonia.StyledElement.Avalonia#Styling#IStyleHost#IsStylesInitialized",
 					"parent":"Avalonia.StyledElement",
@@ -5828,14 +6583,14 @@
 					"fullName":"Avalonia.AvaloniaObject.SetCurrentValue<T>(Avalonia.StyledProperty<T>, T)"
 				},
 				{
-					"uid":"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,Avalonia.Data.IBinding)",
-					"commentId":"M:Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,Avalonia.Data.IBinding)",
+					"uid":"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,Avalonia.Data.BindingBase)",
+					"commentId":"M:Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,Avalonia.Data.BindingBase)",
 					"parent":"Avalonia.AvaloniaObject",
 					"isExternal": true
 					,
-					"name":"Bind(AvaloniaProperty, IBinding)",
-					"nameWithType":"AvaloniaObject.Bind(AvaloniaProperty, IBinding)",
-					"fullName":"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty, Avalonia.Data.IBinding)"
+					"name":"Bind(AvaloniaProperty, BindingBase)",
+					"nameWithType":"AvaloniaObject.Bind(AvaloniaProperty, BindingBase)",
+					"fullName":"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty, Avalonia.Data.BindingBase)"
 				},
 				{
 					"uid":"Avalonia.AvaloniaObject.Bind(Avalonia.AvaloniaProperty,System.IObservable{System.Object},Avalonia.Data.BindingPriority)",
@@ -5912,16 +6667,6 @@
 					"fullName":"Avalonia.AvaloniaObject.CoerceValue(Avalonia.AvaloniaProperty)"
 				},
 				{
-					"uid":"Avalonia.AvaloniaObject.UpdateDataValidation(Avalonia.AvaloniaProperty,Avalonia.Data.BindingValueType,System.Exception)",
-					"commentId":"M:Avalonia.AvaloniaObject.UpdateDataValidation(Avalonia.AvaloniaProperty,Avalonia.Data.BindingValueType,System.Exception)",
-					"parent":"Avalonia.AvaloniaObject",
-					"isExternal": true
-					,
-					"name":"UpdateDataValidation(AvaloniaProperty, BindingValueType, Exception?)",
-					"nameWithType":"AvaloniaObject.UpdateDataValidation(AvaloniaProperty, BindingValueType, Exception?)",
-					"fullName":"Avalonia.AvaloniaObject.UpdateDataValidation(Avalonia.AvaloniaProperty, Avalonia.Data.BindingValueType, System.Exception?)"
-				},
-				{
 					"uid":"Avalonia.AvaloniaObject.RaisePropertyChanged``1(Avalonia.DirectPropertyBase{{T}},{T},{T})",
 					"commentId":"M:Avalonia.AvaloniaObject.RaisePropertyChanged``1(Avalonia.DirectPropertyBase{``0},``0,``0)",
 					"parent":"Avalonia.AvaloniaObject",
@@ -5968,6 +6713,16 @@
 					"name":"Item[IndexerDescriptor]",
 					"nameWithType":"AvaloniaObject.Item[IndexerDescriptor]",
 					"fullName":"Avalonia.AvaloniaObject.Item[Avalonia.Data.IndexerDescriptor]"
+				},
+				{
+					"uid":"Avalonia.AvaloniaObject.Dispatcher",
+					"commentId":"P:Avalonia.AvaloniaObject.Dispatcher",
+					"parent":"Avalonia.AvaloniaObject",
+					"isExternal": true
+					,
+					"name":"Dispatcher",
+					"nameWithType":"AvaloniaObject.Dispatcher",
+					"fullName":"Avalonia.AvaloniaObject.Dispatcher"
 				},
 				{
 					"uid":"Avalonia.AvaloniaObject.PropertyChanged",
@@ -6468,6 +7223,20 @@
 					"fullName":"HexView.Avalonia.Controls.HexViewControl.BytesWidth"
 				},
 				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll*",
+					"commentId":"Overload:HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll",
+					"name":"CanHorizontallyScroll",
+					"nameWithType":"HexViewControl.CanHorizontallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.CanHorizontallyScroll"
+				},
+				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll*",
+					"commentId":"Overload:HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll",
+					"name":"CanVerticallyScroll",
+					"nameWithType":"HexViewControl.CanVerticallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.CanVerticallyScroll"
+				},
+				{
 					"uid":"HexView.Avalonia.Controls.HexViewControl.HexFormatter*",
 					"commentId":"Overload:HexView.Avalonia.Controls.HexViewControl.HexFormatter",
 					"name":"HexFormatter",
@@ -6860,6 +7629,23 @@
 					"fullName":"Avalonia.Controls.Primitives.IScrollable.Viewport"
 				},
 				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll*",
+					"commentId":"Overload:HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanHorizontallyScroll",
+					"name":"IScrollable.CanHorizontallyScroll",
+					"nameWithType":"HexViewControl.IScrollable.CanHorizontallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll"
+				},
+				{
+					"uid":"Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll",
+					"commentId":"P:Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll",
+					"parent":"Avalonia.Controls.Primitives.IScrollable",
+					"isExternal": true
+					,
+					"name":"CanHorizontallyScroll",
+					"nameWithType":"IScrollable.CanHorizontallyScroll",
+					"fullName":"Avalonia.Controls.Primitives.IScrollable.CanHorizontallyScroll"
+				},
+				{
 					"uid":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#CanHorizontallyScroll*",
 					"commentId":"Overload:HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#CanHorizontallyScroll",
 					"name":"ILogicalScrollable.CanHorizontallyScroll",
@@ -6875,6 +7661,23 @@
 					"name":"CanHorizontallyScroll",
 					"nameWithType":"ILogicalScrollable.CanHorizontallyScroll",
 					"fullName":"Avalonia.Controls.Primitives.ILogicalScrollable.CanHorizontallyScroll"
+				},
+				{
+					"uid":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll*",
+					"commentId":"Overload:HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#IScrollable#CanVerticallyScroll",
+					"name":"IScrollable.CanVerticallyScroll",
+					"nameWithType":"HexViewControl.IScrollable.CanVerticallyScroll",
+					"fullName":"HexView.Avalonia.Controls.HexViewControl.Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll"
+				},
+				{
+					"uid":"Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll",
+					"commentId":"P:Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll",
+					"parent":"Avalonia.Controls.Primitives.IScrollable",
+					"isExternal": true
+					,
+					"name":"CanVerticallyScroll",
+					"nameWithType":"IScrollable.CanVerticallyScroll",
+					"fullName":"Avalonia.Controls.Primitives.IScrollable.CanVerticallyScroll"
 				},
 				{
 					"uid":"HexView.Avalonia.Controls.HexViewControl.Avalonia#Controls#Primitives#ILogicalScrollable#CanVerticallyScroll*",
