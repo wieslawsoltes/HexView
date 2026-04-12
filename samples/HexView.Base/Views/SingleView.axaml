@@ -234,7 +234,7 @@
                    VerticalAlignment="Center" HorizontalAlignment="Left" />
         <TextBox Name="PathTextBox" Grid.Column="2" BorderThickness="0"
                  Background="Transparent" VerticalAlignment="Center"
-                 Watermark="No file opened" FontSize="13" Padding="4,0" />
+                 PlaceholderText="No file opened" FontSize="13" Padding="4,0" />
         <Button Name="OpenButton" Click="OpenButton_OnClick"
                 Grid.Column="3" Classes="tool" MinWidth="95" Padding="12,6"
                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -299,7 +299,7 @@
           <Border Classes="card" Padding="7,7">
             <StackPanel Orientation="Horizontal" Spacing="6">
               <TextBox Name="AnnotationLabelTextBox" Width="180" Classes="search"
-                       Watermark="Annotation label" />
+                       PlaceholderText="Annotation label" />
               <Button Name="AddAnnotationButton" Click="AddAnnotationButton_OnClick"
                       Classes="tool" MinWidth="120" Padding="12,6"
                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -336,7 +336,7 @@
               </ComboBox.Items>
             </ComboBox>
             <TextBox Name="SearchTextBox" Width="320" Classes="search"
-                     Watermark="Search: 0x1234 or DE AD BE EF" />
+                     PlaceholderText="Search: 0x1234 or DE AD BE EF" />
             <Button Name="FindPrevButton" Click="FindPrevButton_OnClick"
                     Width="34" Height="30" Classes="tool" ToolTip.Tip="Previous (Shift+F3)"
                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -497,7 +497,7 @@
           <x:Int32>16</x:Int32>
         </ComboBox.Items>
       </ComboBox>
-      <CheckBox Name="ShowSepsCheckBox" IsChecked="True" Checked="ShowSepsCheckBox_OnChanged" Unchecked="ShowSepsCheckBox_OnChanged"/>
+      <CheckBox Name="ShowSepsCheckBox" IsChecked="True"/>
       <TextBox Name="AddrWidthTextBox" KeyUp="AddrWidthTextBox_OnKeyUp"/>
       <ComboBox Name="EncodingComboBox" SelectedIndex="0" SelectionChanged="EncodingComboBox_OnSelectionChanged">
         <ComboBox.Items>
@@ -507,7 +507,7 @@
           <x:String>UTF-16BE</x:String>
         </ComboBox.Items>
       </ComboBox>
-      <CheckBox Name="ControlGlyphCheckBox" IsChecked="True" Checked="ControlGlyphCheckBox_OnChanged" Unchecked="ControlGlyphCheckBox_OnChanged"/>
+      <CheckBox Name="ControlGlyphCheckBox" IsChecked="True"/>
       <TextBox Name="SelStartTextBox"/>
       <TextBox Name="SelLenTextBox"/>
       <TextBox Name="ReplaceTextBox"/>

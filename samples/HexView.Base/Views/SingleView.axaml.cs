@@ -17,7 +17,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using HexView.Avalonia.Model;
 using HexView.Avalonia.Services;
 
@@ -58,10 +57,12 @@ public partial class SingleView : UserControl
         {
             ShowSeparatorsMenuItem.IsChecked = ShowSepsCheckBox.IsChecked ?? false;
         };
+        ShowSepsCheckBox.IsCheckedChanged += ShowSepsCheckBox_OnChanged;
         ControlGlyphCheckBox.IsCheckedChanged += (s, e) =>
         {
             ShowControlGlyphMenuItem.IsChecked = ControlGlyphCheckBox.IsChecked ?? false;
         };
+        ControlGlyphCheckBox.IsCheckedChanged += ControlGlyphCheckBox_OnChanged;
 
         // Update bookmarks menu when opened
         BookmarksMenuItem.SubmenuOpened += BookmarksMenuItem_OnSubmenuOpened;
@@ -444,8 +445,7 @@ public partial class SingleView : UserControl
 
         if (Application.Current?.ApplicationLifetime is ISingleViewApplicationLifetime { MainView: { } mainView })
         {
-            var visualRoot = mainView.GetVisualRoot();
-            if (visualRoot is TopLevel topLevel)
+            if (TopLevel.GetTopLevel(mainView) is { } topLevel)
             {
                 return topLevel.StorageProvider;
             }

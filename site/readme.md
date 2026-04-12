@@ -26,7 +26,7 @@ og_type: website
   </a>
   <a class="hv-link-card" href="articles/getting-started/installation">
     <span class="hv-link-card-title"><i class="bi bi-download" aria-hidden="true"></i> Installation</span>
-    <p>Add the package, target Avalonia 11.3, and restore Lunet tooling for docs work.</p>
+    <p>Add the package, target Avalonia 12.0.0, and restore Lunet tooling for docs work.</p>
   </a>
   <a class="hv-link-card" href="articles/getting-started/quickstart-control">
     <span class="hv-link-card-title"><i class="bi bi-window" aria-hidden="true"></i> Quickstart Control</span>
